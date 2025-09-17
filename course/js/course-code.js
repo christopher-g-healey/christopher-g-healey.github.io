@@ -345,7 +345,7 @@ function copy_code( txt )
   $.ajax( {
     method: "GET",
     async: false,
-    url: "https://www.csc2.ncsu.edu/faculty/healey/html/header-code.html",
+    url: "https://christopher-g-healey.github.io/course/html/header-code.html",
     success: function( res ) {
       // Start processing the copy code command by adding a temporary
       // paragraph to the end of the document with the text to copy to
@@ -849,10 +849,10 @@ function switch_theme()
   var  class_ID;                      // Index into jQuery URL for theme change
   var  cur_tok;                       // Current URL token
   var  http_root =                    // Root of page URL
-    "https://www.csc2.ncsu.edu/faculty/healey/";
+    "https://christopher-g-healey.github.io/";
   var  icon_src = [                   // Light & dark button icons
-    "https://www.csc2.ncsu.edu/faculty/healey/course/figs/moon-icon-gradient.png",
-    "https://www.csc2.ncsu.edu/faculty/healey/course/figs/sun-icon-gradient.png"
+    "https://christopher-g-healey.github.io/course/figs/moon-icon-gradient.png",
+    "https://christopher-g-healey.github.io/course/figs/sun-icon-gradient.png"
   ];
   var  jquery_URL = [                 // jQuery light & dark themes
     "https://code.jquery.com/ui/1.13.3/themes/excite-bike/jquery-ui.css",
