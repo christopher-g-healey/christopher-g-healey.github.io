@@ -1,0 +1,846 @@
+.dark {
+    --txt-bg: #2b2b2b;
+    --txt-fg: #b3b7ba;
+    --txt-hilite: #deb887;
+    
+    --title-fg: #deb887;
+
+		--img-bg: #000000;
+    
+    --tbl-bd: #0000e6
+    
+    --th-bd: #e6e6f1;
+    --th-bg: #7979f2;
+    --th-fg: #d7dbd3;
+    --tr-even-bg: #e1e1ed;
+    --tr-odd-bg: #cacaed;
+    --td-bd: #0000e6;
+    --td-fg: #8c4425;
+
+    --hr-endpt: #0000e6;
+    --hr-mid: #cacaed;
+
+    --code-img-bd: #c0c0c0;
+    --code-img-bg: #ffffff;
+
+    --shadow: #777777;
+
+    --href: #6b8b9b;
+    --href-visit: #a794e5;
+
+    --canvas-bd: #d7dbd3;
+    --canvas-bg: #e8e8e8;
+
+    --defn-bd: #d7dbd3;
+    --defn-bg: #cacaed;
+    --defn-fg: #2b2b2b;
+
+    --ex-bd: #0000e6;
+    --ex-bg: #cacaed;
+    --ex-fg: #2b2b2b;
+    --ex-accordion-bg: #cacaed;
+    --ex-accordion-fg: #2b2b2b;
+
+    --flex-bd: #d7dbd3;
+    --flex-bg: #7979f2;
+    --flex-fg: #d7dbd3;
+    --flex-accordion-bd: #d7dbd3;
+    --flex-accordion-bg: #e8e8e8;
+    --flex-accordion-fg: #2b2b2b;
+    --accordion-bd: #d7dbd3;
+    --accordion-bg: #055cae;
+    --accordion-fg: #d7dbd3;
+
+    --fig-fg: #2b2b2b;
+
+    --accordion-body-bg: #055cae;
+    --accordion-body-fg: #d7dbd3;
+
+    --matrix-bd: #5d8194;
+
+    --nav-bd: #c8c8c8;
+    --nav-bg: #eeeeee;
+    --nav-foot-bg: #2b2b2b;
+    --nav-li: #22429e;
+    --nav-li-hover: #e6e6f1;
+    
+    --copy-icon: url(../figs/copy-24x24.png);
+    --copy-icon-inv: url(../figs/copy-24x24-inv.png);
+    --copy-icon-accordion: url(../figs/copy-24x24.png);
+}
+
+.light {
+    --txt-bg: #ffffff;
+    --txt-fg: #222222;
+    --txt-hilite: #cd5c5c;
+    
+    --title-fg: #222222;
+
+		--img-bg: #ffffff;
+    
+    --tbl-bd: #e60000;
+
+    --th-bd: #e66f6f;
+    --th-bg: #e60000;
+    --th-fg: #ffffff;
+    --tr-even-bg: #fbf9f7;
+    --tr-odd-bg: #ffe8e8;
+    --td-bd: #e60000;
+    --td-fg: #222222;
+
+    --hr-endpt: #ffe8e8;
+    --hr-mid: #e60000;
+
+    --code-img-bd: #c0c0c0;
+    --code-img-bg: #ffffff;
+
+    --shadow: #777777;
+
+    --href: #6b8b9b;
+    --href-visit: #a794e5;
+
+    --canvas-bd: #d7dbd3;
+    --canvas-bg: #fbfbfb;
+
+    --defn-bd: #d7dbd3;
+    --defn-bg: #e89f1f;
+    --defn-fg: #222222;
+
+    --ex-bd: #e60000;
+    --ex-bg: #ffe8e8;
+    --ex-fg: #222222;
+    --ex-accordion-bg: #ffe8e8;
+    --ex-accordion-fg: #222222;
+
+    --flex-bd: #d7dbd3;
+    --flex-bg: #9bc7ff;
+    --flex-fg: #222222;
+    --flex-accordion-bd: #d7dbd3;
+    --flex-accordion-bg: #fbfbfb;
+    --flex-accordion-fg: #222222;
+    --accordion-bd: #d7dbd3;
+    --accordion-bg: #8fbee9;
+    --accordion-fg: #222222;
+
+    --accordion-body-bg: #ffecbd;
+    --accordion-body-fg: #222222;
+
+    --fig-fg: #222222;
+
+    --matrix-bd: #5d8194;
+
+    --nav-bd: #c8c8c8;
+    --nav-bg: #eeeeee;
+    --nav-foot-bg: #ffffff;
+    --nav-li: #22429e;
+    --nav-li-hover: #e6e6f1;
+    
+    --copy-icon: url(../figs/copy-24x24.png);
+    --copy-icon-inv: url(../figs/copy-24x24.png);
+    --copy-icon-accordion: url(../figs/copy-24x24.png);
+}
+
+.ui-accordion-content {               /* jQuery accordion body formatting */
+		padding: rem 2.rem;
+		border-top: 0;
+		overflow: auto;
+		background: var(--accordion-body-bg);
+		color: var(--accordion-body-fg);
+}
+
+.tooltipLight {
+  font-size: 10px;
+  background: #ffe8e8;
+  color: #222222;
+}
+
+.tooltipDark {
+  font-size: 10px;
+
+
+<!-- Initially assume light theme (day), draw moon icon to switch to dark -->
+<!-- Javascript will automatically check this and switch if it's night -->
+
+<img id="light-dark" style="width: 24px; height: 24px; position: fixed; top: 2px; right: 20px; margin: 0; padding: 0; z-index: 200;" src="../figs/moon-icon-gradient.png" />
+  background: #cacaed;
+  color: #2b2b2b;
+}
+
+body {                                /* Default body CSS */
+  font-family: 'Noto Serif', Georgia,  Times, serif;
+  font-size: 10pt;
+  background-color: var(--txt-bg);
+  color: var(--txt-fg);
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  counter-reset: figure table;
+}
+
+h2 {                                  /* Default H2 CSS */
+  position: relative;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: .7em;
+  margin-bottom: .2em;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 14pt;
+  text-align: justify;
+  text-justify: distribute;
+}
+
+h3 {                                  /* Default H3 CSS */
+  position: relative;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 1.1em;
+  font-style: italic;
+  text-align: justify;
+  text-justify: distribute;
+}
+
+h4 {                                  /* Default H4 CSS */
+  position: relative;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: .7em;
+  margin-bottom: .2em;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 11pt;
+  text-align: justify;
+  text-justify: distribute;
+}
+
+p {                                   /* Default paragraph CSS */
+  position: relative;
+  margin-left: 5%;
+  margin-right: 5%;
+  text-align: justify;
+  text-justify: distribute;
+  margin-top: .5em;
+  margin-bottom: .5em;
+}
+
+blockquote {                          /* Default blockquote CSS */
+  position: relative;
+  margin-left: 7.5%;
+  margin-right: 7.5%;
+  margin-top: .5em;
+  margin-bottom: .5em;
+}
+
+dt {                                  /* Default definition term CSS */
+  position: relative;
+  margin-left: 5%;
+  margin-right: 5%;
+  text-align: justify;
+  text-justify: distribute;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+dd {                                  /* Default definition description CSS */
+  position: relative;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-bottom: 1.0em;
+  text-align: justify;
+  text-justify: distribute;
+  font-family: 'Noto Serif', Times, serif;
+}
+
+ol,ul,dl {                            /* Default list CSS */
+  position: relative;
+  margin-left: 5%;
+  margin-right: 10%;
+  text-align: justify;
+  text-justify: distribute;
+}
+
+ol>li,ul>li {                         /* Margins for items in an ordered list */
+  margin-top: .25em;
+  margin-bottom: .25em;
+}
+
+ol>li.tight,ul>li.tight {             /* Margins for items in tight ordered list */
+  margin-top: 0em;
+  margin-bottom: 0em;
+}
+
+ul.sub,ol.sub {                       /* Margins, bullet for ol, ul sublists */
+  margin-left: 0%;
+  margin-right: 5%;
+  padding-left: 2em;
+  list-style-type: disc;
+}
+
+table {                               /* Default table CSS */
+  position: relative;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 5%;
+  margin-right: 5%;
+  border-collapse: collapse;
+}
+
+table.center {                        /* Centered table CSS */
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 90%;
+}
+
+caption {                             /* Default item caption CSS */
+  caption-side: bottom;
+  text-align: justify;
+  font-family: 'Noto Serif', Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 0.8em;
+}
+
+table>caption{                        /* Pos, alignment, font for table caption */
+  caption-side: bottom;
+  text-align: center;
+  padding-top: 0.5em;
+  font-weight: bold;
+  font-size: 90%;
+  font-family: 'Trebuchet MS', sans-serif;
+}
+
+table>caption:before {                /* Insert increment table counter before.. */
+                                      /* ..table caption text */
+  content: "Table " counter(table) ".  ";
+  counter-increment: table;
+}
+
+figcaption {
+  font-weight: bold;
+  font-family: 'Trebuchet MS', sans-serif;
+  color: var(--fig-fg);
+}
+
+figcaption::before {                  /* Insert increment figure counter before.. */
+                                      /* ..table caption text */
+  counter-increment: figure;
+  content: "Fig " counter(figure) ".  ";
+}
+
+th {                                  /* Default table header CSS */
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: var(--th-bd);
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 90%;
+  font-weight: bold;
+  background-color: var(--th-bg);
+  color: var(--th-fg);
+}
+
+tr.even {                             /* Even row colour CSS */
+  background-color: var(--tr-even-bg);
+}
+
+tr.odd {                              /* Odd row colour CSS */
+  background-color: var(--tr-odd-bg);
+}
+
+td {                                  /* Default table definition CSS */
+  vertical-align: top;
+  text-align: left;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--td-bd);
+  color: var(--td-fg);
+  padding: 8px;
+  font-size: 90%;
+}
+
+td.list {                             /* Alignment, width, padding for list.. */
+  vertical-align: bottom;             /* ..within table definition */
+  border-width: 0;
+  padding: 0;
+}
+
+.detail {                             /* Default CSS for generic div */
+  font-family: 'Noto Serif', Georgia, Times, serif;
+  font-size: 10pt;
+  margin: 1.5em 7.5% 1.5em 7.5%;
+}
+
+div.footer {                          /* Footer div pos, margins, font size CSS */
+  position: relative;
+  margin-right: 5%;
+  float: right;
+  font-size: 0.8em;
+  margin-bottom: 0.5em;
+}
+
+div.list {                            /* List div margin left CSS */
+  margin-left: 4%;
+}
+
+hr {                                  /* Horizontal rule default CSS */
+  border: 0;
+  height: 1px;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 1.5em;
+  margin-bottom: 1em;
+  background: linear-gradient(to right, var(--hr-endpt), var(--hr-mid), var(--hr-endpt) );
+}
+
+b {                                   /* Fold text font CSS */
+  font-family: 'Trebuchet MS', sans-serif;
+}
+
+em {                                  /* Emphasized text font CSS */
+  font-style: italic;
+}
+
+a:link {                              /* No underline on link CSS */
+  text-decoration: none;
+  color: var(--href);
+}
+
+a:visited {                           /* No underline, colour on visited link CSS */
+  text-decoration: none;
+  color: var(--href-visit);
+}
+
+a:hover {                             /* Underline link on hover CSS */
+  text-decoration: underline;
+}
+
+.inner-list {                         /* Inner list class margins CSS */
+  margin-left: 1em;
+  padding-left: 1em;
+}
+
+
+/*  CSS for codeblocks and code examples */
+
+.code {                               /* Code class font CSS */
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.9em;
+}
+
+.codeblock {                          /* Code block class CSS */
+  position: relative;
+  left: 8%;
+  width: 84%;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.9em;
+}
+
+.code-img {                           /* Image within a code div */
+  display: block;
+  border: 1px solid var(--code-img-bd);
+  background-color: var(--code-img-bg);
+  padding: 1em 1em 1em 1em;
+  margin: 2em 0px 2em 0px;
+  margin-inline: auto;
+	text-align: center;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.9em;
+}
+
+.img-div {                            /* Image within a code div */
+  display: block;
+  width: 80%;
+  border: 1px solid var(--code-img-bd);
+  background-color: var(--code-img-bg);
+  padding: 1em 1em 1em 1em;
+  margin: 2em 0px 2em 0px;
+  margin-inline: auto;
+	text-align: center;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.9em;
+}
+
+.shadow {                             /* Shadow class CSS */
+  -moz-box-shadow: 1px 1px 2px var(--shadow);
+  -webkit-box-shadow: 1px 1px 2px var(--shadow);
+  box-shadow: 1px 1px 2px var(--shadow);
+}
+
+.center-canvas {                      /* An SVG canvas centered onscreen */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+  border: 1px solid var(--canvas-bd);
+  background: var(--canvas-bg);
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+}
+
+.defn-div {                           /* A definition div, used for math defns */
+  background-color: var(--defn-bg);
+  border: 1px solid var(--defn-bd);
+  color: var(--defn-fg);
+  margin: 20px 20% 20px 20%;
+  padding: 10px 15px 10px 15px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  font-size: 1.0em;
+  line-height: 1.4em;
+}
+
+.ex-div, .ex-div-accordion {          /* An example div, used for example code */
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  margin: 20px 10% 20px 10%;
+  border: 1px solid var(--ex-bd);
+  background-color: var(--ex-bg);
+  color: var(--ex-fg);
+  padding: 0px 15px 1em 15px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  font-family: Monaco, monospace;
+  font-size: 0.9em;
+  line-height: 1.4em;
+}
+
+.code-flex-div {			/* Flex div to hold code example */
+  display:flex;
+  margin: 20px 7.5% 20px 7.5%;
+  justify-content: center;
+}
+
+.code-flex-pair-div {			/* Flex div for side-by-side code example */
+  display:flex;
+  margin: 20px 7.5% 20px 7.5%;
+  justify-content: space-between;
+}
+
+/* Base CSS for code, equations, code in accordion, equations in accordion */
+  
+.code-flex, .eq-flex, .code-flex-accordion, .eq-flex-accordion {
+  flex 1 1 auto;
+  width: 90%;
+  border: 1px solid var(--flex-bd);
+  background-color: var(--flex-bg);
+  color: var(--flex-fg);
+  padding: 5px 15px 5px 15px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  font-family: Monaco, monospace;
+  font-size: 0.9em;
+  line-height: 1.4em;
+  background-image: var(--copy-icon-inv);
+  background-repeat: no-repeat;
+  background-position: bottom 0px right 0px;
+  background-size: 24px 24px;
+}
+
+.code-flex {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  padding: 0px 15px 0px 15px;
+}
+
+.code-flex-accordion {                /* Flip bg/text colour in accordion */
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  padding: 0px 15px 0px 15px;
+  color: var(--flex-accordion-fg);
+  background-color: var(--flex-accordion-bg);
+  border: 1px solid var(--flex-accordion-bd);
+  background-image: var(--copy-icon-accordion);
+}
+
+.eq-flex {                            /* No copy icon on equations */
+  border: 1px solid var(--flex-bd);
+  background-image: none;
+}
+
+.eq-flex-accordion {                  /* Flip bg/text colour in accordion */
+  color: var(--flex-accordion-fg);
+  background-color: var(--flex-accordion-bg);
+  border: 1px solid var(--flex-accordion-bd);
+  background-image: none;
+}
+  
+/* Base CSS for code, equations, code in accordion, equations in accordion pairs */
+  
+.code-flex-pair, .eq-flex-pair, .code-flex-pair-accordion, .eq-flex-pair-accordion {
+  flex: 0 0 auto;
+  width: 45%;
+  border: 1px solid var(--accordion-bd);
+  background-color: var(--accordion-bg);
+  color: var(--accordion-fg);
+  padding: 5px 15px 5px 15px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  font-family: Monaco, monospace;
+  font-size: 0.9em;
+  line-height: 1.4em;
+  background-image: var(--copy-icon-inv);
+  background-repeat: no-repeat;
+  background-position: bottom 0px right 0px;
+  background-size: 24px 24px;
+}
+
+.code-flex-pair {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  padding: 0px 15px 0px 15px;
+}
+
+.code-flex-pair-accordion {           /* Flip bg/text colour in accordion */
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  padding: 0px 15px 0px 15px;
+  color: var(--flex-accordion-fg);
+  background-color: var(--flex-accordion-bg);
+  background-image: var(--copy-icon-accordion);
+}
+
+.eq-flex-pair {                       /* No copy icon on equations */
+  background-image: none;
+}
+
+.eq-flex-pair-accordion {             /* Flip bg/text colour in accordion */
+  color: var(--flex-accordion-fg);
+  background-color: var(--flex-accordion-bg);
+  background-image: none;
+}
+
+.code-div-accordion {                 /* A div used for a single Python/R.. */
+  display: flex;                      /* ..code example in an accordion */
+  margin: 20px 7.5% 20px 7.5%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.code-div-accordion-pair {            /* A sub-div used for side-by-side.. */
+  display: flex;                      /* ..Python/R code examples in an.. */
+  margin: 20px 7.5% 20px 7.5%;        /* ..accordion */
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.code-accordion {                     /* A code div for code within an accordion */
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  border: 1px solid var(--accordion-bd);
+  background-color: var(--accordion-bg);
+  color: var(--accordion-fg);
+  padding: 5px 15px 5px 15px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.9em;
+  line-height: 1.4em;
+  width: 45%;
+  text-align: left;
+}
+
+code {
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.9em;
+}
+
+
+/* Spans are used for code examples to simulate tab indents */
+
+span.indent {                         /* Indented span */
+  margin-left: 4.0em;
+}
+span.white-sp {                       /* Span that preserves code format */
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+span.tab-1 {                          /* One tab span */
+  margin-left: 4.0em;
+}
+span.tab-2 {                          /* Two tab span */
+  margin-left: 8.0em;
+}
+span.tab-3 {                          /* Three tab span */
+  margin-left: 12.0em;
+}
+span.tab-4 {                          /* Four tab span */
+  margin-left: 16.0em;
+}
+span.tab-5 {                          /* Five tab span */
+  margin-left: 20.0em;
+}
+
+
+/* Table defn's to simulate matrices */
+
+.border-td-lf {                       /* Table cell class with only right border */
+    border-left-style: hidden;
+    border-top-style: hidden;
+    border-bottom-style: hidden;
+}
+
+.border-td-rt {                       /* Table cell class with only left border */
+    border-right-style: hidden;
+    border-top-style: hidden;
+    border-bottom-style: hidden;
+}
+
+td.matrix {                           /* Table cell simulating matrix, used in.. */
+  text-align: center;                 /* linear algebra */
+  white-space: nowrap;
+  border-width: 0px;
+  padding: 2px 4px 2px 4px;
+}
+
+td.matrix-left {			/* Left brace on matrix */
+  padding: 0px;
+  border: 1px solid var(--matrix-bd);
+  border-right: 0px;
+  width: 6px;
+  height: 100%;
+}
+
+td.matrix-right {			/* Right brace on matrix */
+  padding: 0px;
+  border: 1px solid var(--matrix-bd);
+  border-left: 0px;
+  width: 6px;
+  height: 100%;
+}
+
+
+/*  Algorithm environment  */
+
+div.alg {				/* Div to hold alg table */
+  margin-left: 2.5%;
+}
+
+td.alg {				/* Alg table cell */
+  border-width: 0px;
+  padding: 1px;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.9em;
+}
+
+td.alg-num {				/* Alg line number */
+  border-width: 0px;
+  padding: 1px 10px 2px 1px;
+  vertical-align: bottom;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.7em;
+  font-weight: bold;
+}
+
+td.alg-left {				/* Alg conditional brace td */
+  border: 0px;
+  border-left: 1px solid var(--matrix-bd);
+  padding: 0px;
+  width: 12px;
+  height: 100%;
+}
+
+div.alg-left {				/* Div in alg conditional brace td */
+  border-bottom: 1px solid var(--matrix-bd);
+  position: absolute;
+  bottom: 0;
+  width: 6px;
+}
+
+
+/*  A bunch of CSS to format the navigation toolbar  */
+
+#navWrap {				/* Toolbar height so it won't... */
+  height: 30px;				/* ..collapse when floats */
+  font-size: 10pt;
+}
+
+#nav {					/* Rounded div to hold nav's ul */
+  width: 100%;
+  min-width: 925px;
+  padding: 0px;
+  border: 1px solid var(--nav-bd);
+  background: var(--nav-bg);
+  z-index: 100;
+  -moz-border-radius: 0 0 5px 5px;
+  -webkit-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
+}
+
+#nav-footer {				/* Spacer under toolbar's nav div */
+  height: 1em;
+  padding: 0px;
+  background: var(--nav-foot-bg);
+  z-index: 99;
+}
+
+#nav ul {				/* Nav's horizontal ul */
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+#nav li {				/* Nav's individual elements */
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 0 3px 0 3px;
+  color: var(--nav-li);
+  list-style-type: none;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-weight: bold;
+}
+
+#nav li:hover {				/* Change li's color on hover */
+  background-color: var(--nav-li-hover);
+}
+
+#nav li a {				/* Links in li black, no underline */
+  text-decoration: none;
+}
+
+#nav li a:hover {			/* Restore underline on link hover */
+  text-decoration: underline;
+}
