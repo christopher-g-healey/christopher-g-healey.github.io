@@ -102,7 +102,7 @@ function eval_cmd( cmd )
 
 // Fetch current header HTML
 
-fetch( "https://www.csc2.ncsu.edu/faculty/healey/course/html/header-code.html" )
+fetch( "https://christopher-g-healey.github.io/course/html/header-code.html" )
   .then( r => r.text() )
 
   // Process each command in header text
@@ -132,4 +132,5 @@ fetch( "https://www.csc2.ncsu.edu/faculty/healey/course/html/header-code.html" )
       }
    }                                  // End process each comand in header
   } );                                // End fetch promise
+
 
