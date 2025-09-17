@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta charset="UTF-8" />
+
+<title>Practical Python Assignment: Tic-Tac-Toe</title>
+</head>
+
+<script type="text/javascript" src="../../js/header.js"></script>
+
+<body class="light">
+
+<div style="text-align:center;">
+<span id="banner-img" style="
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 1100px;
+  height: 450px;
+  background-image: url( '../../figs/assn-tictactoe/banner.png' );
+  background-repeat: no-repeat;
+">
+<div style="
+  position: absolute;
+  align: right;
+  bottom: 15px;
+  right: 20px;
+  font-family: 'Trebuchet MS', Helvetica, sans-serif;
+  font-size: 16pt;
+  font-weight: normal;
+  color: #646464;
+">
+  Practical Python Assignment: Tic-Tac-Toe
+  <div style="font-size: 10pt;">
+    <a target="_blank" href="https://healey.csc.ncsu.edu">
+    <i>Christopher G. Healey</i>
+    </a>
+  </div>
+</div>
+<div style="
+  position: absolute;
+  align: right;
+  top: 0px;
+  left: 0px;
+">
+  <a target="_blank" href="https://www.ncsu.edu">
+    <img alt="NC State Logo" src="../../figs/nc-state-logo-blue.png"
+     style="
+       border-style: none;
+       -moz-box-shadow: 1px 1px 8px #646464;
+       -webkit-box-shadow: 1px 1px 8px #646464;
+       box-shadow: 1px 1px 8px #646464;
+     " alt="nc-state-logo">
+  </a>
+</div>
+</span>
+</div>
+
+
+<!--Spacer after image of one "line"-->
+
+<div style="height: 1em;"></div>
+
+<!-- Navigation toolbar -->
+
+<div id="navWrap">
+  <div id="nav">
+    <ul id="nav-list">
+      <li id="nav-intro:intro">Introduction</li>
+      <li id="nav-require:require">Requirements</li>
+      <li id="nav-design:design">Design</li>
+      <li id="nav-UI:UI">UI</li>
+      <li id="nav-win:win">Wins/Ties</li>
+      <li id="nav-grade:grade">Grading</li>
+      <li id="nav-collab:collab">Collaboration</li>
+    </ul>
+  </div>
+
+  <div id="nav-footer">
+  </div>
+</div>
+
+
+<!-- Initially assume light theme (day), draw moon icon to switch to dark -->
+<!-- Javascript will automatically check this and switch if it's night -->
+
+<img id="light-dark" style="width: 24px; height: 24px; position: fixed; top: 2px; right: 20px; margin: 0; padding: 0; z-index: 200;" src="../../../msa/figs/moon-icon-gradient.png" />
+
+
+<h2>Due Date</h2>
+
+<p>Monday, September 9, 11:59pm via Moodle. Look for the "Practical
+Python Assignment: Tic-Tac-Toe" link.</p>
+
+<h2 id="intro">Introduction</h2>
+
+<p>The second assignment for <a href="../index.html">this year's
+Python module</a> asks you to write a
+simple <a href="https://en.wikipedia.org/wiki/Tic-tac-toe">tic-tac-toe
+game</a> that allows two players to play tic-tac-toe against one
+another. You will be asked to:</p>
+
+<ol>
+
+  <li>Implement a program that tracks the state of an ongoing
+  tic-tac-toe game.
+
+  <li>Allow each player to choose the position they want to place
+  their pieces.
+
+  <li>Check and end the game when either a win or a tie occurs.
+
+</ol>
+
+
+<h2 id="require">Assignment Requirements</h2>
+
+<p>
+Your program must meet the following requirements, since it will be
+marked electronically, failing to meet these requirements means your
+program or its ouptut will not be found and cannot be graded.
+</p>
+
+<ol>
+
+<li>Your program <b>MUST</b> be called <code>tictactoe.py</code>. You
+<b>CANNOT</b> submit a Jupyter notebook <code>.ipynb</code> file.
+
+<li>You <b>MUST</b> use the
+  identifiers <code>A1</code>, <code>A2</code> and so on to refer to
+  squares on the board exactly as we have specified.
+
+</ol>
+
+
+<h2 id="design">Basic Game Loop</h2>
+
+<p>
+The game loop for a tic-tac-toe game is fairly simple.
+
+<ol>
+
+<li>Initialize the board to be empty.
+
+<li><code>X</code> starts, and chooses a position to place their
+marker.
+
+<li><code>O</code> positions their marker in any empty position.
+
+<li>After each marker is placed, a check is made to see whether either
+player has won.
+
+<li>Placement alternates until a player wins or the board is full, at
+which point the game is called for a tie.
+
+</ol>
+
+<p>
+The reason you would break down the game like this isn't because you
+don't know tic-tac-toe, but because this gives you a fairly good idea
+of what you need to do to program Python to play a tic-tac-toe game.
+This is a common strategy for larger programs, take each problem and
+break it down into a sequence of sub-problems until you feel
+comfortable that you understand how to write code to solve each
+sub-problem. If our breakdown above is still too high level, keep
+decomposing it until to get to a point where you feel like you
+understand how to convert each description into a corresponding block
+of code.
+</p>
+
+<h2 id="UI">Interface</h2>
+
+<p>
+<b>Board Positions.</b>&nbsp;&nbsp;Because we'll be marking your
+programs electronically, there is a very specific way that positions
+on the board are labeled, and in how your program should accept the
+positions as input to update your tic-tac-toe board.
+</p>
+
+<p>
+Positions on the board are labeled with the
+numbers <code>1</code>, <code>2</code>, and <code>3</code>, used for
+the three rows, top to bottom, and the
+letters <code>A</code>, <code>B</code>, and <code>C</code>, used for
+the three columns, left to right. So, for example, the top-left
+position is <code>A1</code>, and the bottom-left position
+is <code>C3</code>. The entire board has positions labeled like this.
+</p>
+
+<p>
+<table style="margin-left: auto; margin-right: auto;">
+<tr class="even">
+  <td style="padding: 2em;"><code>A1</code></td>
+  <td style="padding: 2em;"><code>B1</code></td>
+  <td style="padding: 2em;"><code>C1</code></td>
+</tr>
+
+<tr class="even">
+  <td style="padding: 2em;"><code>A2</code></td>
+  <td style="padding: 2em;"><code>B2</code></td>
+  <td style="padding: 2em;"><code>C2</code></td>
+</tr>
+
+<tr class="even">
+  <td style="padding: 2em;"><code>A3</code></td>
+  <td style="padding: 2em;"><code>B3</code></td>
+  <td style="padding: 2em;"><code>C3</code></td>
+</tr>
+
+</table>
+</p>
+
+<p>
+<b>User Input.</b>&nbsp;&nbsp;When a user enters a position, they must
+use the above format <i>exactly</i>. You are required to check any
+position a user provides to ensure it properly defines a valid
+position. If it does not, you should tell the user the position is
+invalid, and ask them to enter a new, correct position.
+</p>
+
+<p>
+Even if the position provided by the user is in the correct format,
+it may still be invalid (<i>e.g.</i>, if the position is already
+taken). After confirming the position's format is correct, you
+must then check to ensure the position itself is available. If not,
+you would again report the issue to the user and ask them to
+provide a new, valid position.
+</p>
+
+<p>
+Input from the keyboard can be requested using
+Python's <a href="https://www.geeksforgeeks.org/taking-input-in-python/" target="_blank"><code>input()</code></a>
+function.
+</p>
+
+<div class="code-flex-div">
+  <div class="eq-flex">
+    position = input( "Choose a position: " )<br>
+    print( position )
+  </div>
+</div>
+
+<p>
+<code>input()</code> allows a user to enter characters from the
+keyboard, then returns the result as a string. This can be assigned to
+a variable for further processing.
+</p>
+
+
+<h2 id="win">Wins and Ties</h2>
+
+<p>
+At some point, one of the players will win the game, or the game
+will end in a tie. When this happens, your program should print
+the result of the game, and exit the program.
+</p>
+
+
+<h2 id="grade">Grading</h2>
+
+<p>Each student must submit their Python code
+using <a href="https://wolfware.ncsu.edu"
+target="_blank">Moodle</a>. Look for "Python - Assignment 2 - Tic Tac
+Toe" in the Programming &amp; Visualization &rarr; Python section.
+Remember, you <b>MUST</b> name your program <code>tictactoe.py</code>
+and you <b>CANNOT</b> submit a Jupyter notebook <code>.ipynb</code>
+file.</p>
+
+<p>Your program will be graded on a 101-point scale from 0 to 100.
+Grading will be performed using an automated input script, so please
+remember it's important that your program accept the input format
+described in the <a href="#UI">Interface</a> section of the
+assignment.
+</p>
+
+
+<h2 id="collab">Collaboration</h2>
+
+<p>
+Because this is one of the first assignments where you will not be
+working in teams, I want to provide some guidelines on the types of
+collaboration that are considered acceptable and not acceptable for
+this assignment.
+</p>
+
+<p>
+Acceptable collaboration would include:
+</p>
+
+<ul>
+
+  <li>Discussing general design strategies to address problems in the
+  assignment,
+
+  <li>Providing references to information in the documentation that
+  could be helpful in completing the assignment, and
+
+  <li>Discussing general Python approaches to solving tasks that could
+  occur in the assignment.
+
+</ul>
+
+<p>
+When you sit down to code your assignment, you will do this by
+yourself. You cannot collaborate with your classmates when you write
+your code. It must be done individually, and without assistance from
+other students that include:
+</p>
+
+<ul>
+
+  <li>Having another classmate provide you with code, or providing code
+  to your classmate(s),
+
+  <li>Having another classmate help debug your code, or helping debug
+  a classmate(s) code,
+
+  <li>Obtaining specific code solutions to parts of the assignment
+  from a classmate, or providing specific code solutions to parts of
+  the assignment to your classmate(s), and
+
+  <li>Using any online or other resources that provide code solutions
+  to significant portions of the assignment.
+
+</ul>
+
+<p>
+Submission of your code means you've implicitly agreed to these
+collaboration guidelines, and have not participated in any type of
+collaboration that would be considered inappropriate.
+</p>
+
+<p>
+If you have any questions about whether a specific collaboration is
+allowed, <b>please ask</b> either myself or Andrea. We're happy to
+discuss where the lines lie with respect to how you can communicate
+with your classmates about the assignment.
+</p>
+
+<!-- The mod-date span will be updated by code in mod-date.js -->
+
+<hr class="fig_top">
+<div class="footer">
+  Updated <span id="mod-date">01-Jan-01</span>
+</div>
+
+</body>
+</html>
+
+
+<!--  LocalWords:  ui Tac Healey NumPy Moodle tac
+ -->

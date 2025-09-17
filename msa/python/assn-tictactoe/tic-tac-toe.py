@@ -1,0 +1,174 @@
+#!/usr/bin/python3
+
+#- TIC-TAC-TOE.PY ----------------------------------------------------------#
+#  Simple Python implementation of tic-tac-toe for two players				#
+#																			#
+#- Modification History: ---------------------------------------------------#
+#  When:		Who:					Comments:							#
+#																			#
+#  22-Aug-18	Christopher G. Healey	Initial implementation			    #
+#---------------------------------------------------------------------------#
+
+
+def get_position( board ):
+
+#  Get a position for current player's piece
+#
+#  board:  Current gameboard
+#
+#  Return position on range 0..8
+
+	print( 'Positions are defined by a column letter and row number.' )
+	print( 'For example, A1, B2, or C3.\n' )
+
+	valid = False
+	while not valid:
+		inp = input( 'Choose a position for your move: ' )
+
+		#  Ensure column is A,B,C and row is 1,2,3
+
+		if inp[ 0 ] < 'A' or inp[ 0 ] > 'C':
+			print( 'Columns must be A, B, or C\n' )
+			continue
+		elif inp[ 1 ] < '1' or inp[ 1 ] > '3':
+			print( 'Rows must be 1, 2, or 3\n' )
+			continue
+
+		#  Ensure position is available
+
+		row = int( inp[ 1 ] ) - 1
+		col = ord( inp[ 0 ] ) - ord( 'A' )
+
+		pos = ( row * 3 ) + col
+		if board[ pos ] != '-':
+			print( 'Board position ' + inp + ' is already occupied\n' )
+		else:
+			valid = True
+
+	return pos
+
+#  End function get_position
+
+
+def init_board( board ):
+
+#  Initialize board to empty (all hyphens)
+#
+#  board:  Current gameboard
+#
+#  Return initialized board
+
+	board = [ '-' ] * 9
+	return board
+
+#  End function init_board()
+
+
+def print_board( board ):
+
+#  Print the current board state
+#
+#  board:  Current gameboard
+
+	print( '    (A) (B) (C)' )			# Print column headers
+
+	for i in range( 0, 9 ):
+		if i > 0 and ( i % 3 == 0 ):	#  If end-of-row, move to next row
+			print( '' )					#  Prints a newline by default
+
+		if i % 3 == 0:					#  Start of new row, print row number
+			row_num = int( i / 3 ) + 1
+			print( '(' + str( row_num ) + ') ', end = '' )
+
+		print( ' ' + board[ i ] + '  ', end = '' )
+
+	print( '\n' )
+
+#  End function print_board
+
+
+def full( board ):
+
+#  Determine if the board is full
+#
+#  board:  Current gameboard
+
+	for i in range( 0, 9 ):
+		if board[ i ] == '-':			# Board not full
+			return False
+
+	return True
+
+#  End function win
+
+
+def win( board ):
+
+#  Determine if one of the players has won the game
+#
+#  board:  Current gameboard
+
+	#  Check for a row win
+
+	for i in range( 0, 9, 3 ):
+		if board[ i ] == '-':			# Empty, win not possible
+			continue
+
+		if board[ i ] == board[ i + 1 ] and board[ i ] == board[ i + 2 ]:
+			print( 'Player ' + board[ i ] + ' wins!\n' )
+			return True
+
+	#  Check for column win
+
+	for i in range( 0, 3 ):
+		if board[ i ] == '-':			# Empty, win not possible
+			continue
+
+		if board[ i ] == board[ i + 3 ] and board[ i ] == board[ i + 6 ]:
+			print( 'Player ' + board[ i ] + ' wins!\n' )
+			return True
+
+	#  Check for diagonal win
+
+	if board[ 0 ] != '-':
+		if board[ 0 ] == board[ 4 ] and board[ 0 ] == board[ 8 ]:
+			print( 'Player ' + board[ 0 ] + ' wins!\n' )
+			return True
+
+	if board[ 2 ] != '-':
+		if board[ 2 ] == board[ 4 ] and board[ 2 ] == board[ 6 ]:
+			print( 'Player ' + board[ 2 ] + ' wins!\n' )
+			return True
+
+	return False
+
+#  End function win
+
+
+#  Mainline
+
+
+board = init_board( [ ] )				# Initialize, print empty board
+
+cur = 'X'								# Set current player
+
+done = False
+while not done:							# While game not completed
+	print_board( board )				# Print current board state
+
+	pos = get_position( board )			# Get valid move
+	board[ pos ] = cur
+
+	#  Swap player
+
+	cur = ( 'O' if cur == 'X' else 'X' )
+
+	if win( board ):					# A win, game over
+		done = True
+	elif full( board ):					# A full board with no win, game tied
+		print( 'The game ended in a tie\n' )
+		done = True
+
+print_board( board )					# Print final board state
+
+#  End mainline

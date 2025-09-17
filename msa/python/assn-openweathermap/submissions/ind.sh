@@ -1,0 +1,40 @@
+# -----
+read -p 'Identifying name: ' nm_part
+dir=`echo $nm_part*`
+nm=`echo "$dir" | cut -d_ -f1`
+echo $nm
+
+cd "$dir" > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff --color=auto -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff --color=auto -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+
+#read -p 'Return to base directory (y/n)? ' ans
+#if [ $ans == "y" ]; then
+#  cd ..
+#fi

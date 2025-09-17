@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta charset="UTF-8" />
+ 
+<title>Summer 2 Python Assignment: OpenWeatherMap Weather Forecast</title>
+</head>
+
+<script type="text/javascript" src="../../js/header.js"></script>
+
+<body class="light">
+
+<div style="text-align:center;">
+  <span id="banner-img" style="
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 1211px;
+    height: 700px;
+    background-image: url( '../../figs/assn-openweathermap/banner.png' );
+    background-repeat: no-repeat;
+  ">
+
+  <!-- Title text, lower-left corner -->
+
+  <div style="
+    position: absolute;
+    text-align: left;
+    bottom: 10px;
+    left: 10px;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    font-size: 16pt;
+    font-weight: normal;
+    color: #646464;
+  ">
+    Summer 2 Python Assignment: OpenWeatherMap Weather Forecast
+    <div style="font-size: 10pt;">
+      <a target="_blank" href="http://healey.csc.ncsu.edu">
+      <em>Christopher G. Healey</em>
+      </a>
+    </div>
+  </div>
+
+  <!-- NC State logo, upper-left corner -->
+
+  <div style="
+    position: absolute;
+    align: left;
+    top: 12px;
+    left: 0px;
+  ">
+    <a target="_blank" href="http://www.ncsu.edu">
+      <img src="../../figs/nc-state-logo-blue.png"
+       style="
+         border-style: none;
+         -moz-box-shadow: 1px 1px 8px #646464;
+         -webkit-box-shadow: 1px 1px 8px #646464;
+         box-shadow: 1px 1px 8px #646464;
+       " alt="nc-state logo">
+    </a>
+  </div>
+  </span>
+</div>
+
+<!--Spacer after image of one "line"-->
+
+<div style="height: 1em;"></div>
+
+<!-- Navigation toolbar -->
+
+<div id="navWrap">
+  <div id="nav">
+    <ul id="nav-list">
+      <li id="nav-intro:intro">Introduction</li>
+      <li id="nav-api:api">API</li>
+      <li id="nav-json:city-json">City JSON</li>
+      <li id="nav-tomorrow:tomorrow">Tomorrow</li>
+      <li id="nav-min-max:min-max">Min/Max</li>
+      <li id="nav-output:output">Output</li>
+      <li id="nav-grade:grade">Grading</li>
+      <li id="nav-collab:collab">Collaboration</li>
+    </ul>
+  </div>
+
+  <div id="nav-footer">
+  </div>
+</div>
+
+
+<!-- Initially assume light theme (day), draw moon icon to switch to dark -->
+<!-- Javascript will automatically check this and switch if it's night -->
+
+<img id="light-dark" style="width: 24px; height: 24px; position: fixed; top: 2px; right: 20px; margin: 0; padding: 0; z-index: 200;" src="../../../msa/figs/moon-icon-gradient.png" />
+
+
+<h2>Due Date</h2>
+
+<p>Friday, July 19, 11:59pm via Moodle. Look for the
+&quot;<a target="_blank"
+href="https://moodle-courses2425.wolfware.ncsu.edu/course/view.php?id=94&bp=s">Python
+Programming: OpenWeatherMap API Assignment</a>&quot; link.</p>
+
+
+<h2 id="intro">Introduction</h2>
+
+<p>The assignment for <a href="../index.html">this year's Summer
+Session 2 Python module</a> involves using the <a target="_blank"
+href="http://openweathermap.org/">OpenWeatherMap</a> weather API and
+simple analytics on forecast weather data. You will be asked to:</p>
+
+<ol>
+
+  <li>Use the OpenWeatherMap API to query future-day forecasts
+  containing expected daily weather conditions for 16 different
+  cities.
+
+  <li>Parse the Python variables returned by the API to extract the
+  the minimum and maximum forecast
+  temperature <em>temperatureMin<sub>i</sub></em>
+  and <em>temperatureMax<sub>i</sub></em> in Celsius for each of the
+  upcoming four (4) days.
+
+  <li>Compute the average minimum and maximum forecast
+  temperatures <em>Min<sub>avg</sub></em>
+  and <em>Max<sub>avg</sub></em> for the upcoming four (4) days.
+
+  <li>Write the location description <em>loc</em> we provide below,
+  the four minimum and maximum forecast temperatures, and the overall
+  minimum and maximum forecast temperatures to a CSV file
+  named <code>temp.csv</code>, one line per city.
+
+</ol>
+
+
+<h2 id="api">OpenWeatherMap API</h2>
+
+<p>
+In order to use the OpenWeatherMap API, you must first register with
+the site to obtain a free developer's API key. This key is required
+for every query you make, to track your use of the site.
+</p>
+
+<ol>
+
+  <li>Go to the <a target="_blank"
+  href="http://home.openweathermap.org/users/sign_up">OpenWeatherMap sign-up
+  page</a>.
+    
+  <li>Enter a username, your NCSU email, and choose a password in the
+  appropriate fields.
+
+  <li>Click "I am 16 years old and over", "I agree with Privacy Policy, Terms
+  and conditions of sale and Websites terms and conditions of use", and "I'm not
+  a robot."
+    
+  <li>Click "Create Account."
+    
+  <li>In the pop-up window that appears, enter NCSU as the Company and
+  choose Education/Science in the Purpose pop-up dialog, then click Save.
+
+  <li>Look for a verification email from the OpenWeather Team and click the
+  "Verify your email" button to activate your account.
+
+  <li>Click the Billing plans link near the top of the page and you
+  will be taken to the billing plan page, where you can confirm that
+  by default you have been given a Free plan with 60 calls per minute.
+
+  <li>Click on the API keys link and you will see the default API key
+  created for you. You will need this key to make calls to the Open
+  Weather Map API.
+
+</ol>
+
+<p>
+It may take a few hours for your API key to activate. Wait at least a
+day before checking on API calls returning code 401 (Invalid API key.)
+</p>
+
+<p>
+Take careful note of the query restrictions placed on free accounts.
+<b>You are only allowed to make 60 queries per minute</b>, after which
+queries will be blocked. You should plan your development accordingly.
+</p>
+
+<p>
+As an example, here is some simple Python code that gets the four-day
+forecast for Peterhead, Scotland. You will want to focus on
+the <code>forecase</code> API call, since this will contain the
+information you need to build your 4-day forecasts. I've obfuscated my
+API key, so you would insert your own key as a string for
+the <code>api_key</code> variable.
+</p>
+
+<div class="code-flex-div">
+    <div class="code-flex" id="openweathermap-ex">
+    &gt;&gt;&gt; import pprint<br>
+    &gt;&gt;&gt; import requests<br>
+    &gt;&gt;&gt; import sys<br>
+    ... <br> 
+    &gt;&gt;&gt; api_key = "XXXXX"<br>
+    &gt;&gt;&gt; city = "Peterhead, Scotland"<br>
+    ... <br> 
+    &gt;&gt;&gt; #  Geolocate Peterhead, Scotland to get its latitude and longitude<br>
+    ... <br> 
+    &gt;&gt;&gt; geo_URL = 'http://api.openweathermap.org/geo/1.0/direct'<br>
+    ... <br> 
+    &gt;&gt;&gt; geo = f'{geo_URL}?q={city}&limit=5&appid={api_key}'<br>
+    &gt;&gt;&gt; resp = requests.get( geo )<br>
+    ... <br> 
+    &gt;&gt;&gt; if resp.status_code != 200:  # Failure?<br>
+    ... <span class="tab-1">print( f'Error geocoding {city}: {resp.status_code}' )</span><br>
+    ... <span class="tab-1">sys.exit( 1 )</span><br>
+    ... <br> 
+    &gt;&gt;&gt; #  OpenWeatherMap returns a list of matching cities, up to the limit specified<br>
+    &gt;&gt;&gt; #  in the API call; even if you only ask for one city (limit=5), it's still<br>
+    &gt;&gt;&gt; #  returned as a 1-element list<br>
+    ... <br> 
+    &gt;&gt;&gt; if len( resp.json() ) == 0:  # No such city?<br>
+    ... <span class="tab-1">print( f'Error locating city {city}; {resp.status_code}' )</span><br>
+    ... <span class="tab-1">sys.exit( 2 )</span><br>
+    ... <br> 
+    &gt;&gt;&gt; json = resp.json()<br>
+    &gt;&gt;&gt; if type( json ) == list:  # List of cities?<br>
+    ... <span class="tab-1">lat = json[ 0 ][ 'lat' ]</span><br>
+    ... <span class="tab-1">lon = json[ 0 ][ 'lon' ]</span><br>
+    &gt;&gt;&gt; else:  # Unknown city?<br>
+    ... <span class="tab-1">print( f'Error, invalid data returned for city {city}, {resp.status_code}' )</span><br>
+    ... <span class="tab-1">sys.exit( 3 )</span><br>
+    ... <br> 
+    &gt;&gt;&gt; #  Use Peterhead's latitude and longitude to get its 5-day forecast in 3-hour<br>
+    &gt;&gt;&gt; #  blocks<br>
+    ... <br> 
+    &gt;&gt;&gt; forecast_URL = 'http://api.openweathermap.org/data/2.5/forecast'<br>
+    &gt;&gt;&gt; forecast = f'{forecast_URL}?lat={lat}&lon={lon}&appid={api_key}'<br>
+    &gt;&gt;&gt; resp = requests.get( forecast )<br>
+    ... <br> 
+    &gt;&gt;&gt; if resp.status_code != 200:  # Failure?<br>
+    ... <span class="tab-1">print( f'Error retrieving data: {resp.status_code}' )</span><br>
+    ... <span class="tab-1">sys.exit( 4 )</span><br>
+    ... <br> 
+    &gt;&gt;&gt; #  Pretty-print the resulting JSON forecast for the first 3 hour block<br>
+    ... <br> 
+    &gt;&gt;&gt; print( f'{city}:' )<br>
+    &gt;&gt;&gt; data = resp.json()<br>
+    &gt;&gt;&gt; printer = pprint.PrettyPrinter( width=80, compact=True )<br>
+    &gt;&gt;&gt; printer.pprint( data[ 'list' ][ 0 ] )<br>
+<br>
+ &nbsp; &nbsp;Peterhead, Scotland:<br>
+ &nbsp; &nbsp;{'clouds': {'all': 65},<br>
+ &nbsp; &nbsp; 'dt': 16294716000<br>
+ &nbsp; &nbsp; 'dt_txt': '2021-08-20 15:00:00',<br>
+ &nbsp; &nbsp; 'main': {'feels_like': 285.58,<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'grnd_level': 1013,<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'humidity': 81,<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'pressure': 1016,<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'sea_level': 1016,<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'temp': 286.11,<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'temp_kf': -0.18,<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'temp_max': 286.29,<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'temp_min': 286.11},<br>
+ &nbsp; &nbsp; &nbsp;pop': 0,<br>
+ &nbsp; &nbsp; &nbsp;sys': {'pod': 'd'},<br>
+ &nbsp; &nbsp; &nbsp;visibility': 10000,<br>
+ &nbsp; &nbsp; &nbsp;weather': [{'description': 'broken clouds',<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'icon': '04d',<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'id': 803,<br>
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;'main': 'Clouds'}],<br>
+ &nbsp; &nbsp; &nbsp;wind': {'deg': 123, 'gust': 5.45,'speed': 5.06}}<br>
+    </div>
+</div>
+
+<p>
+Replace <code>XXXXX</code> with the API key you were issued by the
+OpenWeatherMap site. The variable <code>data</code> will contain
+Python-encoded representations of numerous fields with information on
+Peterhead and its forecasted
+weather. <code>data[&nbsp;'list'&nbsp;]</code> is just one of the
+fields available. You can print <code>data</code> to view the
+different dictionary entries available.  Note that OpenWeatherMap
+returns a 40-element array <code>data[&nbsp;'list'&nbsp;]</code> with
+entry 0 corresponding to the first three-hour block, and entry 39
+corresponding to the last three-hour block.  Also note that the
+default temperature units are Kelvin, which is why the values seem
+high (286.11 Kelvin is 55.33 Fahrenheit or 12.96 Celsius.)  More
+information about the 5-day/3-hour forecast call is available
+on <a href="http://openweathermap.org/forecast5/">OpenWeatherMap's API
+reference</a>. Finally, note that we use the <code>geo</code> API to
+convert a city's name and country into a latitude and longitude needed
+to identify the location were we want to query a weather forecast.
+</p>
+
+<div class="code-div">
+  <div id="openweathermap-code-02" style="white-space: pre;">
+  http://api.openweathermap.org/geo/1.0/direct?q=Nanaimo,British Columbia&limit=1&appid=XXXXX
+  </div>
+</div>
+
+
+<h2 id="city-json">Cities to Query</h2>
+
+<p>
+Below is a list of the 16 cities to query. We have tested the name and
+country of each city to ensure OpenWeatherMap's API will return proper
+data if you specify use the <code>geo</code> API to convert the city
+to a latitude and longitude, then use the latitude and longitude to
+retrieve the 5 day/3 hour forecast data.
+</p>
+
+<ol>
+
+  <li>Buenos Aires, Argentina
+  <li>Guangzhou, China
+  <li>Wichita, Kansas
+  <li>Niskayuna, New York
+  <li>Gwangmyeong, South Korea
+  <li>Taipei, Taiwan
+  <li>Nanaimo, British Columbia
+  <li>Chennai, India
+  <li>Barrington, Illinois
+  <li>Littleton, Colorado
+  <li>Peterhead, Scotland
+  <li>Vizag, India
+  <li>Des Moines, Iowa
+  <li>Beijing, China
+  <li>Killeen, Texas
+  <li>Morehead City, North Carolina
+
+</ol>
+
+<p>
+You can hard-code these city and country names directly into your
+program. There is no requirement that you provide any mechanism to
+enter them into the program as it runs. We will modify your code as
+needed if we want to run it on cities that are different than the ones
+we gave you to test with.
+</p>
+
+<div class="code-flex-div">
+  <div class="eq-flex">
+    loc = [<br>
+    &nbsp; 'Buenos Aires, Argentina',<br>
+    &nbsp; 'Guangzhou, China',<br>
+    &nbsp; 'Wichita, Kansas',<br>
+     ...<br>
+    &nbsp; 'Killeen, Texas',<br>
+    &nbsp; "Morehead City, North Carolina'<br>
+    ]<br>
+  </div>
+</div>
+
+
+<h2 id="tomorrow">Locating "Tomorrow"</h2>
+
+<p>
+The 4-day forecast you build starts at midnight tomorrow, and includes
+tomorrow plus the three days following tomorrow. For example, if the
+date when you run your program is August 23, you would provide a 4-day
+forecast for August 24 through August 28.
+
+<p>
+OpenWeatherMap always returns dates and times in UTC (Coordinated
+Universal Time or Greenwich Mean Time.) This means that, technically,
+to get the proper forecast for a general location, you would first
+need to convert all dates and times from UTC to the timezone of the
+location, then use these to identify the first three-hour block
+corresponding to 12am-3am in the target city's timezone.
+</p>
+
+<p>
+Unfortunately, this is non-trivial for a variety of reasons: certain
+countries define non-standard time zones, daylight savings time is
+used in some countries (or parts of countries) but not others, and so
+on.  Because of this, we will allow you to use the date and time
+OpenWeatherMap returns <i>as though</i> it were properly corrected for
+the timezone of the city you query. This means the 4-day forecast will
+most likely be offset forward some number of three-hour multiples, but
+for the purpose of the assignment, this is not critical.
+</p>
+
+<p>
+To find the first block that corresponds to the beginning of
+"tomorrow", start at
+block <code>data[&nbsp;'list'&nbsp;][&nbsp;0&nbsp;]</code> and look at
+the <code>dt_txt</code> field. If it contains the
+time <code>00:00:00</code>, this is the first block for tomorrow. If
+it does not contain <code>00:00:00</code>, move to the next
+block <code>data[&nbsp;'list'&nbsp;][&nbsp;1&nbsp;]</code> and see if
+that block's <code>dt_txt</code>
+contains <code>00:00:00</code>. Continue searching forward one block at
+a time until you find the first occurrence of midnight
+(<code>00:00:00</code>). This identifies the block at the beginning of
+tomorrow. Each day is eight blocks long (eight 3-hour blocks spans 24
+hours). For example, if you determine block 3 is the start of
+tomorrow, you now know that blocks 3&ndash;10 cover all of tomorrow,
+blocks 11&ndash;18 cover all of the day after tomorrow, and so on.
+</p>
+
+<h2 id="min-max">Determining a Day's Minimum and Maximum Temperature</h2>
+
+<p>
+Once you have the eight forecasts for minimum temperatures and the
+eight forecasts for maximum temperatures for a given day, the minimum
+you need to extract is the <b>smallest</b> of the eight forecast
+minimum temperatures. Similarly, the maximum you need to extract is
+the <b>largest</b> of the eight forecast maximum temperatures. These
+are the values you should write as \(min_{i}\) and \(max_{i}\) for
+day \(i\).
+</p>
+
+
+<h2 id="output">CSV Output</h2>
+
+<p>
+After you have completed retrieving data from the OpenWeatherMap site,
+write your results to an output file
+called <code>temp.csv</code>. Each line will correspond to a single
+city, and will contain the following entries
+</p>
+
+<div class="code-flex-div">
+  <div class="eq-flex">
+  \(loc\),\(min_1\),\(max_1\), \(min_4\),
+  \(max_4\),\(\ldots\),\(min_{\textrm{avg}}\),\(max_{\textrm{avg}}\)
+  </div>
+</div>
+
+<p>
+where \(min_i\) corresponds to the minimum forecast temperature in
+Celsius for \(i\) days in the future, \(max_i\) corresponds to the
+maximum forecast temperature in Celsius for \(i\) days in the future,
+and \(min_{\textrm{avg}}\) and \(max_{\textrm{avg}}\) correspond to
+the average minimum and maximum temperature. In your case, \(i\)
+ranges from 1 to 4.
+</p>
+
+<p>
+Your CSV file must also contain a header line as its first line,
+formatted as follows.
+
+<div class="code-flex-div">
+  <div class="eq-flex">
+  City,Min 1,Max 1, ... Min 4,Max 4,Min Avg,Max Avg
+  </div>
+</div>
+
+<p>
+Below is an example of the output you should create in your CSV
+file. Note that these are just examples, and are not the ones your
+program will generate, since it will be run sometime in the future.
+</p>
+
+<div class="code-flex-div">
+  <div class="eq-flex">
+City,Min 1,Max 1,Min 2,Max 2,Min 3,Max 3,Min 4,Max 4,Min Avg,Max Avg<br>
+"Buenos Aires, Argentina",11.05,15.29,12.14,14.93,6.05,15.24,8.36,13.42,9.40,14.72<br>
+"Guangzhou, China",28.25,33.52,25.86,31.00,24.52,26.01,25.20,30.52,25.96,30.26<br>
+ ...<br>
+"Moorehead City, North Carolina",25.62,29.77,25.47,30.46,26.07,31.01,26.52,31.48,25.92,30.68
+  </div>
+</div>
+
+<p><b>Note:</b> Your CSV output must match ours <b>EXACTLY.</b> Pay
+special attention to the specific wording and order of items in the
+header line, the exact order of temperatures in the data lines, and
+the fact that the city and country are separated by comma and space
+(e.g., "City, Country", <b>NOT</b> "City,Country", with double quotes
+around the city name and country, <b>NOT</b> without them).
+</p>
+
+<p>
+OpenWeatherMap returns temperatures with up to two decimal places of
+precision. You should ensure that your average minimum and maximum
+forecast temperatures <em>Min<sub>avg</sub></em>
+and <em>Max<sub>avg</sub></em> are output with <b>EXACTLY</b> two
+decimal places of precision ("exactly" means if the temperature is 29.2,
+you would write 29.20 to your output file, <b>NOT</b> 29.2).
+</p>
+
+<p>
+When you examine your file <code>temp.csv</code> to validate its
+content, <b>DO NOT DO IT IN EXCEL.</b> Excel will truncate decimal
+values. This means if the file contains <code>12.00</code>, it will
+appear as <code>12</code> in Excel, and you will think your program is
+not generating two decimals of precision properly. If you load
+<code>temp.csv</code> into a text editor like Notepad, you will most
+likely see <code>12.00</code>, exactly as expected. <b>Lesson:</b>
+Excel will screw you. Do not trust it.
+</p>
+
+
+
+<h2 id="grade">Grading</h2>
+
+<p>
+Your completed program is due by 11:59pm EST on Friday, July 19. Each
+student must submit their Python code
+using <a href="http://wolfware.ncsu.edu"
+target="_blank">Moodle</a>. Look for "Python Programming:
+OpenWeatherMap API Assignment" in the Programming &rarr; Python
+section on Moodle's AA 500 (001) course page.
+</p>
+
+<p>
+Although it might seem odd to specify these, here are things we <b>DO
+NOT</b> want you to submit.
+</p>
+
+<ol>
+
+<li>Do not submit a Jupyter Notebook (an <code>.ipynb</code> file). We
+want a Python source code file (a <code>.py</code> file) that we can
+run with Python directly from the command line. You can export a
+Python from from a Jupyter notebook, if needed.
+  
+<li>Do not submit any CSV files of temperature data. We will run your
+program to generate the <code>temp.csv</code> file. It would be
+useless to submit a CSV file, because the values it contains depends
+on when your program is run.
+
+</ol>
+
+<p>
+Your program will be graded on a 101-point scale from 0 to 100.
+Grading will be performed in two parts.
+</p>
+
+<ol>
+
+  <li>We will run your program and examine its <code>temp.csv</code>
+  output file to our known, correct answers.
+
+  <li>We will run your program on a small number of additional cities,
+  to determine whether it can correctly parse and analyze a standard
+  OpenWeatherMap forecast.
+
+</ol>
+
+<p>
+Please pay special attention to requirement 2. This means you cannot
+hard-code any temperature values into your program. Each result you
+write to the CSV file must be based on values parsed directly from
+OpenWeatherMap's results for the given city and day the program is
+run.
+</p>
+
+
+<h2 id="collab>Collaboration</h2>
+
+<p>
+Because this is one of the first assignments where you will not be
+working in teams, I want to provide some guidelines on the types of
+collaboration that are considered acceptable and not acceptable for
+this assignment.
+</p>
+
+<p>
+Acceptable collaboration would include:
+</p>
+
+<ul>
+
+  <li>Discussing general design strategies to address problems in the
+  assignment,
+
+  <li>Providing references to information in the documentation that
+  could be helpful in completing the assignment, and
+
+  <li>Discussing general Python approaches to solving tasks that could
+  occur in the assignment.
+
+</ul>
+
+<p>
+When you sit down to code your assignment, you will do this by
+yourself. You cannot collaborate with your classmates when you write
+your code. It must be done individually, and without assistance from
+other students that include:
+</p>
+
+<ul>
+
+  <li>Having another classmate provide you with code, or providing code
+  to your classmate(s),
+
+  <li>Having another classmate help debug your code, or helping debug
+  a classmate(s) code,
+
+  <li>Obtaining specific code solutions to parts of the assignment
+  from a classmate, or providing specific code solutions to parts of
+  the assignment to your classmate(s), and
+
+  <li>Using any online or other resources that provide code solutions
+  to significant portions of the assignment.
+
+</ul>
+
+<p>
+Submission of your code means you've implicitly agreed to these
+collaboration guidelines, and have not participated in any type of
+collaboration that would be considered inappropriate.
+</p>
+
+<p>
+If you have any questions about whether a specific collaboration is
+allowed, <b>please ask</b> either myself or Andrea. We are
+happy to discuss where the lines lie with respect to how you can
+communicate with your classmates about the assignment.
+</p>
+
+<!-- The mod-date span will be updated by code in mod-date.js -->
+
+<hr class="fig_top">
+<div class="footer">
+  Updated <span id="mod-date">01-Jan-01</span>
+</div>
+
+</body>
+</html>
+
+<!--  LocalWords:  ui Healey NumPy Moodle analytics temperatureMin dt
+ -->
+<!--  LocalWords:  temperatureMax loc CSV NCSU Peterhead pprint api
+ -->
+<!--  LocalWords:  XXXXX json PrettyPrinter txt grnd kf sys Jiangbei
+ -->
+<!--  LocalWords:  forecasted Kothagudem Manhasset Nanaimo Polevskoy
+ -->
+<!--  LocalWords:  Solihull Aviv datetime timedelta str tm 00pm ve si
+ -->
+<!--  LocalWords:  strptime tz strftime len OpenWeatherMap Wbesites
+ -->
+<!--  LocalWords:  OpenWeather OpenWeatherMap's Bengaluru Gumi Nizhny
+ -->
+<!--  LocalWords:  Niskayuna Olongapo Simmern Vinh Jupyter Geolocate
+ -->
+<!--  LocalWords:  geo geocoding lon elif coord 04d Guilin Dissen de
+ -->
+<!--  LocalWords:  Kandukur Uijeongbu Jalpa Enugu Grimesland Visalia
+ -->
+<!--  LocalWords:  Colonia del 12am 3am isn 59pm
+ -->

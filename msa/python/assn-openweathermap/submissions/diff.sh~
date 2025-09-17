@@ -1,0 +1,8 @@
+for i in */*.py
+do
+  nm=`echo "$i" | cut -d_ -f1`
+  echo $nm
+  echo $i
+  diff -i -E -Z -b -B -y --suppress-blank-empty --suppress-common-lines "$i" "Namburi Gagan__gnamburATncsu.edu__237064_assignsubmission_file_/namburi_assignment1.py" | wc -l
+done
+

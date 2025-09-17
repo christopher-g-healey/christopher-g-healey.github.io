@@ -1,0 +1,65 @@
+#!/bin/bash
+
+echo "#!/bin/bash"
+echo ""
+
+for dir in *assignsubmission*
+do
+  nm=`echo "$dir" | cut -d_ -f1`
+  echo "echo '$nm'"
+
+#  Run our openweathermap
+
+# echo "  python3 './openweathermap.py'"
+
+#  Check if there's even a .py file here
+
+  echo "cd '$dir' > /dev/null"
+  echo "n=\`ls -l ./*.py 2> /dev/null | wc -l\`"
+  echo "if [[ \$n -eq 0 ]]"
+  echo "then"
+  echo "  echo 'No .py file?'"
+
+#  Remove any CSV files
+
+  echo "elif [[ \$n -eq 1 ]]"
+  echo "then"
+  echo "  rm -f *.csv*"
+
+#  Run their program and our program
+
+  echo "  python3 *.py > /dev/null"
+
+#  Check the output of these "I can't read" idiots
+
+  echo "  n=\`ls -lR ./*.csv | wc -l\`"
+  echo "  if [[ \$n -eq 0 ]]"
+  echo "  then"
+  echo "    echo 'No CSV file created?'"
+  echo "  elif [[ \$n -gt 1 ]]"
+  echo "  then"
+  echo "    echo 'More than one CSV file created?'"
+  echo "  else"
+  echo "    mv *.csv temp.csv"
+
+  echo "    echo '-----'"
+  echo "    n1=\`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l\`"
+  echo "    echo w/o USA: \$n1"
+  echo "    if [[ \$n1 -gt 0 ]]"
+  echo "    then"
+  echo "      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv"
+  echo "    fi"
+# echo "    n2=\`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_02.out temp.csv | wc -l\`"
+# echo "    echo w/USA.csv: \$n2"
+# echo "    if [[ \$n2 -gt 0 ]]"
+# echo "    then"
+# echo "      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_02.out temp.csv"
+# echo "    fi"
+  echo "  fi"
+  echo "else"
+  echo "  echo 'More than one .py file'"
+  echo "fi"
+  echo "cd .."
+  echo "read -p 'Continue...'"
+  echo "# -----"
+done

@@ -1,0 +1,1321 @@
+# -----
+echo 'Mills Kate'
+cd 'Mills Kate__kemills4ATncsu.edu__237061_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Milowic Tim'
+cd 'Milowic Tim__timilowiATncsu.edu__237077_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Minkler Dan'
+cd 'Minkler Dan__dfminkleATncsu.edu__237005_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Mitchell Kevin'
+cd 'Mitchell Kevin__kemitch4ATncsu.edu__237018_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Mitrovic Jelena'
+cd 'Mitrovic Jelena__jmitrovATncsu.edu__237042_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Monahan Patrick'
+cd 'Monahan Patrick__psmonahaATncsu.edu__237001_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Morris Kate'
+cd 'Morris Kate__kmorris4ATncsu.edu__237062_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Namburi Gagan'
+cd 'Namburi Gagan__gnamburATncsu.edu__237064_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Pachorek Dylan'
+cd 'Pachorek Dylan__dcpachorATncsu.edu__237060_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Patel Rohan'
+cd 'Patel Rohan__rjpatel3ATncsu.edu__237003_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Peddakama Manasa'
+cd 'Peddakama Manasa__mpeddakATncsu.edu__237076_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Pincus Richard'
+cd 'Pincus Richard__rjpincusATncsu.edu__237009_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Pirsos Alex'
+cd 'Pirsos Alex__akpirsosATncsu.edu__237036_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Ramdas Vasanth'
+cd 'Ramdas Vasanth__vramdasATncsu.edu__236992_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Ram Pranav'
+cd 'Ram Pranav__pramATncsu.edu__237068_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Raum Alex'
+cd 'Raum Alex__maraumATncsu.edu__236986_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Reece Elliott'
+cd 'Reece Elliott__ewreeceATncsu.edu__237039_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Rudra Ishanee'
+cd 'Rudra Ishanee__irudraATncsu.edu__237040_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Ruehle Gabby'
+cd 'Ruehle Gabby__grruehleATncsu.edu__236999_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Saile John'
+cd 'Saile John__jcsaileATncsu.edu__236989_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Schmier Craig'
+cd 'Schmier Craig__ctschmieATncsu.edu__237031_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Schwartz Ben'
+cd 'Schwartz Ben__beschwa2ATncsu.edu__237090_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Seybold Robert'
+cd 'Seybold Robert__rwseybolATncsu.edu__237075_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Sheikh-Ahmad Iman'
+cd 'Sheikh-Ahmad Iman__isheikhATncsu.edu__236987_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Silva Giovani'
+cd 'Silva Giovani__gfsilvaATncsu.edu__237013_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Sood Surabhi'
+cd 'Sood Surabhi__ssood3ATncsu.edu__237053_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'So Stephen'
+cd 'So Stephen__sso2ATncsu.edu__237070_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Spangenberg Grant'
+cd 'Spangenberg Grant__gwspangeATncsu.edu__237093_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Stanley Hannah'
+cd 'Stanley Hannah__hestanleATncsu.edu__237082_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Stepanova Jessica'
+cd 'Stepanova Jessica__jgstepanATncsu.edu__237046_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Stott Sarah'
+cd 'Stott Sarah__scstottATncsu.edu__237002_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Tammaro Andrew'
+cd 'Tammaro Andrew__ajtammarATncsu.edu__237059_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Tan Rachel'
+cd 'Tan Rachel__rttanATncsu.edu__237048_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Tran David'
+cd 'Tran David__dtran4ATncsu.edu__237084_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Vogelsang Brett'
+cd 'Vogelsang Brett__bavogelsATncsu.edu__237083_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Willett Jason'
+cd 'Willett Jason__jpwilletATncsu.edu__236998_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Wilson Landon'
+cd 'Wilson Landon__llwilso3ATncsu.edu__237033_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Woelfel Nathan'
+cd 'Woelfel Nathan__ncwoelfeATncsu.edu__237044_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Wolschlag Andrew'
+cd 'Wolschlag Andrew__apwolschATncsu.edu__237047_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
+echo 'Zarrouk Nour'
+cd 'Zarrouk Nour__nezarrouATncsu.edu__237010_assignsubmission_file_' > /dev/null
+n=`ls -l ./*.py 2> /dev/null | wc -l`
+if [[ $n -eq 0 ]]
+then
+  echo 'No .py file?'
+elif [[ $n -eq 1 ]]
+then
+  rm -f *.csv*
+  python3 *.py > /dev/null
+  n=`ls -lR ./*.csv | wc -l`
+  if [[ $n -eq 0 ]]
+  then
+    echo 'No CSV file created?'
+  elif [[ $n -gt 1 ]]
+  then
+    echo 'More than one CSV file created?'
+  else
+    mv *.csv temp.csv
+    echo '-----'
+    n1=`diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv | wc -l`
+    echo w/o USA: $n1
+    if [[ $n1 -gt 0 ]]
+    then
+      diff -y -i -Z -b -W210 --suppress-common-lines ../weather_01.out temp.csv
+    fi
+  fi
+else
+  echo 'More than one .py file'
+fi
+cd ..
+read -p 'Continue...'
+# -----
