@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta charset="UTF-8" />
+
+<title>R&thinsp;+&thinsp;Shiny: Institute for Advanced Analytics</title>
+</head>
+
+<script type="text/javascript" src="../js/header-code.js"></script>
+
+<body class="light">
+
+<div style="text-align: center;">
+  <span id="banner-img" style="
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 1000px;
+    height: 425px;
+    background-image: url( '../figs/shiny/banner.png' );
+    background-repeat: no-repeat;
+  ">
+
+  <!-- NC State logo, upper-left corner -->
+
+  <div style="
+    position: absolute;
+    align: left;
+    top: 0px;
+    left: 10px;
+  ">
+
+    <a target="_blank" href="https://www.ncsu.edu">
+    <img alt="NC State Logo" src="../figs/nc-state-logo-blue.png"
+    style="
+      border-style: none;
+      -moz-box-shadow: 1px 1px 8px #646464;
+      -webkit-box-shadow: 1px 1px 8px #646464;
+      box-shadow: 1px 1px 8px #646464;
+    ">
+    </a>
+  </div>
+
+  <!-- R+Shiny text, lower-left corner -->
+
+  <div style="
+    position: absolute;
+    bottom: 0px;
+    left: 10px;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    font-size: 16pt;
+    font-weight: normal;
+    color: #646464;
+  ">
+  <div style="line-height: 90%;">R&thinsp;+&thinsp;Shiny</div>
+    <div style="font-size: 10pt;">
+      <a target="_blank" href="http://healey.csc.ncsu.edu">
+        <i>Christopher G. Healey</i>
+      </a>
+    </div>
+  </div>
+  </span>
+</div>
+
+<!-- Spacer after image of one "line" -->
+
+<div style="height: 1em;"></div>
+
+<!-- Navigation toolbar -->
+
+<div id="navWrap">
+  <div id="nav">
+    <ul id="nav-list">
+      <li id="nav-intro:intro">Introduction
+      <li id="nav-R-graphics:graphics">R Graphics
+      <li id="nav-R-charts:charts">R Charts
+      <li id="nav-R-maps:maps">R Maps
+      <li id="nav-shiny:shiny-basic">Shiny
+      <li id="nav-reactive:reactive">Reactivity
+      <li id="nav-shiny-publish:publish">Publishing
+    </ul>
+  </div>
+
+  <div id="nav-footer">
+  </div>
+</div>
+
+
+<!-- Initially assume light theme (day), draw moon icon to switch to dark -->
+<!-- Javascript will automatically check this and switch if it's night -->
+
+<img id="light-dark" style="width: 24px; height: 24px; position: fixed; top: 2px; right: 20px; margin: 0; padding: 0; z-index: 200;" src="../figs/moon-icon-gradient.png" />
+
+
+<h2 id="intro">Introduction</h2>
+
+<p>
+This module will introduce you to <a target="_blank"
+href="http://shiny.rstudio.com">Shiny</a>, a framework that integrates
+with RStudio to construct web-based dashboards. We will work through a
+number of simple examples of loading data, visualizing it with R's
+built-in graphics operations, then integrating those visualizations
+into an interactive Shiny web dashboard, which can be viewed online by
+anyone with a web browser.
+</p>
+
+
+<h4>Setup</h4>
+
+<p>In order to use the Shiny examples in this tutorial, you will need
+to add the following R packages:</p>
+
+<div class="ex-div">
+install.packages( "shiny" )
+install.packages( "ggplot2" )</span>
+install.packages( "maps" )</span>
+install.packages( "mapproj" )</span>
+</div>
+
+<p>at the R command line.</p>
+
+
+<h2 id="graphics">R Graphics</h2>
+
+<p>R provides numerous ways to generate <em>plots</em> or
+<em>visualizations</em> of data stored in vectors, matrices, tables,
+and data frames. The two most common methods for visualizing data are
+<a target="_blank"
+href="https://gist.githubusercontent.com/noamross/027e1f63343ba223b9cb/raw/fbe08e45a1864769758383976a870927cc13ffd2/base_r_plotting_tutorial_koontz_d-rug.r">R's
+base graphics</a>, which are included as part the standard R package,
+and <a target="_blank"
+href="http://www.ggplot2.org"><code>ggplot2</code></a>, a package by
+Hadley Wickham specifically designed to support the flexible design of
+plots ranging from simple to complex.</p>
+
+<p>As an example, the following code produces a bar graph of the
+heights of the trees in the built-in <code>trees</code> data
+frame.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-tree-pyplot">
+% barplot( trees$Height, names.arg=row.names( trees ), main="Tree Height", col="lightblue", xlab="ID", ylab="Height" )
+  </div>
+</div>
+
+<div class="img-div" style="max-width: 700px;">
+ <img style="max-width: 700px;" src="../figs/shiny/barplot-rbasic.png"></img>
+ 
+  <figcaption>An R base graphics barplot of tree heights</figcaption>
+</div>
+
+<p>The same bar graph can be produce using <code>ggplot2</code> as
+follows.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-tree-ggplot">
+% library( "ggplot2" )
+% x_lbl &lt;- row.names( trees )
+% x_lbl &lt;- factor( x_lbl, levels=unique( x_lbl ) )
+% ggplot( data=trees, aes( x=x_lbl, y=Height ) ) + geom_bar( fill="lightblue", stat="identity" ) + xlab( "ID" ) + ggtitle( "Tree Height" )
+  </div>
+</div>
+
+<div class="img-div" style="max-width: 700px;">
+  <img style="max-width: 700px;" src="../figs/shiny/barplot-ggplot.png"></img>
+
+  <figcaption>A ggplot barplot of tree heights</figcaption>
+</div>
+
+<p><code>ggplot2</code> is based on <a target="_blank"
+href="https://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448?ie=UTF8&tag=flowingdata-20">the
+grammar of graphics</a>, a foundation proposed by Leland Wilkinson to
+generate visualizations. In this context, a chart is divided into
+individual components &mdash; data, annotations, scales, and so on
+&mdash; that are connected together using addition. In the example
+above, each command has the following meaning.</p>
+
+<ol>
+
+  <li><code style="display: inline-block; margin-bottom:
+  0.25em;">library( "ggplot2" )</code><br>
+
+  Load the <code>ggplot2</code> package.
+
+  <li><code style="display: inline-block; margin-bottom:
+  0.25em;">x_lbl = row.names( trees )</code><br>
+
+  There are no specific names for each tree, so we want to label the
+  x-axis numerically from 1 to 31, the total number of trees.
+  <code>row.names( trees )</code> provides a list of row indices for
+  the data frame as a character vector.
+
+  <div class="code-flex-div">
+    <div class="code-flex" id="code-numeric-indices">
+% x_lbl &lt;- factor( x_lbl, levels=unique( x_lbl ) );
+    </div>
+  </div>
+
+  This converts <code>x_lbl</code> from a character vector into a
+  factor (<em>i.e.,</em> a list of categories). Because of the way
+  characters are sorted, <code>factor( x_lbl )</code> would produce an
+  order of 1, 10, 11, &hellip;, 2, 20, 21, &hellip;, 3, 30, 31, 4, 5,
+  &hellip;&thinsp;.  To get the proper order of 1, 2, 3, &hellip; 31,
+  we specify the levels in the factor with <code>levels=unique( x_lbl
+  )</code>. This produces a properly ordered list of unique category
+  values (in this case, the numbers from 1 to 31 in order).<br><br>
+
+  As with many things in R, there are different ways to produce an
+  identical result. For example, we could have converted the character
+  vector of row indices to a numeric vector, then to a factor. We would
+  not need to use <code>unique()</code> in this scenario, since the
+  numeric vector would be properly ordered, and there are no duplicate
+  indices.
+
+  <div class="code-flex-div">
+    <div class="code-flex" id="code-numeric-factor-indices">
+% x_lbl &lt;- as.numeric( row.names( trees ) )
+% x_lbl &lt;- factor( x_lbl )
+    </div>
+  </div>
+
+  <li><code>ggplot( data=trees, aes(x=x_lbl, y=Height) ) + geom_bar(
+  fill="lightblue", stat="identity" ) + xlab( "ID" ) + ggtitle( "Tree
+  Height" )</code><br>
+
+  This produces the final bar chart. We first specify the data source
+  and axes, followed by the representation type (a bar chart), followed
+  by an x-axis label and a chart title.
+
+</ol>
+
+<p>Throughout these notes, we will use <code>ggplot</code> for our
+examples.</p>
+
+
+<h2 id="charts">Charts</h2>
+
+<p>We provide examples of the standard charts you're likely to use
+when you're building an R+Shiny web application. Basic bar charts have
+been covered above. Below we examine variations on bar charts, line
+charts, pie charts, scatterplots, and histograms.</p>
+
+<h4>Bar Charts</h4>
+
+<p> In addition to basic bar charts, we often want to construct
+stacked or side-by-side bar charts to compare and contrast
+subcategories of our data. Consider the <code>beaver1</code> dataset
+included in the standard R install.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-bar-chart-beaver">
+% library( "ggplot2" )
+% str( beaver1 )
+'data.frame':	114 obs. of  4 variables:
+$ day  : num  346 346 346 346 346 346 346 346 346 346 ...
+$ time : num  840 850 900 910 920 930 940 950 1000 1010 ...
+$ temp : num  36.3 36.3 36.4 36.4 36.5 ...
+$ activ: num  0 0 0 0 0 0 0 0 0 0 ...
+% df &lt;- beaver1
+% df$day &lt;- as.factor( df$day )
+% df$activ &lt;- factor( df$activ, labels=c( "inactive", "active" ) )
+% df &lt;- df[ order( df$activ ), ]
+% ggplot( df, aes( x=day, y="", fill=activ ) ) + geom_bar( stat="identity" ) + ylab( "Activity" ) + ggtitle( "Beaver Activity vs Inactivity" )
+  </div>
+</div>
+
+<p>
+The <code>df[ order( df$activ ), ]</code> command is critical, because
+it guarantees activity values for individual days are grouped
+together.  Without this, a day's active and inactive values will be
+spread throughout the day, and the stacked chart will look like a
+single bar with lines through it where the <code>activ</code> factor
+changes its value.
+</p>
+
+<p>
+Side-by-side bar charts are generated similarly, however here we need
+to aggregate a total (<em>e.g.,</em> a number of occurrences of each
+activity) for each subcategory (<em>e.g.,</em> for each day). Once we
+have done that, we can plot the subcategories as side-by-side bars.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-side-by-side-bar">
+% df &lt;- table( beaver1[ , c( 1, 4 ) ] )
+% df &lt;- as.data.frame( df )
+% levels( df$activ ) &lt;- c( "inactive", "active" )
+% df
+ day  activ Freq
+1 346 inactive   86
+2 347 inactive   22
+3 346   active    5
+4 347   active    1
+% ggplot( df, aes( x=day, y=Freq, fill=activ ) ) + geom_bar( stat="identity", position="dodge" ) + ylab( "Activity" ) + ggtitle( "Beaver Activity vs Inactivity" )
+  </div>
+</div>
+
+<p>
+Here, we select the <code>day</code> and <code>activ</code> columns
+from the <code>beaver1</code> dataset, use <code>table</code> to
+compute the frequency of activity for each day, convert the result to
+a data frame, then plot it as a side-by-side bar. We
+use <code>position="dodge"</code> in the <code>geom_bar</code> command
+to get a side-by-side bar graph. The
+default, <code>position="stacked"</code>, would give us a stacked bar
+chart.
+</p>
+
+<div class="img-div" style="max-width: 900px;">
+  <img style="max-width: 400px;" src="../figs/shiny/stacked-bar.png"></img>
+  <span style="display: inline-block; width: 50px">&nbsp;</span>
+  <img style="max-width: 400px;" src="../figs/shiny/side-by-side-bar.png"></img>
+
+  <figcaption>A <code>ggplot</code> stacked bar chart on the left, and a
+  corresponding side-by-side bar chart on the right</figcaption>
+</div>
+
+<h4>Line Charts</h4>
+
+<p>
+Building a line chart in <code>ggplot</code> is very similar to
+building a bar chart, except that we substitute <code>geom_bar</code>
+with <code>geom_line</code>. This shows one of the strengths of
+<code>ggplot</code>. Since the data, representation of the data, and
+decorations on the representation are all built separately and
+combined, switching the representation from bar to line involves
+changing only one part of the overall <code>ggplot</code> command.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-line-chart">
+% x_lbl &lt;- as.numeric( row.names( trees ) )
+% ggplot( data=trees, aes(x=x_lbl, y=Height) ) + geom_line( colour="red", linetype="dashed", size=1.0 ) + xlab( "ID" ) + ggtitle( "Tree Height" )
+  </div>
+</div>
+
+<p>
+Notice here that we have treated the data frame row indices as a
+sequence of numeric values: <code>x_lbl &lt;- as.numeric( row.names(
+trees ) )</code>, and not as a factor variable. In a line chart, by
+default <code>ggplot</code> uses the combination of all factor
+variables to group the points. This is not what we want, so we cannot
+use a factor variable for the x-axis. An alternative to this is to
+manually specify the grouping. Using the aesthetic specification
+<code>aes( group=1 )</code> specifies we want a single line connecting
+all the points.
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-line-chart-w-grouping">
+% x_lbl &lt;- row.names( trees )
+% x_lbl &lt;- factor( x_lbl, levels=unique( x_lbl ) )
+% ggplot( data=trees, aes(x=x_lbl, y=Height, group=1 ) ) + geom_line( colour="red", linetype="dashed", size=1.0 ) + geom_point( color="red", size=3.0, shape=1 ) + xlab( "ID" ) + ggtitle( "Tree Height" )
+  </div>
+</div>
+
+<div class="img-div" style="max-width: 900px;">
+  <img style="max-width: 700px;" src="../figs/shiny/line-chart.png"></img>
+
+  <figcaption>A <code>ggplot</code> line chart</figcaption>
+</div>
+
+<p>
+Notice that we also used <code>geom_point</code> to add an open circle
+at each height value. The <code>shape</code> argument defines how
+points are displayed. <a target="_blank"
+href="http://www.cookbook-r.com/Graphs/Shapes_and_line_types/">Shapes
+are defined numerically</a> to provide open and filled circles,
+squares, triangles, other glyphs like plus and X-symbols.
+</p>
+
+<p>
+We can also built multi-line charts, where each line represents a
+separate factor. Consider the <code>chickwts</code> dataset, which
+lists chicken weight by the type of feed it was given. The following
+code generates a multi-line chart, one line per feed type, showing the
+weight of each chicken that received the given feed.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-multiline">
+% str( chickwts )
+data.frame':	71 obs. of  2 variables:
+$ weight: num  179 160 136 227 217 168 108 124 143 140 ...
+$ feed  : Factor w/ 6 levels "casein","horsebean",..: 2 2 2 2 2 2 2 2 2 2 ...
+% df &lt;- chickwts
+% cat &lt;- table( df$feed )
+% idx &lt;- numeric()
+% for( i in 1:length( cat ) ) {
+% &nbsp;&nbsp;idx &lt;- c( idx, 1:cat[ i ] )
+% }
+% df$x_lbl &lt;- as.factor( idx )
+% ggplot( data=df, aes( x=x_lbl, y=weight, group=feed, color=feed ) ) + geom_line( size=1.0 ) + geom_point( size=4.0, shape=20 ) + xlab( "ID" ) + ggtitle( "Chicken Weight by Feed Type" )
+  </div>
+</div>
+
+<div class="img-div" style="max-width: 700px;">
+  <img style="max-width: 700px;" src="../figs/shiny/multi-line-chart.png"></img>
+
+  <figcaption>A <code>ggplot</code> multi-line chart</figcaption>
+</div>
+
+<p>
+The <code>group=feed</code> argument in the initial
+<code>ggplot</code> command defines which variable to use to split the
+dataset into individual lines.
+</p>
+
+
+<h4>Pie Charts</h4>
+
+<p>
+Pie charts are closely related to stacked bar
+graphs. In <code>ggplot</code> terms, you can think of a pie chart as
+a stacked bar chart that's been "wrapped" to form a circle. The code
+below uses the built in <code>chickwts</code> dataset to build a
+stacked bar chart of average chicken weight by feed type.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-pre-pie">
+% df &lt;- aggregate( chickwts$weight, by=list( chickwts$feed ), FUN=mean )
+% names( df ) &lt;- c( "feed", "weight" )
+% df$feed &lt;- reorder( df$feed, order( -df$weight ) )
+% ggplot( df, aes( x="", y=weight, fill=feed ) ) + geom_bar( stat="identity", width=0.25 ) + ggtitle( "Mean Chicken Weighty by Feed Type" )
+  </div>
+</div>
+
+<!--
+    > df &lt;- df[ order( -df$weight ), ]<br>
+-->
+
+<div class="img-div" style="max-width: 900px;">
+  <img style="max-width: 400px;" src="../figs/shiny/stacked-bar-pre-pie.png"></img>
+  <span style="display: inline-block; width: 50px">&nbsp;</span>
+  <img style="max-width: 400px;" src="../figs/shiny/pie-chart.png"></img>
+
+  <figcaption>A <code>ggplot</code> stacked bar chart on the left, and a
+  corresponding pie chart on the right</figcaption>
+
+</div>
+
+<p>
+Notice the R commands <code>aggregate( chickwts$weight, by=list(
+chickwts$feed), FUN=mean )</code> and <code>df[ order( -df$weight ),
+]</code>. The first command aggregates chicken weight by feed type,
+producing a data frame with a single average weight entry for each
+feed type. The second command sorts the data frame descending by
+average weight. We want to do this, because in a pie chart we want to
+display slices in descending order from largest to smallest.
+</p>
+
+<p>
+To convert the stacked bar chart into a pie chart, we simply add an
+additional <code>ggplot</code> command <code>coord_polar</code> to
+plot the data in polar coordinates. This produces the pie chart shown
+above and to the right.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-pie">
+% df &lt;- aggregate( chickwts$weight, by=list( chickwts$feed ), FUN=mean )
+% names( df ) &lt;- c( "feed", "weight" )
+% df &lt;- df[ order( -df$weight ), ]
+% ggplot( df, aes( x="", y=weight, fill=feed ) ) + geom_bar( stat="identity" ) + coord_polar( "y", start=0 ) + ggtitle( "Mean Chicken Weighty by Feed Type" )
+  </div>
+</div>
+
+<p>
+Here's a slightly more informative and aesthetic version of the pie
+chart. You can check your R knowledge and consult the <a
+target="_blank"
+href="http://docs.ggplot2.org/current/"><code>ggplot</code>
+documentation</a> to explore the commands used to create this chart.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-pie-complex">
+% df &lt;- aggregate( chickwts$weight, by=list( chickwts$feed ), FUN=mean )
+% names( df ) &lt;- c( "feed", "weight" )
+% df &lt;- df[ order( -df$weight ), ]
+% lbl &lt;- paste( df$feed, "\n", round( df$weight / 16.0, 1 ), "lb", sep = "" )
+% cb_palette &lt;- c( "#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2" )
+% df$pos &lt;- cumsum( df$weight ) - ( df$weight / 2 )
+% df$feed &lt;- factor( df$feed, levels = df$feed[ order( df$weight ) ] )
+% pie &lt;- ggplot( df, aes( x="", y=weight, fill=feed ) )
+% pie &lt;- pie + geom_bar( colour="black", stat="identity" ) + coord_polar( "y", start=0 )
+% pie &lt;- pie + theme( axis.ticks=element_blank(), axis.title=element_blank(), axis.text.y=element_blank(), axis.text.x=element_text( colour="black" ), legend.position="none" )
+% pie &lt;- pie + scale_y_continuous( breaks=df$pos, labels=lbl )
+% pie &lt;- pie + scale_fill_manual( values=cb_palette )
+% pie &lt;- pie + ggtitle( "Mean Chicken Weight by Feed Type" )
+% print( pie )
+  </div>
+</div>
+
+<div class="img-div" style="max-width: 501px;">
+  <img style="max-width: 501px;" src="../figs/shiny/pie-chart-decorate.png"></img>
+
+  <figcaption>A more informative and aesthetic version of the original
+  pie chart</figcaption>
+
+</div>
+
+<h4>Scatterplots</h4>
+
+<p>
+A scatterplot is normally used to look for relationships between two
+variables. For example, suppose we wanted to visually explore whether
+a relationship exists between a tree's height and its volume. This
+can be done using the <code>geom_point</code> command.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-scatterplot">
+% df &lt;- trees
+% ggplot( data=df, aes( x=Height, y=Volume ) ) + geom_point( shape=20, size=3.0 ) + ggtitle( "Tree Height vs Volume" )
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 900px;">
+  <img style="max-width: 400px;" src="../figs/shiny/scatterplot.png"></img>
+  <span style="display: inline-block; width: 50px">&nbsp;</span>
+  <img style="max-width: 400px;" src="../figs/shiny/scatterplot-reg-line.png"></img>
+  
+  <figcaption>A scatterplot of tree height versus volume on the left, and the same
+  scatterplot with a linear regression line and 95% confidence region on the
+  right</figcaption>
+</div>
+
+<p>
+The figure suggests there <em>appears</em> to be a relationship
+between tree height and volume, but it would be useful to plot a
+regression line through the points to see how well it fits the data,
+and what its slope is. This can be done in <code>ggplot</code> using
+the <code>geom_smooth</code> command.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-pie">
+% df &lt;- trees
+% ggplot( data=df, aes( x=Height, y=Volume ) ) + geom_point( shape=20, size=3.0 ) + geom_smooth( method=lm ) + ggtitle( "Tree Height vs Volume" )
+  </div>
+</div>
+
+<p>
+Adding the regression line and confidence interval seems to further
+confirm a relationship between tree height and volume. Accessing the
+<code>lm</code> function directly confirms a <em>p</em>-value of less
+than 0.05, the normal cutoff for rejecting the null hypothesis.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-scatterplot-reg-line">
+% summary( reg )
+
+Call:
+lm(formula = trees$Height ~ trees$Volume)
+
+Residuals:
+       Min       1Q   Median       3Q      Max 
+-10.7777  -2.9722  -0.1515   2.0804  10.6426 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  69.00336    1.97443  34.949  &lt; 2e-16 ***
+trees$Volume  0.23190    0.05768   4.021 0.000378 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 5.193 on 29 degrees of freedom
+Multiple R-squared:  0.3579,     Adjusted R-squared:  0.3358 
+F-statistic: 16.16 on 1 and 29 DF,  p-value: 0.0003784
+  </div>
+</div>
+
+<h4>Histograms</h4>
+
+<p>
+Histograms allow you to: (1) count the number of occurrences in a
+categorical variable, or (2) discretize a continuous variable, then
+count the number of occurrences of values within a predefined set of
+ranges or <em>bins</em>. Both approaches are demonstrated below. The
+first uses the built in <code>airquality</code> dataset and treats
+temperature as a factor (<em>i.e.</em>, as a categorical variable) to
+count the number of temperature occurrences within the dataset. The
+second uses the <code>chickwts</code> to count the number different
+chicken weights using equal-width bins of eight ounces.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-histogram">
+% df &lt;- airquality
+% df$Temp &lt;- as.factor( df$Temp )
+% ggplot( data=df, aes( x=Temp ) ) + geom_bar( color="black", fill="palegreen2" ) + xlab( "Temperature F" ) + ylab( "" ) + scale_y_continuous( breaks=c( 1, 3, 5, 7, 9, 11 ) ) + ggtitle( "Temperature Counts" )
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 900px;">
+  <img style="max-width: 400px;" src="../figs/shiny/histogram-discrete.png"></img>
+  <span style="display: inline-block; width: 50px">&nbsp;</span>
+  <img style="max-width: 400px;" src="../figs/shiny/histogram-continuous.png"></img>
+  
+  <figcaption>
+  Histograms of discrete temperatures on the left, and continuous
+  </figcaption>
+</div>
+
+
+<p>
+If you create a histogram from a discrete variable
+(<em>e.g.,</em>factor variable), you use <code>geom_bar</code>. This
+makes sense intuitively, since counting occurrences in a categorical
+variable is, in essence, equivalent to generating a bar chart of
+counts of the variable's values. If you create a histogram from a
+continuous variable, you use <code>geom_histogram</code>.
+</p>
+
+<p>
+In the discrete histogram example above, we use
+<code>scale_y_continuous</code> to explicitly define the tick
+positions on the y-axis. In the <code>geom_histogram</code> example
+above, we use the <code>alpha</code> argument to make each bar
+semi-transparent.
+</p>
+
+<h4>Boxplots</h4>
+
+<p>
+A final chart that is often useful in statistics is the boxplot, a
+visualization that identifies the median, the second and third
+quartiles boundaries <em>Q<sub>1</sub></em> and
+<em>Q<sub>3</sub></em>, and the inner and outer "fences", normally 1.5
+&times IQR (inter-quartile range <em>Q<sub>3</sub></em> -
+<em>Q<sub>1</sub></em>) below and above <em>Q<sub>1</sub></em> and
+<em>Q<sub>3</sub></em>. Any points outside the fences are plotted as
+outliers.
+</p>
+
+<p>
+An example of boxplots for <em>chickwts</em> feed type versus average
+weight can be constructed as follows.
+</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-boxplot">
+% library( ggplot2 )
+% ggplot( data=chickwts, aes( x=feed, y=weight ) ) + geom_boxplot( colour="blue", fill="white", outlier.colour="red", outlier.shape=1 )
+  </div>
+</div>
+
+<p>
+This boxplot shows only a few outliers in the "sunflower" feed type
+category. Another example uses the <em>iris</em> dataset to plot Sepel
+Width by Species. This shows a few additional outliers, both above and
+below the IQR fences. We have also used <code>geom_dotplot</code> to
+display all of the data points at their corresponding Sepal Width
+positions, overlaid on top of the boxplot.
+</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-boxplot-iqr">
+% library( ggplot2 )
+% box &lt;- ggplot( data=iris, aes( x=Species, y=Sepal.Width ) )
+% box &lt;- box + geom_boxplot( lwd=1, color="black", fill="white" )
+% box &lt;- box + geom_dotplot( aes( fill=Species ), binaxis="y", stackdir="center", method="histodot", binwidth=0.1, dotsize=0.75 )
+% print( box )
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 900px;">
+  <img style="max-width: 400px;" src="../figs/shiny/boxplot-chickwts.png"></img>
+  <span style="display: inline-block; width: 50px">&nbsp;</span>
+  <img style="max-width: 400px;" src="../figs/shiny/boxplot-iris.png"></img>
+  
+  <figcaption>
+  Boxplots of average chicken weight by feed type on the left, and
+  average sepal width by iris type on the right
+  </figcaption>
+</div>
+
+
+<h2 id="maps">Maps</h2>
+
+<p>
+<code>ggplot</code> also has the ability to visualize data on maps
+using commands like <code>geom_map</code> and <code>coord_map</code>.
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-map">
+% library( ggplot2 )
+% states &lt;- map_data( "state" )
+% ggplot() + geom_map( data=states, map=states, aes( map_id=region ), fill="white", colour="black" ) + expand_limits( x=states$long, y=states$lat )
+  </div>
+</div>
+
+<p>
+You can easily add a map projection to the map using
+<code>coord_map</code>.
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-map-proj">
+% library( ggplot2 )
+% states &lt;- map_data( "state" )
+% ggplot() + geom_map( data=states, map=states, aes( map_id=region ), fill="white", colour="black" ) + expand_limits( x=states$long, y=states$lat ) + coord_map( "albers", lat0=29.5, lat1=49.5 )
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 900px;">
+  <img style="max-width: 400px;" src="../figs/shiny/usa-map.png"></img>
+  <span style="display: inline-block; width: 50px">&nbsp;</span>
+  <img style="max-width: 400px;" src="../figs/shiny/usa-map-albers.png"></img>
+  
+  <figcaption>
+  Maps of the continental United states, a basic state map on the
+  left, a state map with Albers projection on the right
+  </figcaption>
+</div>
+
+
+<p>
+The R code above produces a basic map of the U.S., then warps it using
+an <a target="_blank"
+href="https://en.wikipedia.org/wiki/Albers_projection">Albers map
+projection</a>. An Albers projection requires two parallels to project
+about, defined as <code>lat0=29.5</code> and
+<code>lat1=49.5</code>. The current USGS standard is to display maps
+using Albers projection, and for maps of the continental United
+States, parallels of 29.5&deg;N and 49.5&deg;N are recommended.
+</p>
+
+<h4>Choropleth Maps</h4>
+
+<p>
+To produce a map with data overlaid, you normally start by drawing a
+base map, then adding a second map layer using <code>geom_map</code>
+containing the data you want to visualize.
+</p>
+
+<p>
+For example, suppose we wanted to visualize a choropleth map of state
+population. The R built in <code>state.x77</code> data frame contains
+various information about US states, including estimated population in
+millions as its first column. We can use this to colour individual
+states darker for lower populations and lighter for higher
+populations.
+</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-choropleth">
+% library( ggplot2 )
+% states &lt;- map_data( "state" )
+% choropleth &lt;- data.frame( ID = tolower( rownames( state.x77 ) ), pop = state.x77[ , 1 ] )
+% map &lt;- ggplot() + geom_map( data=states, map=states, aes( map_id=region ), fill="white", colour="black" ) + expand_limits( x=states$long, y=states$lat )
+% map &lt;- map + geom_map( data=choropleth, map=states, aes( fill=pop, map_id=ID ) )
+% map &lt;- map + coord_map( "albers", lat0=29.5, lat1=49.5 )
+% print( map )
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 934px;">
+  <img style="width: 100%; max-width: 934px;" src="../figs/shiny/state-map-choropleth.png"></img>
+  
+  <figcaption>
+  A choropleth map of estimated state populations, in millions
+  </figcaption>
+</div>
+
+
+<p>
+The key concept to understand here is how <code>ggplot</code> maps
+regions on the map to data values that drive the region's colour.
+This is done with the <code>map_id</code> aesthetic field. If you
+look at the <code>state</code> data frame, you'll see that the
+individual polygons that make up each state are identified by the
+state's name, in lowercase.
+</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-state-connection">
+% head( states )
+        long      lat group order  region subregion
+1 -87.46201 30.38968     1     1  alabama      &lt;NA&gt;
+2 -87.48493 30.37249     1     2  alabama      &lt;NA&gt;
+3 -87.52503 30.37249     1     3  alabama      &lt;NA&gt;
+4 -87.53076 30.33239     1     4  alabama      &lt;NA&gt;
+5 -87.57087 30.32665     1     5  alabama      &lt;NA&gt;
+6 -87.58806 30.32665     1     6  alabama      &lt;NA&gt;
+  </div>
+</div>
+
+<p>
+When we built the <code>choropleth</code> variable, we included an
+<code>ID</code> column that also used lowercase state name. We then
+matched the columns between the <code>states</code> and
+<code>choropleth</code> data frames using the <code>map_id</code>
+aesthetic field, using <code>map_id=region</code> in the base map and
+<code>map_id=ID</code> in the choropleth layer that fills in the
+individual state polygons.
+</p>
+
+
+<h4>Dot Maps</h4>
+
+<p>
+Other types of maps, like dot maps, can also be generated using
+<code>ggplot</code>. As with the choropleth map, we begin with a base
+map, then add points to it, in this case using
+the <code>geom_point</code> command. The example uses two CSV files,
+<a href="http://www.csc2.ncsu.edu/faculty/healey/msa/shiny/cities-coords.csv">cities-coords.csv</a>
+and
+<a href="http://www.csc2.ncsu.edu/faculty/healey/msa/shiny/cities-data.csv">cities-data.csv</a>. You'll need to download these files, and use
+<code>setwd()</code> to change RStudio's working directory to the
+directory containing the files.
+</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-dot-map">
+% library( ggplot2 )
+% states &lt;- map_data( "state" )
+% coords &lt;- read.csv( url( "http://www.csc2.ncsu.edu/faculty/healey/msa/shiny/cities-coords.csv" ), header=TRUE, sep="," )
+% data &lt;- read.csv( url( "http://www.csc2.ncsu.edu/faculty/healey/msa/shiny/cities-data.csv" ), header=TRUE, sep="," )
+% data &lt;- data[ data$City != "Houston" & data$Year == 2012, ]
+% points &lt;- merge( coords, data, by.x = c( "City", "State" ), by.y = c( "City", "State" ) )
+% points$Size &lt;- pmax( points$Population / 500000.0, rep( 5.0, 6 ) )
+% map &lt;- ggplot() + geom_map( data=states, map=states, aes( map_id=region ), fill="white", colour="black" ) + expand_limits( x=states$long, y=states$lat )
+% map &lt;- map + geom_point( data=points, aes( x=Longitude, y=Latitude ), colour="blue", size=points$Size, alpha=0.7 )
+% map &lt;- map + coord_map( "albers", lat0=29.5, lat1=49.5 )
+% print( map )
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 934px;">
+  <img style="width: 100%; max-width: 934px;" src="../figs/shiny/usa-map-dot.png"></img>
+  
+  <figcaption>
+  A proportional dot map of city populations
+  </figcaption>
+</div>
+
+
+<p>
+In this example, we've actually created a proportional dot map, where
+the size of each dot represents the population of its corresponding
+city. The <code>pmax</code> command is used to ensure a minimum dot
+size of 5.0.
+</p>
+
+
+<h2 id="shiny-basic">R&thinsp;+&thinsp;Shiny</h2>
+
+<p>
+<a target="_blank" href="http://shiny.rstudio.com">Shiny</a> is a
+package developed by RStudio that allows the creation of web-based,
+interactive dashboards based on R graphics and <a target="_blank"
+href="https://jqueryui.com/widget/">jQuery user interface (UI)
+widgets</a>. This provides a way to create web-based dashboards that
+allow users to interactively explore an underlying dataset.
+</p>
+
+<p>
+A Shiny application is made up of at least two separate R files:
+<code>ui.R</code> that defines the layout of the dashboard and the UI
+widgets it contains, and <code>server.R</code> that responds when a
+user interacts with the UI, reading new interface values and
+generating new visualizations based on those values.
+</p>
+
+<p>
+As an example, here is a simple application that allows a user to
+choose a bin width, then plots the number of chickens from the
+<code>chickwts</code> dataset that have a weight within the range of
+each bin.
+</p>
+
+
+<div style="margin-left: 7.5%; font-size:
+125%;"><b><code>ui.R</code></b></div>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-ui">
+% library( shiny )
+% shinyUI( fluidPage(   # Define UI for histogram application
+%   titlePanel( "Distribution Histogram" ),   # App title
+%   sidebarLayout(   # Sidebar w/slider input for bin width
+%     sidebarPanel(
+%       sliderInput(
+%         "bins",
+%         "Bin Width:",
+%         min = 5,
+%         max = 50,
+%         value = 20 )
+%     ),
+%     mainPanel(   # Plot generated distribution
+%       plotOutput( "distPlot" )
+%     )
+%   )
+% ) )
+  </div>
+</div>
+
+
+<div style="margin-left: 7.5%; font-size:
+125%;"><b><code>server.R</code></b></div>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-server">
+% library( ggplot2 )
+% library( shiny )
+% shinyServer( function( input, output ) {   # Server logic for histogram
+%   output$distPlot &lt;- renderPlot( {
+%     ggplot( data=chickwts, aes( x=weight ) ) + geom_histogram( binwidth=input$bins, colour="white", fill="lightblue", alpha=0.7 ) + scale_y_continuous( breaks=seq( 0, length( chickwts$weight ), by=2 ) ) + ggtitle( "Chicken Weight Distribution" )
+%   } )
+% } )
+  </div>
+</div>
+
+<p>
+To run a Shiny application, place <code>ui.R</code> and
+<code>server.R</code> in a common directory. We'll assume the
+directory is called <code>shiny</code>. Next, ensures RStudio's
+current working directory is the parent directory that holds the
+<code>shiny</code> subdirectory. You can check the working directory
+with the command <code>getwd()</code> and set the working directory
+with the command <code>setwd()</code>. One RStudio is in the proper
+directory, run the Shiny app with the <code>runApp</code> command.
+
+<div class="ex-div">
+% runApp( "shiny" )
+</div>
+
+
+<div class="img-div" style="max-width: 960px;">
+  <img style="max-width: 960px;" src="../figs/shiny/shiny-chickwts.png"></img>
+  
+  <figcaption>
+  A Shiny app visualizing a chicken weight histogram, with an
+  interactive slider to control histogram bin widths
+  </figcaption>
+</div>
+
+
+<p>
+This will create a new web browser window within RStudio and run the
+Shiny app in that window.
+</p>
+
+<h4>UI and Server Code</h4>
+
+<p>
+Let's look at the <code>ui.R</code> and <code>server.R</code> in more
+detail. As discussed previously, the UI code builds the user
+interface, which includes interactive widgets and output
+(visualizations) displayed based on the current value of the widgets.
+The server code is responsible for <em>reacting</em> to changes in the
+UI widget values, generating updated visualizations based on those
+changed values, and pushing the results back to the UI side to be
+displayed.
+</p>
+
+<p>
+Looking at <code>ui.R</code> in more detail, we see the following
+operations.
+</p>
+
+<ul>
+
+<li><code>shinyUI( fluidPage(</code><br> This initiates the UI block,
+and specifies that a <code>fluidPage</code> layout will be used to
+allow for flexible placement of widgets and output.
+
+<li><code>&nbsp; sidebarLayout(</code><br> This specifies that a simple
+sidebar layout will be used, where widgets are arranged to the left
+(or right) of the main output panel.
+
+<li><code>&nbsp; &nbsp; sidebarPanel(</code><br> This defines the
+left panel that will hold all of the interactive widgets.
+
+<li><code>&nbsp; &nbsp; &nbsp; sliderInput(</code><br> This defines a
+slider widget to allow a user to input values along a continuous
+numeric range.
+
+<li><code>&nbsp; &nbsp; &nbsp; &nbsp; "bins",</code><br> This defines
+the variable name attached to the sliderInput
+widget, <code>bins</code>.
+
+<li><code>&nbsp; &nbsp; &nbsp; &nbsp; "Bin Width:",</code><br> This defines the label for the
+sliderInput widget.
+
+<li><code>&nbsp; &nbsp; &nbsp; &nbsp; min = 5, max = 50,</code><br> This defines the range of
+values for the sliderInput widget.
+
+<li><code>&nbsp; &nbsp; &nbsp; &nbsp; value = 20,</code><br> This
+defines the starting value for the sliderInput widget.
+
+<li><code>&nbsp; &nbsp; mainPanel(</code><br> This specifies the
+region that will hold the output visualizations.
+
+<li><code>&nbsp; &nbsp; &nbsp; plotOutput( "distPlot" )</code><br> This
+defines a region in the mainPanel to hold a plot or image,
+named <code>distPlot</code>.
+
+</ul>
+
+<p>
+The server code is shorter and simpler, since its only job is to
+receive the current value of the <code>sliderInput</code> widget
+variable <code>bins</code>, create a histogram of chicken weights
+based on the values of <code>bins</code>, then assign that histogram
+to the output variable <code>distPlot</code>.
+</p>
+
+<ul>
+
+<li><code>shinyServer( function( input, output ) {</code><br> This
+initiates a Shiny server to <em>react</em> to changes in UI widgets. It
+uses a function to respond to the changes. The
+arguments <code>input</code> and <code>output</code> contain
+information about the input (<em>i.e.,</em> UI) and output
+(<em>i.e.,</em> visualizations in the <code>MainPanel</code> region of
+the application).
+
+<li><code>&nbsp; output$dispPlot &lt;- renderPlot( {</code><br> Defines
+an interactive plot, to be assigned to the output
+variable <code>dispPlot</code>. Notice that
+since <code>dispPlot</code> is part of the <code>mainPanel</code>
+in <code>ui.R</code>, whatever we assign here will appear in the main
+output region of our application.
+
+<li><code>&nbsp; &nbsp; ggplot( data=chickwts, ... + ggtitle( "Chicken
+Weight Distribution" )</code><br> This builds a ggplot histogram to
+display in the output region of the application (since we're assigning
+it to <code>dispPlot</code>). Notice that we
+use <code>binwidth=input$bins</code> in
+the <code>geom_histogram</code> call. This means that, whatever value
+the user has chosen with the <code>sliderInput</code>, that value will
+be used to define the width of the bins in the resulting histogram.
+
+</ul>
+
+
+<h2 id="reactive">Reactivity</h2>
+
+<p>
+The way that the UI and server code communicate with one another
+occurs through <a target="_blank"
+href="http://shiny.rstudio.com/articles/reactivity-overview.html"><em>reactivity</em></a>,
+Shiny's terminology for an approach similar to callbacks in other
+languages. To start, we'll discuss <em>reactive sources</em>
+and <em>reactive endpoints</em>.
+</p>
+
+<h4>Reactive Sources and Endpoints</h4>
+
+<p>
+In simple terms, a reactive source is normally a variable attached to
+a user interface widget in the UI source code. For example, in our
+<code>ui.R</code> example, the variable <code>bins</code> is a
+reactive source, since it is attached to a slider and needs the
+dashboard to "react" whenever its value changes.
+</p>
+
+<p>
+On the other hand, the variable <code>distPlot</code> is a reactive
+endpoint, since code in <code>server.R</code> assigns a histogram
+to <code>distPlot</code> based on the reactive
+source <code>bins</code>. The histogram is then displayed in the
+dashboard's <code>mainPanel</code>.
+</p>
+
+<p>
+From this example, we can see that reactive source and endpoint
+variables are normally defined in the UI code, and responses to
+changes in reactive sources are normally managed in the server code,
+with a typical response being to update the value of a reactive
+endpoint. You can see this exact type of processing happening in
+our example program.
+</p>
+
+<ol>
+
+<li>The slider's thumb is moved.
+
+<li>Changing the thumb causes the value of <code>bins</code> (a
+reactive source) to change.
+
+<li><code>shinyServer</code> <em>reacts</em> to this change by
+executing any code that uses the <code>bins</code> variable, in
+particular, by updating the value of <code>distPlot</code> (a reactive
+endpoint).
+
+<li><code>shinyUI</code> <em>reacts</em> to the change in the value
+of <code>distPlot</code> by updating itself to
+display <code>distPlot</code>'s new value in
+its <code>mainPanel</code>.
+
+</ol>
+
+<p>
+It is now clear what <code>input</code> and <code>output</code>
+represent in the function defined within <code>shinyServer</code>.
+<code>input</code> contains (among other things) values for all of the
+reactive sources in <code>ui.R</code>. In particular, it contains the
+value of <code>bins</code>, which is accessed in typical R fashion
+as <code>input$bins</code>.
+</p>
+
+<p>
+Similarly, <code>output</code> contains values for the reactive
+endpoints in <code>ui.R</code>. In our example, this
+includes <code>distPlot</code>, which needs to be updated
+whenever <code>bins</code> changes. Shiny recognizes that the
+assignment to <code>output$distPlot</code> in
+the <code>shinyServer</code> function access <code>input$bins</code>
+(to define the histogram's <code>binwidth</code>),
+so <code>shinyServer</code> is automatically called by Shiny whenever
+the value of the reactive source <code>bins</code> changes. Similarly,
+Shiny calls the <code>shinyUI</code> function whenever the value of
+the reactive endpoint <code>distPlot</code> changes.
+</p>
+
+
+<div class="img-div" style="max-width: 250;">
+  <img style="max-width: 198;" src="../figs/shiny/reactive-source-endpoint.png"></img>
+  
+  <figcaption>
+  A <code>bins</code> reactive source acting as a dependent to a
+  <code>distPlot</code> reactive endpoint
+  </figcaption>
+</div>
+
+
+<p>
+Shiny represents the relationships between reactive sources and
+endpoints as shown in the diagram above. We would describe this as
+reactive sources having one or more <em>dependents</em> (in our
+example, <code>bins</code> has one dependent <code>distPlot</code>),
+and reactive endpoints being <em>dependent</em> on one or more
+reactive sources (in our example, <code>distPlot</code> depends
+on <code>bins</code>).
+</p>
+
+<h4>Reactive Conductors</h4>
+
+<p>
+A final type of component used in Shiny is a <a target="_blank"
+href="http://shiny.rstudio.com/tutorial/lesson6/"><em>reactive
+conductor</em></a>. The purpose of a conductor is to encapsulate a
+computation that depends on reactive source(s). The result returned by
+a reactive conductor is normally used by a reactive endpoint. Since
+the reactive conductor caches its return value, if the value is slow
+to compute, or if it is going to be used by numerous reactive
+endpoints, the conductor improves the overall efficiency of the Shiny
+program. Reactive conductors are also useful for performing longer
+computations that you might not want to embed directly in code used to
+assign a value to a reactive endpoint.
+</p>
+
+<p>
+Consider the following modifications to <code>ui.R</code> and
+<code>server.R</code>, to allow us to print some text information
+about the histogram in our dashboard.
+</p>
+
+
+<div style="margin-left: 7.5%; font-size:
+125%;"><b><code>ui.R</code></b></div>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-conductor-ui">
+% library( shiny )
+% shinyUI( fluidPage(   # Define UI for histogram application
+%   titlePanel( "Distribution Histogram" ),   # App title
+%   sidebarLayout(   # Sidebar w/slider input for bin width
+%     sidebarPanel(
+%       sliderInput(
+%         "bins",
+%         "Bin Width:",
+%         min = 5,
+%         max = 50,
+%         value = 20 )
+%     ),
+%     mainPanel(   # Plot generated distribution
+%       plotOutput( "distPlot" ),
+<span style="color: var(--txt-hilite);">%       uiOutput( "distInfo" )</span>
+%     )
+%   )
+% ) )
+  </div>
+</div>
+
+
+<div style="margin-left: 7.5%; font-size:
+125%;"><b><code>server.R</code></b></div>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-conductor-server">
+% library( ggplot2 )
+% library( shiny )
+% shinyServer( function( input, output ) {   # Server logic for histogram
+<span style="color: var(--txt-hilite);">%   g &lt;- reactive( {
+%     ggplot( data=chickwts, aes( x=weight ) ) + geom_histogram( binwidth=input$bins, color="white", fill="lightblue", alpha=0.7 ) + scale_y_continuous( breaks=seq( 0, length( chickwts$weight ), by=2 ) ) + ggtitle( "Chicken Weight Distribution" )
+%   } )</span>
+%   output$distPlot &lt;- renderPlot( {
+<span style="color: var(--txt-hilite);">%     g()</span>
+%   } )
+<span style="color: var(--txt-hilite);">%   output$distInfo &lt;- renderUI( {
+%     hist_data &lt;- ggplot_build( g() )$data[[ 1 ]]
+%     min &lt;- hist_data$xmin
+%     max &lt;- hist_data$xmax
+%     rng &lt;- range( chickwts$weight )
+%     bin_s &lt;- paste( "&lt;b&gt;Weight Range:&lt;/b&gt;  [", rng[ 1 ], ",", rng[ 2 ], "]&lt;br&gt;" )
+%     bin_s &lt;- paste( bin_s, "&lt;b&gt;Number of Bins:&lt;/b&gt; ", length( min ), "&lt;br&gt;" )
+%     bin_s &lt;- paste( bin_s, "&lt;b&gt;Left Boundary:&lt;/b&gt; ", min[ 1 ], "&lt;br&gt;" )
+%     bin_s &lt;- paste( bin_s, "&lt;b&gt;Right Boundary:&lt;/b&gt; ", max[ length( max ) ], "&lt;br&gt;" )
+%     HTML( bin_s )
+%   } )</span>
+% } )
+  </div>
+</div>
+
+
+<p>
+This code makes the following changes to the original chicken weights
+histogram dashboard.
+</p>
+
+<ol>
+
+<li>A <code>uiOutput( "distInfo" )</code> object is added
+to <code>ui.R</code>'s <code>mainPanel</code> to hold text information
+about the histogram. Notice that the <code>uiObject</code> defines a
+new reactive source <code>distInfo</code>.
+
+<li>We now create the histogram using a reactive
+expression <code>g()</code>. This is done because <code>g()</code> is
+used to set both <code>distPlot</code> and values
+in <code>distInfo</code>. Rather than build the histogram twice, we
+build it once, then use the cached value for both assignments.
+
+
+<div class="img-div" style="max-width: 400px;">
+  <img style="max-width: 346px;" src="../figs/shiny/reactive-conductor.png"></img>
+  
+  <figcaption>
+  A <code>g()</code> reactive conductor creating a ggplot histogram
+  based on the value of reactive source <code>bins</code>
+  right
+  </figcaption>
+</div>
+
+
+<li>In order to pull information from the histogram, we
+use <code>ggplot_build</code> on <code>g()</code>, then extract
+field <code>data[[ 1 ]]</code>, which holds information about the
+histogram.
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-reactive-conductor">
+% str( ggplot_build( g() )$data[[ 1 ]] )
+'data.frame':	17 obs. of  17 variables:
+$ y       : num  1 1 5 5 3 4 8 6 7 3 ...
+$ count   : num  1 1 5 5 3 4 8 6 7 3 ...
+$ x       : num  100 120 140 160 180 200 220 240 260 280 ...
+$ xmin    : num  90 110 130 150 170 190 210 230 250 270 ...
+$ xmax    : num  110 130 150 170 190 210 230 250 270 290 ...
+$ density : num  0.000704 0.000704 0.003521 0.003521 0.002113 ...
+$ ncount  : num  0.111 0.111 0.556 0.556 0.333 ...
+$ ndensity: num  158 158 789 789 473 ...
+$ PANEL   : int  1 1 1 1 1 1 1 1 1 1 ...
+$ group   : int  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 ...
+$ ymin    : num  0 0 0 0 0 0 0 0 0 0 ...
+$ ymax    : num  1 1 5 5 3 4 8 6 7 3 ...
+$ colour  : chr  "white" "white" "white" "white" ...
+$ fill    : chr  "lightblue" "lightblue" "lightblue" "lightblue" ...
+$ size    : num  0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+$ linetype: num  1 1 1 1 1 1 1 1 1 1 ...
+$ alpha   : num  0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7 ...
+  </div>
+</div>
+
+<li><code>renderUI</code> is used to render HTML-styled text to a
+uiOutput object. Notice that we first build the string
+<code>bin_s</code> with HTML code like <code>&lt;b&gt;</code> and
+<code>&lt;br&gt;</code>.  When we pass the result to the
+<code>uiOutput</code> object in <code>ui.R</code>, however, we must
+wrap it in an <code>HTML()</code> call to convert the result into an
+HTML object that <code>uiOutput</code> can display properly.
+
+</ol>
+
+
+<div class="img-div" style="max-width: 960px;">
+  <img style="max-width: 960;" src="../figs/shiny/shiny-chickwts-txt.png"></img>
+  
+  <figcaption>
+  The Shiny chicken weights dashboard with a <code>uiOutput</code>
+  object to display text describing specific properties of the
+  dashboard
+  </figcaption>
+</div>
+
+<p>
+Finally, here is a Shiny dashboard that displays information from the
+built in <code>iris</code> dataset. It allows a user to choose which
+samples from the three iris species to visualize as boxplots using
+checkboxes. It allows the user to display outliers only, or all points
+using radio buttons. Finally, it allows the user to set the IQR range
+to define outliers using a slider.
+</p>
+
+<p>
+As in the example above, a reactive function is used to build a
+reactive conductor <code>df()</code> that contains the subset of
+samples to plot (based on which species the user chooses to
+visualize). This allows the Points and Outlier IQR inputs to change,
+without needing to re-subset the original dataset.
+</p>
+
+
+<div style="margin-left: 7.5%; font-size: 125%;">
+	<b><code>ui.R</code></b>
+</div>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-shiny-chickwts-ui-txt">
+% library( shiny )
+% shinyUI( fluidPage(
+%   titlePanel( "Sepal Width Boxplot" ),
+%   sidebarLayout(
+%     sidebarPanel(
+%       checkboxGroupInput(
+%         "species",
+%         "Species:",
+%         c( "Setosa" = "setosa",
+%            "Versicolor" = "versicolor",
+%            "Virginica" = "virginica"
+%         ),
+%         inline = TRUE,
+%         selected = "setosa"
+%       ),
+%       radioButtons(
+%         "points",
+%         "Points:",
+%         c( "Outlier" = "outlier", "All" = "all" ),
+%         inline = TRUE
+%       ),
+%       sliderInput(
+%         "iqr",
+%         "Outlier IQR:",
+%         min = 0.5,
+%         max = 3.0,
+%         step = 0.25,
+%         value = 1.5
+%       )
+%     ),
+%     mainPanel(
+%       plotOutput( "distPlot" )
+%     )
+%   )
+% ) )
+  </div>
+</div>
+
+
+<div style="margin-left: 7.5%; font-size: 125%;">
+	<b><code>server.R</code></b>
+</div>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-shiny-chckwts-server">
+% library( ggplot2 )
+% library( shiny )
+% shinyServer( function( input, output ) {
+%   df &lt;- reactive( {
+%     return( subset( iris, Species == input$species ) )
+%   } )
+%   output$distPlot &lt;- renderPlot( {
+%     if ( input$points == "outlier" ) {
+%       ggplot( data=df(), aes( x=Species, y=Sepal.Width ) ) + geom_boxplot( color="black", fill="palegreen", outlier.color="red", outlier.shape=1, coef=input$iqr ) + ggtitle( "Sepal Width Boxplot" )
+%     } else {
+%       ggplot( data=df(), aes( x=Species, y=Sepal.Width ) ) + geom_boxplot( lwd = 1, color="black", fill="palegreen", coef=input$iqr ) + geom_dotplot( aes( fill=Species ), binaxis="y", stackdir="center", method="histodot", binwidth=0.1, dotsize=0.75 ) + ggtitle( "Sepal Width Boxplot" ) + guides( fill=FALSE )
+%     }
+%   } )
+% } )
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 960px;">
+  <img style="max-width: 960;" src="../figs/shiny/shiny-iris.png"></img>
+  
+  <figcaption>
+  Boxplot visualizations of the iris dataset, with controls to define
+  which species to visualize, whether to visualize outliers only or
+  all points, and how to define an outlier based on the IQR
+  </figcaption>
+</div>
+
+
+<h2 id="publish">Publishing</h2>
+
+<p>
+There are numerous ways to publish your applications so others can use
+them. One simple, built in method is to deploy your application on
+Shiny's application cloud, located at <a target="_blank"
+href="https://www.shinyapps.io">https://www.shinyapps.io</a>. Another
+is to embed your Shiny UI and server together in a single R file, then
+send that file to other users.
+</p>
+
+
+<h4>shinyapps.io</h4>
+
+<p>
+Shiny applications can be published on RStudio's cloud application
+server. You may have noticed a "Publish" button in the upper-right
+corner of your Shiny application window. If you've authorized a
+shinyapps.io account in RStudio, clicking this button generates a
+dialog that allows you to choose a directory with Shiny code to deploy,
+and an account to use to host the application.
+</p>
+
+<p>
+To setup your shinyio.apps account, visit <a target="_blank"
+href="https://www.shinyapps.io">shinyapps.io</a> and choose "Sign Up"
+to create an account to host your Shiny applications. You will be
+asked to enter an email address and a password for you new account,
+then asked to choose a name for your account. Once this is done,
+instructions will be provided to setup RStudio to publish
+applications. This involves three steps.
+
+<ol>
+
+<li>Install the <code>rsconnect</code> package, if it isn't already
+installed, by issuing <code>install.packages( 'rsconnect' )</code> at
+the console prompt.
+
+<li>Authorize your account, shinyapps.io will show you the exact
+command to do this, and will also allow you to reveal your "secret"
+token to complete the authorization.
+
+<li>Finally, instructions on how to deploy a Shiny application are
+provided. This is done by ensuring <code>rsconnect</code> is available
+by loading it with <code>library( rsconnect )</code>, then using
+<code>deployApp( "app-directory" )</code>, identical to how you
+use <code>runApp</code> to run the Shiny application.
+
+</ol>
+
+<p>
+Once your Shiny app is deployed, it will be available at a specific
+URL, so anyone with a web browser will be able to run it. The URL uses
+your shinyapps.io account name <code>account-name</code> and the name
+of the application directory
+<code>app-directory</code> you used to upload your application,
+specifically:
+</p>
+
+<div class="ex-div">
+https://account-name.shinyapps.io/app-directory
+</div>
+
+<p>
+So, for example, if my account name was <code>msa</code> and I
+uploaded an application in a directory called <code>shiny</code>,
+users could access that application at the URL <a target="_blank"
+href="https://msa.shinyapps.io/shiny">https://msa.shinyapps.io/shiny</a>.
+</p>
+
+
+<h4>Self-Contained Shiny Apps</h4>
+
+<p>
+Another option is to embed Shiny UI and server code directly in a
+single R file, then share the file with other R users. The code below
+shows an example of embedding our original Shiny histogram application
+as a single R file.
+</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-shiny-standalone">
+% load &lt;- function() {
+%   if ( require( "ggplot2" ) != TRUE ) {
+%     print( "Required library 'ggplot2' could not be loaded" )
+%     return( FALSE )
+%   } else if ( require( "shiny" ) != TRUE ) {
+%     print( "Required library 'shiny' could not be loaded" )
+%     return( FALSE )
+%   } else {
+%     return( TRUE )
+%   }
+% }
+% 
+% if ( load() == TRUE ) {
+%   hist_ui &lt;- fluidPage(
+%     titlePanel( "Distribution Histogram" ),
+%     sidebarLayout(
+%       sidebarPanel(
+%         sliderInput(
+%           "bins",
+%           "Bin Width:",
+%           min = 5,
+%           max = 50,
+%           value = 20 )
+%       ),
+%       mainPanel(
+%         plotOutput( "distPlot" )
+%       )
+%     )
+%   )
+% 
+%   hist_server &lt;- function( input, output ) {
+%     output$distPlot &lt;- renderPlot( {
+%       ggplot( data=chickwts, aes( x=weight ) ) + geom_histogram( binwidth=input$bins, colour="white", fill="lightblue", alpha=0.7 ) + scale_y_continuous( breaks=seq( 0, length( chickwts$weight ), by=2 ) ) + ggtitle( "Chicken Weight Distribution" )
+%     } )
+%   }
+% 
+%   shinyApp( ui = hist_ui, server = hist_server )
+% }
+  </div>
+</div>
+
+
+<p>
+Here, we create two variables <code>hist_ui</code>
+and <code>hist_server</code>, each containing the contents of the
+original <code>ui.R</code> and <code>server.R</code>. We then run the
+application using the
+<code>shinyApp()</code> command, passing <code>ui = hist_ui</code> and
+<code>server = hist_server</code> as arguments to define the UI and
+server components of the application.
+</p>
+
+<p>
+In a self-contained program like this, we also need to ensure the
+proper libraries <code>ggplot2</code> and <code>shiny</code> are
+available when a given user tries to run the
+application. The <code>load()</code> function is built to do this.  It
+uses <code>require()</code> to attempt to load both libraries,
+returning <code>FALSE</code> if either library is not available.
+The <code>load()</code> function monitors return codes
+from <code>require()</code>, returning <code>TRUE</code> only if both
+libraries are loaded. The mainline of the program begins by calling
+<code>load()</code>, and only runs the body of the program to create
+and execute the Shiny app if <code>load()</code>
+returns <code>TRUE</code> (that is, if both the <code>ggplot2</code>
+and <code>shiny</code> libraries are available).
+</p>
+
+
+
+<!-- The mod-date span will be updated by code in mod-date.js -->
+
+<hr class="fig_top">
+<div class="footer">
+  Updated <span id="mod-date">01-Jan-01</span>
+</div>
+
+</body>
+</html>
+
+
+<!--  LocalWords:  ui RStudio bootcamp ggplot Hadley Wickham barplot
+ -->
+<!--  LocalWords:  lightblue xlab ylab lbl aes ggtitle dataset str df
+ -->
+<!--  LocalWords:  num activ wth colour linetype chickwts horsebean
+ -->
+<!--  LocalWords:  idx coord cb pos lm Signif discretize palegreen io
+ -->
+<!--  LocalWords:  binwidth mapproj usa carolina albers USGS alabama
+ -->
+<!--  LocalWords:  Choropleth choropleth subregion coords csv jQuery
+ -->
+<!--  LocalWords:  RStudio's shinyUI fluidPage titlePanel sliderInput
+ -->
+<!--  LocalWords:  sidebarLayout sidebarPanel mainPanel plotOutput
+ -->
+<!--  LocalWords:  distPlot shinyServer subdirectory runApp boxplot
+ -->
+<!--  LocalWords:  quartiles quartile outlier Sepel IQR Shiny's rng
+ -->
+<!--  LocalWords:  Reactivity reactivity uiOutput distInfo xmin xmax
+ -->
+<!--  LocalWords:  ncount ndensity ymin ymax chr uiObject checkboxes
+ -->
+<!--  LocalWords:  checkboxGroupInput Setosa setosa Versicolor iqr
+ -->
+<!--  LocalWords:  versicolor Virginica virginica radioButtons coef
+ -->
+<!--  LocalWords:  lwd dotplot binaxis stackdir histodot dotsize
+ -->
+<!--  LocalWords:  shinyapps shinyio shinyApp
+ -->

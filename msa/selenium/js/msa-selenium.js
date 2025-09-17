@@ -1,0 +1,244 @@
+
+//  Initialize jQuery detail accordions in the HTML
+
+$( function() {
+  var  accordion_list;			// List of detail accordion IDs
+  var  i;				// Current accordion_list index
+  var  id;				// Copy image ID
+  var  is_fixed;			// Nav bar is pinned flag
+  var  nav;				// Ref to nav bar's div
+  var  nav_foot;			// Ref to nav bar's bottom spacer
+  var  nav_y;				// Top of nav bar y-offset on page
+  var  w;				// Reference to main window
+
+
+  accordion_list = [
+  ];
+
+  for ( i in accordion_list ) {
+    $( accordion_list[ i ] ).accordion( {
+      active: false,
+      collapsible: true,
+      autoHeight: false,
+      heightStyle: "content"
+    } );
+  }
+
+  //  This code tracks the navigation bar, if it scrolls past the top
+  //  of the page, it's "floated" and pinned to the top of the page
+
+  nav = $("#nav");			// Grab nav bar div, footer div
+  nav_foot = $("#nav-footer");
+
+  nav_y = nav.offset().top;		// Get nav bar's top offset on page
+
+  is_fixed = false;
+
+  w = $(window);
+  w.scroll( function() {
+    var  fixed;				// Nav bar should be fixed flag
+    var  nav_h;				// Nav bar height
+    var  top;				// Vert scrollbar's top offset on page
+
+    top = w.scrollTop();		// Get vert sbar pos from top of page
+    fixed = top > nav_y;		// Scrolled past nav bar's top on page?
+    nav_h = $("#nav").height();		// Get nav bar's height
+
+    if ( fixed && !is_fixed ) {		// Fix navbar in place?
+      nav.css( {
+        position: "fixed",
+        top: 0,
+        left: nav.offset().left,
+        width: "98.5%"
+      } );
+      nav_foot.css( {
+        position: "fixed",
+        top: nav_h,
+        left: nav.offset().left,
+        width: "98.5%"
+      } );
+
+      is_fixed = true;
+
+    } else if ( !fixed && is_fixed ) {	// Release fixed navbar?
+      nav.css( {
+        position: "static",
+        width: "100%"
+      } );
+      nav_foot.css( {
+        position: "static",
+        width: "100%"
+      } );
+
+      is_fixed = false;
+    }
+  } );
+
+  w.scroll();				// If page refresh, show nav ar
+
+  $("#nav-list li").click( function() {
+    var  div_id	= [			// ID of div to scroll to
+      { "id": "selenium-intro", "div": "#intro" },
+      { "id": "selenium", "div": "#selenium-info" },
+      { "id": "explore-page", "div": "#explore" },
+      { "id": "selenium-code", "div": "#selenium-prog" },
+      { "id": "selenium-xpath", "div": "#xpath" },
+      { "id": "soup-intro", "div": "#soup" },
+      { "id": "nws-ex", "div": "#nws-example" },
+    ];
+    var  i;				// Loop counter
+
+
+    //  Find div ID for whatever nav item user clicked
+
+    for( i = 0; i < div_id.length; i++ ) {
+      if ( $(this).attr( "id" ) == div_id[ i ][ "id" ] ) {
+        break;
+      }
+    }
+
+    if ( i >= div_id.length ) {		// Unknown nav item?
+      console.log( "Unknown navigation ID " + $(this).attr( "id" ) );
+    } else {
+
+    //  Animate the top of the div to the top of the page, but offset
+    //  by 25px to account for the navigation toolbar itself
+
+      $("html, body").animate(
+        { scrollTop: $(div_id[ i ][ "div" ]).position().top - 25 }, 'swing' );
+    }
+  } );
+
+  //  This code assigns click handlers to all "Copy" images in code
+  //  blocks, which will call the copy_code() function for the proper
+  //  div on click
+
+  i = 1;
+  do {
+    id = "#code-" + ( "00" + i ).slice( -2 ) + "-img";
+    if ( $(id).length == 0 ) {
+      continue;
+    }
+
+    $(id).click( function( i ) {
+      copy_code( $("#" + this.id).next().html() );
+    } );
+
+    i++;
+  }
+  while( $(id).length > 0 );
+} );
+
+
+function copy_code( txt )
+
+  //  Copy Python code in a code-div block
+  //
+  //  txt:  HTML text of div
+{
+  var  blk;				// Copy block to copy
+  var  code;				// Python code from code block
+  var  i;				// Loop counter
+  var  len;				// Line length
+  var  line;				// Tokens in code block
+  var  pos_dt;				// Position of ...
+  var  pos_gt;				// Position of >>>
+  var  rc;				// Return code from copy attempt
+  var  rng;				// Range object to hold code text
+  var  sel;				// Selection of text in range object
+  var  tab_1 = "    "			// Tab
+  var  tab_2 = "        "		// Two tabs
+  var  tab_3 = "            "		// Three tabs
+  var  tab_4 = "                "	// Four tabs
+
+
+  //  Remove newlines multiple spaces, and <em></em> in code block,
+  //  then split into individual lines
+
+  line = txt.replace( /\n/g, '' ).replace( /  +/g, ' ' );
+  line = line.replace( /<em>/g, '' ).replace( /<\/em>/g, '' );
+  line = line.split( '<br>' );
+
+  //  Extract code lines from code block
+
+  code = "";
+  for( i = 0; i < line.length; i++ ) {
+
+    //  Check for either ">>>" or "..." to mark a code line
+
+    pos_gt = line[ i ].indexOf( '&gt;&gt;&gt;' );
+    pos_dt = line[ i ].indexOf( '...' );
+
+    if ( pos_gt == -1 && pos_dt == -1 ) {
+      continue;
+    }
+
+    if ( pos_gt != -1 ) {		// >>> code block?
+      code = code + line[ i ].substr( pos_gt + 12 ).trim() + "<br>";
+
+    } else {				// ... code block, handle tables
+      len = line[ i ].length;
+      end = len - 7;
+
+      if ( line[ i ].indexOf( "tab-1" ) != -1 ) {
+        code = code + tab_1 + line[ i ].substring( pos_dt + 24, end ) + "<br>";
+      } else if ( line[ i ].indexOf( "tab-2" ) != -1 ) {
+        code = code + tab_2 + line[ i ].substring( pos_dt + 24, end ) + "<br>";
+      } else if ( line[ i ].indexOf( "tab-3" ) != -1 ) {
+        code = code + tab_3 + line[ i ].substring( pos_dt + 24, end ) + "<br>";
+      } else if ( line[ i ].indexOf( "tab-4" ) != -1 ) {
+        code = code + tab_4 + line[ i ].substring( pos_dt + 24, end ) + "<br>";
+      } else {
+        code = code + line[ i ].substr( pos_dt + 4 ) + "<br>";
+      }
+    }
+  }
+  //code = code + "<br>";
+
+  //  For some reason text() and html() return non-printable ASCII
+  //  characters, so we need to scan code and remove them
+
+  i = 0;
+  while( i < code.length ) {
+    if ( code.charCodeAt( i ) > 126 ) {
+      code = code.substr( 0, i ) + code.substr( i + 1 );
+    } else {
+      i++;
+    }
+  }
+
+  //  Add a temporary paragraph to the end of the document with the
+  //  text to copy to the clipboard
+
+  $("body").append( '<pre id="code-copy">' + code + "</pre>" );
+
+  //  Try to copy the code to the clipboard
+  //  Obtain a reference to the temporarily appended code
+
+  blk = document.getElementById( "code-copy" );
+
+  //  Create a range object that holds the text of the Python code
+
+  rng = document.createRange();
+  rng.selectNodeContents( blk );
+
+  //  Select the Python code within the range
+
+  sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange( rng );
+
+  try {
+    rc = document.execCommand( 'copy' );
+  } catch( e ) {
+    rc = false;
+  }
+
+  if ( rc == false ) {
+    console.log( "Could not copy text block" );
+  }
+
+  //  Remove temporary paragraph with Python code block
+
+  $("#code-copy").remove();
+}					// End funtion copy_code

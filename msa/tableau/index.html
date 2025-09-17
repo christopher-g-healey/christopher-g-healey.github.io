@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta charset="UTF-8" />
+
+
+<title>Tableau: Institute for Advanced Analytics</title>
+</head>
+
+<script type="text/javascript" src="../../course/js/header-code.js"></script>
+
+<body class="light">
+
+<div id="banner-img" style="
+  position: relative;
+  height: 436px;
+  background-image: url( '../../course/figs/tableau/banner.png' );
+  background-repeat: no-repeat;
+  background-position: center top;
+">
+
+<!-- NC State logo, upper-left corner -->
+
+  <div style="
+    position: absolute;
+    align: right;
+    top: 10px;
+    left: 10px;
+  ">
+    <a target="_blank" href="https://www.ncsu.edu">
+      <img src="../../course/figs/nc-state-logo-blue.png"
+       style="
+         border-style: none;
+         -moz-box-shadow: 1px 1px 8px #646464;
+         -webkit-box-shadow: 1px 1px 8px #646464;
+         box-shadow: 1px 1px 8px #646464;
+       " alt="nc-state logo">
+    </a>
+  </div>
+
+<!-- Tableau text, lower-left corner -->
+
+  <div style="
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    font-size: 16pt;
+    font-weight: normal;
+    color: #646464;
+  ">
+    <div style="line-height: 90%;">Tableau</div>
+    <div style="font-size: 10pt;">
+      <a target="_blank" href="http://www.csc2.ncsu.edu/faculty/healey">
+      <i>Christopher G. Healey</i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Spacer after image of one "line" -->
+
+<div style="height: 1em;"></div>
+
+<!-- Navigation toolbar -->
+
+<div id="navWrap">
+  <div id="nav">
+    <ul id="nav-list">
+      <li id="nav-intro:intro">Introduction
+      <li id="nav-setup:setup">Setup
+      <li id="nav-basic:basic">Basic Tableau
+      <li id="nav-dot-map:dot-map">Dot Map
+      <li id="nav-scatterplot:scatterplot">Scatterplots
+      <li id="nav-line-graph:linegraph">Line Graph
+      <li id="nav-dashboard:dashboard">Dashboard
+      <li id="nav-filter:filter">Filter
+      <li id="nav-publish:publish">Publishing
+    </ul>
+  </div>
+
+  <div id="nav-footer">
+  </div>
+</div>
+
+
+<!-- Initially assume light theme (day), draw moon icon to switch to dark -->
+<!-- Javascript will automatically check this and switch if it's night -->
+
+<img id="light-dark" style="width: 24px; height: 24px; position: fixed; top: 2px; right: 20px; margin: 0; padding: 0; z-index: 200;" src="../../course/figs/moon-icon-gradient.png" />
+
+
+<h2 id="intro">Introduction</h2>
+
+<p>
+This module will introduce you
+to <a href="http://www.tableau.com">Tableau</a>, a tool designed to
+manipulate and visualize large datasets. We will work through a simple
+example of loading data, visualizing it in different ways, combining
+the individual visualizations into a dashboard, and publishing the
+dashboard online so anyone with a web browser can view the results.
+</p>
+
+<h2 id="setup">Setup</h2>
+
+<p>
+In order to work with Tableau, you will need a copy of the software.
+You will also need to register for a Tableau Public Account, which
+allows you to upload your visualizations for hosting on Tableau's
+servers. You should have received instructions on how to download and
+activate Tableau Desktop 2024.1.4 or later. If you haven't done that,
+make sure you have a working copy of Tableau Public running on your
+machine. You will also need to create a Tableau Public account by
+visiting <a href="https://public.tableau.com/auth/signup">the Tableau
+Public Account page</a> to create an account to host your
+visualizations.
+</p>
+
+
+<h2 id="basic">Basic Tableau</h2>
+
+<p>
+In order to visualize, we need to start with a dataset. We'll be using
+a modified version of a <a href="USDA_activity_dataset.xls">Excel
+activity dataset</a> originally provided
+by <a href="http://www.peteraldhous.com">Peter Aldhous</a> as part of
+his <a href="http://www.peteraldhous.com/CAR/tableau_demo.pdf">Tableau
+demo</a>. Much of the material we use here is taken from this demo,
+then updated for Tableau Desktop and extended to apply some of the
+visualization principles we learned during the summer visualization
+lectures.
+</p>
+
+<p>
+Once you've downloaded the activity dataset to your computer, open it
+in Excel and spend a few minutes familiarizing yourself with its
+different fields.
+</p>
+
+<h4>Loading Data</h4>
+
+<p>
+To start, we need to load the activity dataset into Tableau Public.
+</p>
+
+<ol>
+
+<li>Launch Tableau Public.
+
+<li>Choose "Excel" from the "Connect To a file" option list.
+
+<li>Select the "USDA_activity_dataset.xls" file that you downloaded,
+and choose to "Open" it.
+
+<li>Tableau will begin loading and parsing the file. When it's
+finished, choose the "Go to Worksheet" button that appears as a small
+popup in the bottom-left of the screen.
+
+</ol>
+
+
+<h4>Dimensions and Measures</h4>
+
+<p>
+If you loaded the dataset correctly, Tableau should present a window
+that looks similar to this.
+</p>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-start.png"></img>
+  <figcaption>
+    Tableau's initial worksheet after loading the activity dataset.
+  </figcaption>
+</div>
+
+
+<p>Notice that Tableau has divided the data in the Excel file into
+<b>Dimensions</b> and <b>Measures</b>. Tableau calls these <em>data
+roles</em>. It's very important to understand the distinction between
+these two concepts.
+</p>
+
+<p>
+Tableau treats fields that contain categorical or qualitative
+information as a dimension. So, fields like "State" (containing
+U.S. state names), "County" (containing county names within a state),
+and "Voting in 2008" (containing "D", "R", or "Null" based on how a
+county voted) are all marked as dimensions by Tableau.
+</p>
+
+<p>
+Measures are fields containing numeric or quantitative information.
+Most of the fields in the activity dataset are measures, for example,
+"% Smokers", "Adult obesity rate", and "Child food insecurity". More
+formally, a measure is a field that is <em>dependent</em> on one or
+more dimensions. For example, if I wanted to visualize "% Smokers", I
+normally want to categorize the results, say, as "% Smokers by
+State". Here, "% Smokers" is a measure that's been made dependent on
+the "State" dimension. If you don't provide a dimension, Tableau will
+simply aggregate the measure over the entire dataset.
+</p>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-smoker-by-state.png"></img>
+  <figcaption>
+    A map showing average % smokers by state (note that because
+    Tableau is weighting each county's average equally, these results
+    are most likely inaccurate).
+  </figcaption>
+</div>
+
+
+<p>
+The most common reason to distinguish between dimensions and measures
+is because of how they act in a visualization. In general, placing a
+dimension on the "Rows" or "Columns" shelf creates an axis of
+individual categories headings. You can try this: drag "State" to the
+"Rows" shelf, and you should see a vertical axis with 51 positions:
+"Alabama", "Alaska", "Arizona" down to "Wyoming".
+</p>
+
+<p>
+If you place a measure on the "Rows" or "Columns" shelf, Tableau
+normally creates an axis showing a continuous scale over the measure's
+range of values. You can try this as well: drag "% Smokers" to the
+"Columns" shelf. Now, you should see a horizontal bar chart showing
+the sum of "% Smokers" for each of the individual
+states. Right-clicking on the "% Smokers" field in the "Columns"
+shelf, choosing "Measure", then selecting "Average" from the submenu
+changes the aggregation method to average the percentage of smokers in
+each state's counties.
+</p>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-state-avg-smoker.png"></img>
+  <figcaption>
+    A horizontal bar graph of the average percentage of smokers by state.
+  </figcaption>
+</div>
+
+
+<h4>Discrete and Continuous</h4>
+
+<p>
+Finally, Tableau views each field as either discrete or continuous.
+Discrete fields are coloured blue, and continuous fields are coloured
+green. Normally, dimensions are discrete and measures are continuous,
+although this is not always true.
+</p>
+
+
+<h2 id="dot-map">Dot Map</h2>
+
+<p>
+To start, we'll generate a dot map of the adult obesity rate for each
+county.
+</p>
+
+<ol>
+
+<li>Clear the worksheet by choosing "Clear &rarr; Sheet" from the
+"Worksheet" menu.
+
+<li>Double-click the "County" dimension (if the "State, County"
+Dimension hierarchy is closed, open it by clicking on the triangle to
+its left to expose the "County" field).
+
+<li>You should see a map with one blue dot in the center of each
+county throughout the United States.
+
+<li>Next, find the "Adult obesity rate" measure, and drag it onto the
+"Color" button in the "Marks" section. You should see a map with each
+county colored a shade of blue based in the county's adult obesity
+rate.
+
+<li>By default, Tableau aggregates multiple data points for a given
+region (in our case, for a given county) by summing. We want to
+average the adult obesity rate, so right-click on the "AVG(Adult
+obesity)" pill in the Marks section, and change "Measure(Sum)" by
+choosing Average in its submenu.
+
+<li>Click on the "Automatic" pop-up menu at the top of the "Marks"
+section, and choose "Circle" as the mark type. The map will change to
+again show a circle centered in each county, but now coloured by adult
+obesity rate.
+
+<li>Next, click on the "Color" button in the "Marks" section, and
+choose "Edit Colors..."
+
+<li>Click on the "Automatic" pop-up "Palette" menu, and choose the
+"Red-Blue Diverging" colour scale. Click on the "Reversed" checkbox to
+select it, then click "OK".
+
+<li>The final map shows red and blue circles: blue for counties with
+an adult obesity rate below the median, and red for counties with a
+rate above the median.
+
+</ol>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-obesity-red-blue.png"></img>
+  <figcaption>
+    A horizontal bar graph of the average percentage of smokers by
+    state.  A map showing average obesity rate by county using a
+    red&ndash;blue colour scale: red for values above the median, blue
+    for values below the median, and saturation for values farther
+    from the median.
+  </figcaption>
+</div>
+
+
+<h2 id="scatterplot">Scatterplots</h2>
+
+<p>
+Next, we'll create some scatterplots to compare adult obesity rate
+to other, possibly related measures.
+</p>
+
+<ol>
+
+<li>Choose "New Worksheet" from the "Worksheet" menu to create a new,
+empty worksheet to hold the scatterplot visualizations.
+
+<li>Drag the "Adult obesity rate" measure to the "Rows" shelf.
+
+<li>Drag the "% Smokers", "% Eating Few Fruits And Vegetables", and "%
+Who Do Not Exercise" measures onto the "Columns" shelf, one after
+another.
+
+<li>Notice that each scatterplot only contains a single circle
+representing the sum (over all data samples) of adult obesity rate to
+the average of percentage smokers, percentage eating few fruits and
+vegetables, and percentage who do not exercise. To drill down to the
+county level, click on the "All" option in the "Marks" section, then
+drag the "County" dimension to the "Marks" section, and drop it the
+blank region below the buttons (that is, do not drop it on any of the
+buttons).
+
+<li>Change all four attributes from Sum aggregation to Average
+aggregation by right-clicking their pills and selecting "Measure (Sum)
+&rarr; Average".
+
+<li>Click on the "Automatic" pop-up menu at the top of the "Marks"
+section, and choose "Circle" to show filled rather than empty circles.
+
+<li>Click on the "Color" button in the "Marks" section, and select a
+shade of purple for the circle colour. Change "Transparency" to 50%,
+then click the "Color" button again to close its options.
+
+<li>In the "Analysis" menu choose "Trend Lines &rarr; Show
+All Trend Lines".
+
+<li>Finally, right-click on each trend line, choose "Edut Trend
+Lines..."  and selection the checkbox "Show Confidence Bands".
+
+</ol>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-scatterplot.png"></img>
+  <figcaption>
+    Three scatterplots showing comparing average obesity rate by
+    county to percentage of smokers, percentage eating few fruits and
+    vegetables, and percentage who do not exercise.
+  </figcaption>
+</div>
+
+
+<h2 id="linegraph">Dual-Axis Line Graph</h2>
+
+<p>
+Often we want to compare variables across a sequence like time or
+a categorical dimension like county or state. Here, we'll build a
+line graph to represent Adult Obesity and % Smokers, to see if there's
+any visual correlation between the two.
+</p>
+
+<ol>
+
+<li>Choose "New Worksheet" from the "Worksheet" menu to create a new,
+empty worksheet to hold the line graphs.
+
+<li>Drag the "State" dimension to the "Columns" shelf.
+
+<li>Drag the "% Smokers" and "Adult obesity rate" measures to the
+"Rows" shelf, one after another.
+
+<li>Notice that this produces two independent bar charts, one for
+"Adult obesity rate" and one for "% Smokers". To convert them to line
+charts, select "All" in the "Marks" section, click on the "Automatic"
+pop-up menu at the top of the card, and choose "Line" to show two line
+graphs.
+
+<li>Next, we want to combine the two line graphs into a single, dual-axis
+graph. To do this, right-click on the lower graph's vertical axis, "Adult
+obesity rate", and choose "Dual Axis" from the pop-up menu.
+
+</ol>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-dual-line-01.png"></img>
+  <figcaption>
+    Dual-axis line graphs comparing sum of obesity rate by state to
+    sum of percentage of smoker.
+  </figcaption>
+</div>
+
+
+<p>
+At this point, we have a basic dual-axis graph, but there are a number of
+formatting modifications we can make to improve on Tableau's defaults.
+</p>
+
+<ol>
+
+<li>Since we're aggregating across all counties in a state, we want
+the average obesity and smoker rates, not the sum of all
+counties. Right click the "SUM(% Smokers)" pill in the Rows shelf,
+select the "Measure (Sum)" entry, and choose "Average" from
+submenu. Do the same thing for the "SUM(Adult obesity rate)" pill.
+
+<li>Finally, we'd like the left axis to show values with a "%" sign at
+the end. To do this, right-click the "Avg % Smokers" label and choose
+"Format...". The list of dimensions and measure on the leftmost column
+will change to a "Format AVG(% Smokers)" panel. In the "Numbers:"
+pop-up, choose "Percentage", set the "Decimal places:" to 0, then
+click the "X" at the top of the Format panel to close it.
+
+</ol>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-dual-line-02.png"></img>
+  <figcaption>
+    Dual-axis line graphs comparing sum of obesity rate by state to sum
+    of percentage of smoker, but with incorrect percentages on the
+    vertical axis.
+  </figcaption>
+</div>
+
+<p>
+Although this adds a "%" to the values on the vertical axis, it also
+exposes a problem: percentages run from 0% to 3500%, because the "%
+Smokers" column is coded on a range 0&ndash;100, and not
+0.0&ndash;1.0.  You can confirm this by choosing the "Data" menu and
+selecting "Connect to me(USDA_activity_dataset) &rarr; View Data",
+then looking at the "AVG(% Smokers)" column.
+</p>
+
+<p>
+To address this, we will create a new <em>calculated field</em> that
+spans the 0.0&ndash;1.0 range we want.
+<p>
+
+<ol>
+
+<li>Choose the menu option "Analysis&thinsp;&rarr;&thinsp;Create
+calculated field..." to open the calculated field dialog.
+
+<li>Name the field "% Smokers Fraction" in the text field at the top
+of the dialog.
+
+<li>Click in the main body of the dialog (below the line beneath the
+field's title), and enter the formula "[% Smokers] / 100.0". Notice
+that Tableau will offer variable completion suggestions as you do
+this.
+
+<li>If you've entered the formula correctly, Tableau should report
+"The calculation is valid." at the bottom of the dialog. Click "OK" to
+save the formula.
+
+<li>The new calculated field "% Smokers Fraction" should now appear in
+the list of Measures. It will have a small "=" sign to the left of the
+"#" sign to indicate it is a calculated field.
+
+</ol>
+
+<p>
+We could remove the original "AVG(% Smokers)" from the Rows shelf and
+replace it with the new "AVG(% Smokers Fraction)", but rather than go
+through all the work of rebuilding the dual-axis graph, we'll instead
+edit the "AVG(% Smokers)" pill in-place on the shelf.
+</p>
+
+<ol>
+
+<li>Right-click the "AVG(% Smokers)" pill and choose "Edit in shelf".
+
+<li>Change the text to "AVG[(% Smokers Fraction)]".
+
+<li>Hit Ctrl+Return to accept the new pill definition.
+
+<li>Click outside the pill to return to the worksheet.
+
+</ol>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-dual-line-03.png"></img>
+  <figcaption>
+    Dual-axis line graphs comparing sum of obesity rate by state to sum
+    of percentage of smoker with correct percentages on the vertical
+    axis.
+  </figcaption>
+</div>
+
+<p>
+The graph will now show an orange "Avg. % Smokers Fraction" line graph
+and a blue "Avg. Adult obesity rate" line graph, overlaid on top of
+one another.
+</p>
+
+
+<h2 id="dashboard">Dashboard</h2>
+
+<p>
+Tableau allows individual visualizations to be combined into a common
+view called a dashboard. We'll use a dashboard to combine our map and
+scatterplot visualizations.
+</p>
+
+<ol>
+
+<li>Choose "New Dashboard" from the "Dashboard" menu.
+
+<li>Double-click the "Sheet 1" label in the tab at the bottom of the
+screen, and rename the sheet to "Map View".
+
+<li>Double-click the "Sheet 2" label in the tab at the bottom of the
+screen, and rename the sheet to "Scatterplot View".
+
+<li>Double-click the "Sheet 3" label in the tab at the bottom of the
+screen, and rename the sheet to "Dual Line View".
+
+<li>Click on the "Dashboard 1" tab, and your three visualization
+sheets should be listed in the "Sheets" list to the left of the
+dashboard.
+
+<li>Drag the map visualization sheet onto the dashboard region (the
+region that says "Drop sheets here").
+
+<li>Your map visualization should appear inside the dashboard.
+
+<li>Drag the scatterplot visualization sheet and drop it near the
+bottom of the map visualization in the dashboard.
+
+<li>The scatterplot visualization should appear below the map
+visualization in the dashboard.
+
+<li>Drag the dual line visualization sheet and drop it near the bottom
+of the scatterplot visualization in the dashboard.
+
+<li>The dual line visualization should appear below the scatterplot
+visualization in the dashboard.
+
+<li>To size the visualization, click on the size option popup beneath
+the "Size" title, and within the new dialog, click "Fixed Size" and
+change it to "Automatic".
+
+<li>Finally, to give a bit more room to each visualization,
+right-click on each of the titles in the three visualizations and
+choose "Hide Title".
+
+</ol>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-dashboard-wo-state.png"></img>
+  <figcaption>
+    A Tableau dashboard containing the map and the scatterplot
+    visualizations.
+  </figcaption>
+</div>
+
+
+<h2 id="filter">Action Filter</h2>
+
+<p>
+Although the current visualization is a good start, showing all the
+data for the entire country makes it cluttered and difficult to see
+more detailed patterns. It would be useful to allow viewers to
+interactively drill down and see data for individual states. Tableau
+provides action filters to allow this type of interaction.
+</p>
+
+<ol>
+
+<li>Choose "New Worksheet" from the "Worksheet" menu to create a new,
+empty worksheet to hold the State action filter.
+
+<li>Drag the "Sheet 4" tab that's created to the left of the
+"Dashboard 1" tab, double-click the "Sheet 4" tab, and rename it to
+"State Filter".
+
+<li>Drag the "State" dimension to the "Rows" shelf.
+
+<li>Drag the "State" dimension to the "Text" button in the "Marks"
+section, to label each state with its name.
+
+<li>Right-click the "State" dimension in the "Rows" shelf, and uncheck
+"Show Header". Since a state's name and its header are identical, the
+header is unnecessary.
+
+<li>Double-click the "State Filter" title at the top of the sheet.  An
+"Edit Title" dialog will, allowing you to change the title from
+"&lt;Sheet Name&gt;" to something like "Select a State". Click "OK" when
+you've chosen your sheet title.
+
+</ol>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-state-filter.png"></img>
+  <figcaption>
+    A list of state names to allow viewers to filter data by state.
+  </figcaption>
+</div>
+
+
+<p>
+Next, we need to add this sheet to the Dashboard, and tell Tableau to
+use its current selection as a filter for the map and scatterplot
+visualizations.
+
+<ol>
+
+<li>Click the "Dashboard 1" tab to show the dashboard in the main
+window.
+
+<li>Drag the State Filter worksheet you just created and drop it to
+the right of the map, below the Adult obesity rate and Measure Names
+legends.
+
+<li>Select the State Filter worksheet in the dashboard (a frame will
+appear around it when you do this), then right-click the frame and
+select "Use as Filter".
+
+<li>Finally, right-click the frame, select "Fit", and choose "Fit
+Width" to allow the state list to use the entire width provided by the
+dashboard.
+
+</ol>
+
+
+<div class="img-div" style="max-width: 1920px;">
+  <img style="width: 100%; max-width: 1920px;" src="../figs/tableau/tableau-dashboard.png"></img>
+  <figcaption>
+    A Tableau dashboard containing the map and scatterplot
+    visualizations, and a state-level filter.
+  </figcaption>
+</div>
+
+
+<p>
+Now, the state list acts as a dynamic filter to the data being shown
+in the other visualizations. Click a state, and only the data for that
+state will be shown in the map and scatterplot visualizations. To
+show all the data, click the currently selected state to unselect it
+and restore the visualizations to their default formats.
+</p>
+
+
+<h2 id="publish">Publishing</h2>
+
+<p>
+The final step is to upload your work to the web. This serves two
+purposes. First, it saves your sheets and dashboards so you can
+load and modify them later. Second, it provides a method to share
+your dashboard through a web browser.
+</p>
+
+<p>
+To publish to Tableau Public from Tableau Desktop, you first need to
+create an <em>extract</em> of the data that feeds your dashboard.
+This will be uploaded to Tableau Public along with your worksheets and
+dashboard. To create the extract, choose "Connect to me
+(USDA_Activity_dataset) &rarr; Extact Data..." from the "Data" menu.
+An "Extract Data" dialog will appear. Click the "Extract" button,
+choose a name and location for the extract file, and click "Save".
+The extract is created and bound to your Tableau workbook, so if you
+move or delete the extract, Tableau will complain when it tries to
+re-open your workbook. At that point, you will be offered options to
+locate the extract, remove it, deactivate it, or regenerate it.
+</p>
+
+<p>
+Once the extract is created, we can save both the dashboard and its
+associated data extract to Tableau Public.
+</p>
+
+<ol>
+
+<li>Open the "Server" menu and choose "Tableau Public &rarr; Save to
+Tableau Public As..."
+
+<li>Enter the user id and password you chose when you created your
+Tableau Public Account.
+
+<li>Choose a name for your workbook, then click "Save"
+
+<li>Tableau will show a progress bar as its uploads the data, then it
+will open your default browser and display your dashboard.
+
+<li>Click the "Share" button on the bottom of the dashboard, and a
+popup will appear with an "Embed Code" field containing the Javascript
+needed to embed your dashboard in a web page, and a "Link" field
+containing the URL to view your dashboard in a web browser.
+
+<li>Select the "Link" URL and Copy (Ctrl+C) it to the clipboard.
+
+<li>Open a new tab in your web browser, then paste the link you copied
+from Tableau Public and load it in a new web browser tab. You should
+see your dashboard, with the interactive state filter, displayed in
+the web browser.
+
+</ol>
+
+<p>
+If you run Tableau at a later date and want to continue working on
+your visualizations, choose "Tableau Public &rarr; Open From Tableau
+Public..." in the "Server" menu to load your workbook from Tableau's
+servers. This will restore your workspace to its previously saved
+state.
+</p>
+
+<p>
+This tutorial only begins to explain the power and flexibility of
+Tableau. You can use the Tableau textbook to explore Tableau in more
+detail. You can also come to talk to me or Andrea if you're having
+problems, and we can help you find instructions to construct the
+visualizations you want to build.
+</p>
+
+<p>
+Also, remember that Tableau is a tool to allow you to build
+visualizations. Like any tool, Tableau doesn't necessarily guarantee
+that the visualizations you produce are <em>good</em> visualizations.
+Try to apply the design principles we discussed in the visualization
+lecture, to make sure your visualizations are clear, effective, and
+well structured. The default visualizations that Tableau provides are
+unlikely to offer this, since Tableau doesn't have your domain
+expertise and understanding of the data's context to decide how best
+to present it.
+</p>
+
+<!-- The mod-date span will be updated by code in mod-date.js -->
+
+<hr class="fig_top">
+<div class="footer">
+  Updated <span id="mod-date">01-Jan-01</span>
+</div>
+
+</body>
+</html>
+
+<!--  LocalWords:  ui Analytics Healey CSS SVG scalable glyphs API px
+ -->
+<!--  LocalWords:  geolocated DOCTYPE html javascript src init colour
+ -->
+<!--  LocalWords:  mapOptions getElementById analytics draggable grey
+ -->
+<!--  LocalWords:  fillColor fillOpacity strokeColor strokeWeight SQL
+ -->
+<!--  LocalWords:  APIs google setQuery lon rng siz tbl getDataTable
+ -->
+<!--  LocalWords:  getNumberOfRows getColumnRange getValue datasets
+ -->
+<!--  LocalWords:  toLocaleString dataset Aldhous startup xls uncheck
+ -->
+<!--  LocalWords:  coloured labelled checkbox Scatterplots unselect
+ -->
+<!--  LocalWords:  scatterplots scatterplot Ctrl workspace data's
+ -->
+<!--  LocalWords:  colours submenu popup
+ -->

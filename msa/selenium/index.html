@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  
+<head>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta charset="UTF-8" />
+
+<title>Selenium+Beautiful Soup: Institute for Advanced Analytics</title>
+</head>
+<!--
+<script type="text/javascript" src="../js/header-code.js"></script>
+-->
+<script type="text/javascript" src="../../course/js/header-code.js"></script>
+
+<body class="light">
+
+<div style="
+position: relative;
+height: 290px;
+background-image: url( 'figs/selenium-logo.png' );
+background-repeat: no-repeat;
+background-position: center top;
+">
+
+<!-- NC State logo, upper-left corner -->
+
+  <div style="
+  position: absolute;
+  align: right;
+  top: 10px;
+  left: 10px;
+  ">
+  <a target="_blank" href="https://www.ncsu.edu">
+   <img src="../figs/nc-state-logo-blue.png"
+      style="
+      border-style: none;
+      -moz-box-shadow: 1px 1px 8px #646464;
+      -webkit-box-shadow: 1px 1px 8px #646464;
+      box-shadow: 1px 1px 8px #646464;
+      " alt="nc-state logo">
+  </a>
+  </div>
+
+<!-- Selenium text, lower-left corner -->
+
+  <div style="
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    font-size: 16pt;
+    font-weight: normal;
+    color: #646464;
+  ">
+
+    <div style="line-height: 90%;">Selenium&thinsp;+&thinsp;Beautiful Soup</div>
+      <div style="font-size: 10pt;">
+       <a target="_blank" href="http://www.csc2.ncsu.edu/faculty/healey">
+         <i>Christopher G. Healey</i>
+       </a>
+      </div>
+    </div>
+  </div>
+
+<!-- Spacer after image of one "line" -->
+
+<div style="height: 1em;"></div>
+
+<!-- Navigation toolbar -->
+
+<div id="navWrap">
+  <div id="nav">
+    <ul id="nav-list">
+     <li id="nav-intro:intro">Introduction
+     <li id="nav-selenium:selenium">Selenium
+     <li id="nav-page:page">Webpage Exploration
+     <li id="nav-code:code">Coding Selenium
+     <li id="nav-xpath:xpath">XPATH
+     <li id="nav-nws-ex:nws-ex">NWS Example
+    </ul>
+  </div>
+
+  <div id="nav-footer"> </div>
+</div>
+
+
+<!-- Initially assume light theme (day), draw moon icon to switch to dark -->
+<!-- Javascript will automatically check this and switch if it's night -->
+
+<img id="light-dark" style="width: 24px; height: 24px; position: fixed; top: 2px; right: 20px; margin: 0; padding: 0; z-index: 200;" src="../figs/moon-icon-gradient.png" />
+
+
+<h2 id="intro">Introduction</h2>
+
+<p>
+A common need is <i>web scraping</i>, the ability to copy content from
+an online web page. In data analytics, this is often used to extract
+data from a web page into a format amenable to follow-on analysis in
+languages like Python, R, SAS, or SQL.
+</p>
+
+<p>
+At its inception, web pages were a simple combination of Hypertext
+Markup Language (HTML) to <i>style</i> the content of a page, the
+Hypertext Transfer Protocol (HTTP) to transfer HTML documents over the
+Internet, and web browsers like Mosaic to convert HTML into a rendered
+presentation. HTML supported document structuring: paragraphs, tables,
+lists, and so on; and text styling: boldface, italics, and other types
+of visual modification of text.
+</p>
+
+<p>
+Modern web pages are very different from their ancestors. Now, pages
+commonly contain complex styling and programming that a web browser
+must interpret and execute prior to displaying a page. Two common
+examples are Cascading Style Sheets (CSS) and Javascript programs to
+control both the appearance and the functionality of a web page.
+</p>
+
+<p>
+In order to web scrape in this new reality, two steps are
+needed. First, the web page must be read and interpreted into its
+final format. <a href="https://www.selenium.dev/"
+target="_blank">Selenium</a> is used to do this, since it has the
+ability to mimic a web browser by reading raw HTML, then performing
+the execution necessary to convert the HTML into its final
+format. Although Selenium is designed to perform web page testing, it
+can also deliver the HTML for a fully rendered page. Once that HTML is
+available, it needs to be read and parsed. In Python, we
+use <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/"
+target="_blank">Beautiful Soup</a> to do this.
+</p>
+
+<p>
+Even with Selenium and Beautiful Soup, web scraping is
+non-trivial. For example, web pages often have interactive controls
+that need to be invoked in a specific order to arrive at the page of
+interest. Selenium is fully capable of doing this, but the raw HTML
+must be examined to determine how to uniquely identify the web page
+controls to manipulate. This information is needed by Selenium to
+locate and modify widgets on the web page. Once the target page is
+scraped, the HTML must again be examined for to determine how to tell
+Beautiful Soup what we want to scrape. Well written HTML will have
+easy-to-locate identifiers for all the main elements on a page. Poorly
+written HTML will not. Both can be parsed, but the effort required for
+poorly written pages is more complex. Regardless, for both Selenium
+and Beautiful Soup, understanding how HTML works is a prerequisite for
+scraping most pages. If you need a quick introduction to HTML, refer
+back to our discussion of HTML5 on the <a href="../dash/#HTML5"
+target="_blank">plotly&thinsp;|&thinsp;Dash</a> lessons.
+</p>
+
+
+<h3>HTML <code>id</code> &amp; <code>class</code></h3>
+
+<p>
+Extending our understanding of HTML, the most common way to identify a
+particular section of HTML is through its <code>id</code>
+or <code>class</code>, two attributes that can be attached to most
+HTML markup tags. As an example, consider the following simple HTML
+code.
+
+<div class="ex-div">
+  &lt;p&gt;This is a paragraph.&lt;/p&gt;
+
+  &lt;p id="id-tag"&gt;This is a paragraph with an id attribute of id-tag.&lt;/p&gt;
+
+  &lt;p class="class-tag"&gt;This is a paragraph with a class attribute of class-tag.&lt;/p&gt;
+
+  &lt;p id="id-tag" class="class-tag"&gt;This is a paragraph with an id attribute of id-tag and a class attribute of class-tag.&lt;/p&gt;
+</div>
+
+<p>
+In HTML, the <code>id</code> attribute is used to <i>identify</i> a
+specific HTML structure. The <i>class</i> tag is used to assign a
+pre-defined class to the structure, usually to style the structure in
+some common way throughout the document. Both Selenium and Beautiful
+Soup allow us to select HTML structures based on their <code>id</code>
+and <code>class</code> attributes, or combinations thereof. This is
+the most common way of identifying the target structure we wish to
+extract from a web page.
+</p>
+
+
+<h2 id="selenium">Selenium</h2>
+
+<p>
+Selenium can be installed as a package in Python from the Anaconda
+Prompt by typing the following.
+</p>
+
+<div class="ex-div">
+conda install -c conda-forge selenium
+</div>
+
+<p>
+You may need to run the prompt in Administrator mode to
+allow <code>conda</code> to update your Anaconda installation.
+Previously, Selinium also required you to install a
+<a href="https://www.selenium.dev/documentation/en/webdriver/"
+target="_blank"><i>webdriver</i></a>. However, the most recent
+versions of Selenium include webdrivers for most common web browsers as
+part of their library.  This makes using Selenium much easier.
+</p>
+
+<p>
+A webdriver allows you to programmatically drive a web page, exactly
+as though you were a user. You can ask Selenium to load a page, click
+elements on the page, fill in text fields, scroll the page, and do any
+of the other things a real user could do if they were viewing the page
+in their own web browser. The webdriver itself is a program that runs
+on your computer and mimics one of the common web browser. Currently,
+Selenium includes
+<a href="https://www.selenium.dev/documentation/en/webdriver/driver_requirements/"
+target="_blank"> webdrivers for Chrome, Firefox, Edge, IE, and
+Safari</a>. Unless you have a need for specific browser compatibility,
+the driver you choose isn't particularly important.
+</p>
+
+<p>
+At this point, you have everything you need to load Selenium in
+Python, invoke a controllable version of one of the common web
+browsers, then use Selenium to load a page and manipulate its contents
+to navigate to to the location where you want to scrape data. At that
+point, the page's HTML can be retrieved and passed to Beautiful Soup
+for further processing. Given this, the high-level order of processing
+for web scraping with Selenium and Beautiful Soup is as follows.
+</p>
+
+<ol>
+
+<li>Ask Selenium to invoke a webdriver, creating a browser instance
+that we can control through Selenium.</li>
+
+<li>Load the initial web page in the browser instance.</li>
+
+<li>Use Selenium to navigate from the initial page to the target page
+exactly as a user would, by clicking buttons, selecting from lists,
+entering text in text fields, and so on.</li>
+
+<li>Once the target page is loaded, ask Selenium to return the HTML
+used to represent the target page.</li>
+
+<li>Pass the page's HTML to Beautiful Soup to parse its contents
+into a searchable parse tree.</li>
+
+<li>Use Beautiful Soup to retrieve information from the web page's
+parse tree.</li>
+
+<li>Save information scraped from the web page into Python variables
+for follow-on analysis.</li>
+
+</ol>
+
+
+<h2 id="page">Exploring Web Pages</h2>
+
+<p>
+As noted above, one of the fundamental requirements for Selenium or
+Beautiful Soup is properly identifying the HTML structures in a web
+page you want to manipulate or scrape. The easiest way to do this is
+to load a web page into your favourite web browser, then use the
+developer tools every browser provides to examine the underlying
+HTML source code in detail. The discussion in these notes will use
+Chrome as an example, since it provides a robust set of examination
+tools. The same functionality can be performed in Firefox, Safari, or
+any other browser, however, using whatever commands they make available
+for this type of exploration.
+</p>
+
+<p>
+To begin, run Chrome and load NC State's homepage
+at <a href="https://www.ncsu.edu"
+target="_blank">https://www.ncsu.edu</a>. Next, click on the three
+vertical dots in the top-right corner of the browser window to reveal
+Chrome's menu. Choose <code>More tools&thinsp;&rarr;&thinsp;Developer
+tools</code> to bring up Chrome's developer tools (you can also use
+the keyboard shortcut <code>Ctrl+Shift+I</code> to do the same thing.)
+If this is the first time you've used the developer tools, they will
+appear in a <i>dock</i> inside the browser window to the left or
+right. To force the developer tools into their own, separate window,
+click the three vertical dots in the upper-right corner of the tools
+dock, and click on the Dock side option that shows two overlapping
+windows. This will pull the developer tools into a window separate
+from the browser window.
+</p>
+
+<p>
+The developer tools are designed for a variety of options, including
+examining a web page's source code, debugging Javascript code, and
+confirming resources for the page loaded properly over the network. Since
+we're interested in examining HTML source code, choose the tab labelled
+<code>Elements</code> at the top of the page. This shows the an
+overview of the code that makes up NC State's homepage, with exposure
+triangles to allow you to show and hide more detailed information
+contained in the page. Move your mouse over the different lines in
+the source code list. You should see different parts of the main browser
+window highlight. This is showing you which parts of the web page correspond
+to which parts of the code you are moving over.
+</p>
+
+<h3>Example: Identifying the <code>RESOURCES</code> Link</h3>
+
+<p>
+Notice that if we click on the magnifying glass icon with the three
+vertical dots to its right at the top of the page, a panel slides down
+with additional options to selection.  If we wanted to do this with
+Selenium, we would need to determine how to uniquely identify the
+magnifying glass button. The fastest way to do this is to ask Chrome's
+developer tools to identify the HTML that controls the icon. To do
+this, click on the dashed box with an arrow in it's lower-right corner
+in the very upper-right corner of the developer tools window or
+hit <code>Ctrl+Shift+C</code>. The page inspector icon should turn
+blue. Next, hover over the magnifying glass in NC State's homepage. A
+blue overlay will cover the icon, with an information popup shown
+underneath it. Click on the icon, and the exact line of HTML in the
+source code will be revealed that controls the magnifying glass.
+</p>
+
+<p>
+When I hover over the <code>Page Inspector</code> icon in the 
+<code>DevTools</code> window, the <code>svg</code> element with
+<code>id="Layer_1"</code> is exposed and highlighted.
+</p>
+
+<div class="img-div" style="max-width: 1919px;">
+  <img style="width: 100%; max-width: 1919px;" src="../figs/selenium/explore.png">
+  <figcaption>
+Using Chrome's Developer Tools to highlight the HTML controlling the NC State homepage search button
+  </figcaption>
+</div>
+
+<p>
+This shows how you can use Chrome's developer tools to walk in and out
+of the code to find the specific elements you want to manipulate, and
+what unique identifiers can be used to allow Selenium to manipulate
+them.
+</p>
+
+
+<h2 id="code">Coding Selenium</h2>
+
+<p>
+Now that we know how to identify the magnifying glass button, how
+would we use Selenium to automatically select it in
+a <code>webdriver</code>? The following Python code snippet will
+create a <code>webdriver</code>, load the NC State homepage, click
+the magnifying glass link, wait for 5 seconds, then terminate.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-selenium-open-pg">
+% import time
+% from selenium import webdriver
+% from selenium.webdriver.common.by import By
+%
+% driver = webdriver.Firefox()
+% driver.get( "https://www.ncsu.edu" )
+% btn = driver.find_element( By.ID, value="Layer_1" )
+% btn.click()
+%
+% time.sleep( 5 )
+% driver.close()
+  </div>
+</div>
+
+<p>
+Moving further into our example, supposed I want to select the <code>
+Directory</code> link at the top of the panel. Some exploring
+identifies its <code>id</code>
+as <code>ncstate-utility-bar-first-link</code>.  The following code
+duplicates our previous operation to click the
+<code>Directory</code> link.
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-selenium-directory">
+% import time
+% from selenium import webdriver
+% from selenium.webdriver.common.by import By
+%
+% driver = webdriver.Firefox()
+% driver.get( "https://www.ncsu.edu" )
+% btn = driver.find_element( By.ID, value="Layer_1" )
+% btn.click()
+%
+% elem = driver.find_element( By.CLASS_NAME, value="go282567778" )
+% elem.click()
+%
+% time.sleep( 5 )
+% driver.close()
+  </div>
+</div>
+
+<h3 id="xpath"><code>XPATH</code></h3>
+
+<p>
+If you run this code, it will not pull up the directory page. This is
+because if you examine the HTML, either with the Page Inspector or
+explicitly, you will see every option in the <code>RESOURCES</code>
+list has an identical class of <code>go282567778</code>. So, if we try
+to identify the <code>Directory</code> entry by its class, we will get
+the first entry in the list instead, <code>Academic and Student
+Affairs</code>.
+</p>
+
+<p>
+To solve this, we need to look for a <code>span</code> entry that
+contains the text <code>Directory</code>. This can be done using an
+<code>XPATH</code> search. What an <code>XPATH</code>?
+An <code>XPATH</code> is short for XML path, the path used to navigate
+through the structure of an HTML document. <code>By.XPATH</code>
+allows you to locate elements using XML path
+expressions. <code>XPATH</code>s come in two flavours: <i>absolute</i>
+and <i>relative</i>. An absolute <code>XPATH</code> defines the exact
+path from the beginning of the HTML page to the page element you want
+to locate.
+</p>
+
+<div class="ex-div">
+/html/body/div[2]/div[1]/h4[1]
+</div>
+
+<p>
+This absolute <code>XPATH</code> says start at the root node (<code>/</code>), then
+find the <code>HTML</code> element (which is the entire HTML for the
+page), then the <code>body</code> element, the second <code>div</code>
+in the body, the first <code>div</code> inside the body's
+second <code>div</code>, and finally the first <code>h4</code> section
+heading within that <code>div</code>. Although this allows very
+explicit selection, it is also labourious, and if the format of the
+web page changes, the absolute <code>XPATH</code> will break. The much more common
+alternative is a relative <code>XPATH</code>, which allows searching within the web
+page for target elements. The basic format of a relative <code>XPATH</code> is:
+</p>
+
+<div class="ex-div">
+//tagname[ @attribute = 'value' ]
+</div>
+
+<p>where:</p>
+
+<ul>
+
+<li> <code>//</code>:&nbsp; select the current node
+
+<li> <code>tagname</code>:&nbsp; tag name of the target node to be
+found (<code>div</code>, <code>img</code>, <code>a</code>, and so on)
+
+<li> <code>@</code>:&nbsp; select an attribute
+
+<li> <code>attribute</code>:&nbsp; attribute name of the target node
+to be found
+
+<li> <code>value</code>:&nbsp; attribute value of the target node to
+be found
+
+</ul>
+
+<p>Alternatively, <code>@attribute</code> can be replaced by a
+function call that the specific <code>tagname</code> understands. We
+could use this to ask a <code>span</code> element to return its text
+with <code>text()</code>, then search for a span with the
+text <code>Directory</code>.</p>
+
+<div class="ex-div">
+  elem = driver.find_element( By.XPATH, "//span[text()='Directory']" )
+</div>
+
+<p>Given this, we could change our code to find the <code>Directory</code>
+link using an <code>XPATH</code>, then click it.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-selenium-directory-xpath">
+% import time
+% from selenium import webdriver
+% from selenium.webdriver.common.by import By
+%
+% driver = webdriver.Firefox()
+% driver.get( "https://www.ncsu.edu" )
+% btn = driver.find_element( By.ID, value="Layer_1" )
+% btn.click()
+%
+% elem = driver.find_element( By.XPATH, "//span[text()='Directory']" )
+% elem.click()
+%
+% time.sleep( 5 )
+% driver.close()
+  </div>
+</div>
+
+<p>
+Unfortunately, identifying the <code>Directory</code> link is only one
+problem that we may encounter. You might assume, "If a link is always
+available, we can just locate it and click it." This may not be true,
+because exposing the panel containing <code>Directory</code> is also
+making the link <i>available</i>. Trying to click the link
+programmatically before we reveal the panel tells us the element is
+not yet available for interaction
+(an <code>ElementNotInteractableException</code> error). But, our code
+above first clicked the magnifying glass link to make the panel
+visible, then found and clicked the <code>Directory</code> link. Even
+doing this, we may still encounter an interaction error. Why would
+this happen?
+</p>
+
+<p>
+When the web browser executes code for complicated web pages like the
+NC State homepage, it takes time for the operations to complete and
+the web page to update. Our code is running too quickly, so it asks
+for a reference to the <code>Directory</code> link
+before the <code>webdriver</code> has processed our first click and
+rendered the drop-down panel. This is a very common occurrence during
+web scraping of dynamic pages.
+</p>
+
+<p>
+How can we solve this second error? An obvious way would be to create
+an infinite loop that located the <code>Directory</code> link, and if
+it wasn't available for interaction, slept for a short period of time,
+then try again. This is <em>strongly</em> discouraged, however, since
+it is inefficient, and it also blocks the Python interpreter from
+performing any actions while the sleep command runs. Selenium provides
+two possible methods for dealing with this issue: <i>implicit
+waits</i> and <i>explicit waits</i>. An implicit wait will wait a
+certain amount of time to locate an element before it gives up and
+returns an error. An explicit wait will wait a certain amount of time
+for a specific condition to evaluate to <code>True</code> based on the
+web page's contents before it gives up and returns an error. It is
+also fairly easy to write our own function to wait a set number of
+attempts for a target element to become available on the web page
+before giving up and deciding something has gone wrong.
+</p>
+
+<p>
+In our situation, an implicit wait will not work, since
+the <code>Directory</code> link is always present whether it is
+visible (and clickable) or not. This means we will need an explicit
+wait, with a specific condition we are waiting on.
+Selenium's <code>expected_conditions</code> class provides numerous
+ways to wait for specific conditions, including waiting until an
+element is clickable. We will set an explicit wait for a span element
+with text <code>Directory</code> for five seconds until it becomes
+clickable.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-selenium-ec-wait">
+% import time
+% import sys
+%
+% from selenium import webdriver
+% from selenium.webdriver.common.by import By
+% from selenium.webdriver.support.ui import WebDriverWait
+% from selenium.webdriver.support import expected_conditions as EC
+%
+% driver = webdriver.Firefox()
+% driver.get( "https://www.ncsu.edu" )
+% btn = driver.find_element( By.ID, value="Layer_1" )
+% btn.click()
+%
+% try:
+%     elem = WebDriverWait( driver, 5 ).until(
+%       EC.element_to_be_clickable(
+%         ( By.XPATH, "//span[text()='Directory']" )
+%       )
+%     )
+% except:
+%     print( 'mainline(), could not expose RESOURCES panel' )
+%     driver.close()
+%     sys.exit( 0 )
+%
+% elem.click()
+%
+% time.sleep( 5 )
+% driver.close()
+  </div>
+</div>
+
+<p>
+Now, the second click registers as expected and we move to the Campus
+Directory web page, ready to search for information on campus members.
+</p>
+
+
+<div class="img-div" style="max-width: 833px;">
+  <img style="width: 100%; max-width: 833px;" src="../figs/selenium/campus-dir.png">
+  <figcaption>
+    Programatically navigating to NC State's Directory page
+  </figcaption>
+</div>
+
+<h3><code>XPATH contains</code></h3>
+
+<p>
+As an alternative, we could also use <code>contains</code> to locate
+an element based on a partial text match. Rather than
+an <code>XPATH</code> of <code>//tagname[ @attribute='value' ]</code>,
+we can use <code>//tagname[ contains(@attribute='partial-value'
+]</code> to locate an element of type <code>tagname</code> with
+an <code>attribute</code> whose text
+contains <code>partial-value</code>, for example:
+</p>
+
+<div class="ex-div">
+elem = driver.find_element( By.XPATH, "//span[contains(text(), 'Dir')]" )
+</div>
+
+<p>
+This locates the <code>span</code> whose text
+contains <code>Dir</code> (the start of the <code>Directory</code>
+label). We could then <code>elem.click()</code> exactly as before to
+reveal the Campus Directory web page.
+</p>
+
+
+<h3>Querying a User</h3>
+
+<p>
+To finish our example, we will enter a last and first name into the
+appropriate fields on the web form, then click the Search button to
+retrieve information about the given individual. At this point, we
+will have arrived at our target page, and we are ready to extract the
+user's Email address from the resulting information. Fields are
+populated using the <code>send_keys</code>, in the following way.
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-selenium-dir-user">
+% import time
+% import sys
+%
+% from selenium import webdriver
+% from selenium.webdriver.common.by import By
+% from selenium.webdriver.support.ui import WebDriverWait
+% from selenium.webdriver.support import expected_conditions as EC
+%
+% driver = webdriver.Firefox()
+% driver.get( "https://www.ncsu.edu" )
+% btn = driver.find_element( By.ID, value="Layer_1" )
+% btn.click()
+%
+% try:
+%     elem = WebDriverWait( driver, 5 ).until(
+%       EC.element_to_be_clickable(
+%         ( By.XPATH, "//span[text()='Directory']" )
+%       )
+%     )
+% except:
+%     print( 'mainline(), could not expose RESOURCES panel' )
+%     driver.close()
+%     sys.exit( 0 )
+%
+% elem.click()
+%
+% form = driver.find_element( By.ID, "sn" )
+% form.send_keys( "Healey" )
+% form = driver.find_element( By.ID, "gn" )
+% form.send_keys( "Christopher" )
+%
+% try:
+%     btn = WebDriverWait( driver, 5 ).until(
+%       EC.element_to_be_clickable( ( By.CLASS_NAME, "btn-primary" ) )
+%     )
+% except:
+%     print( 'mainline(), could not find Directory Search button' )
+%     driver.close()
+%     sys.exit( 0 )
+%
+% btn.click()
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 833px;">
+  <img style="width: 100%; max-width: 833px;" src="../figs/selenium/healey-dir.png">
+  <figcaption>
+    Campus Directory information for Christopher Healey
+  </figcaption>
+</div>
+
+
+<p>
+At this point, if we want to retrieve the value attached to 
+Email field, we have two options. First, we can do this directly in
+Selenium. Second, we can ask Selenium to return the HTML for the
+current page, parse that HTML with Beautiful Soup, then retrieve
+the value attached to the Email field using Beautiful Soup's parse
+tree.
+</p>
+
+
+<h3>Selenium</h3>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-selenium-email-user">
+% &hellip;
+% try:
+%     div = WebDriverWait( driver, 5 ).until(
+%       EC.visibility_of_element_located(
+%         ( By.CLASS_NAME, 'person__right' )
+%       )
+%     )
+% except:
+%     print( 'mainline(), could not find user phone/fax/email' )
+%     driver.close()
+%     sys.exit( 0 )
+%
+% tok = div.text.split()
+% email = 'unknown'
+%
+% for str in tok:
+%     if '@ncsu.edu' in str:
+%         email = str
+%         break
+%
+% print( 'Email address: ' + email )
+% 
+% driver.close()
+  </div>
+</div>
+
+
+<h3>Beautiful Soup</h3>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-soup-email-user">
+% &hellip;
+% from bs4 import BeautifulSoup
+% 
+% tree = BeautifulSoup( driver.page_source, 'html.parser' )
+% div = tree.find( 'div', class_='person__right' )
+% 
+% tok = div.text.split()
+% email = 'unknown'
+%
+% for str in tok:
+%     if '@ncsu.edu' in str:
+%         email = str
+%         break
+%
+% print( 'Email address: ' + email )
+% 
+% driver.close()
+  </div>
+</div>
+
+
+<p>
+In both cases, the program returns <code>healey@ncsu.edu</code>, which
+is the correct NC State email for employee Christopher Healey. You
+might wonder, "This is a lot of work to get someone's email
+address. Why would we go through all this effort for that result?" In
+fact, we probably would not. However, suppose we had a list of 1,000
+NC State employee first and last names, and we needed an email address
+for each of them. Doing this manually through the NC State web page
+would take a significant amount of time. With only a slight
+modification to the end of our program, however, we could query an
+email, go back one page, refill the fields to query a new email, and
+so on until we had all 1,000 emails. Not only would it be fully
+automated, it would also be much faster than a manual approach. This
+is the power of Selenium and Beautiful Soup: the ability to automate
+tedious or manually labourious tasks, even when they involve many
+dynamic interactions with a web page.
+</p>
+
+
+<h2 id="nws-ex">National Weather Service Example</h2>
+
+<p>
+As a practical example, we will use Beautiful Soup to scrape and print
+the extended forecast for Raleigh reported by the National Weather
+Service (NWS) web site. Since we have already discussed exploring a
+web page to identify target elements, we will limit our example to
+using Beautiful Soup to extract the elements we need.  We also provide
+the URL for Raleigh's weather forecast by entering Raleigh, NC into the
+NWS homepage, producing a URL
+of <code>https://forecast.weather.gov/MapClick.php?lat=35.7855&lon=-78.6427</code>.
+</p>
+
+
+<div class="img-div" style="max-width: 700px;">
+  <img style="width: 100%; max-width: 700px;" src="../figs/selenium/nws-forecast.png">
+  <figcaption>
+    National Weather Service extended forecast for Raleigh, NC
+  </figcaption>
+</div>
+
+
+<p>
+To start, we scrape the HTML for Raleigh's web site and confirm it was
+returned properly.
+</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-soup-nws-load">
+% import requests
+% import sys
+% from bs4 import BeautifulSoup
+%
+% page = requests.get( 'https://forecast.weather.gov/MapClick.php?lat=35.7855&lon=-78.6427' )
+%
+% if page.status_code != 200:
+%     print( "mainline(), could not retrieve HTML for Raleigh's weather" )
+%     sys.exit( 0 )
+%
+% tree = BeautifulSoup( page.content, 'html.parser' )
+  </div>
+</div>
+
+<p>
+The individual extended weather entries are contained in an unordered
+list with an id of <code>seven-day-forecast-list</code>. Within each
+list item is a <code>div</code> with a class
+of <code>tombstone-container</code>.  Within this div are four
+separate paragraphs: (1) the period name (e.g., This Afternoon); (2)
+an image whose <code>alt</code> tag contains the detailed forecast
+(this is the same text as in the detailed forecast list, but it
+appears as a tooltip when you hover over the image); (3) a short
+description (e.g., Sunny); and (4) a temperature (e.g., High:
+48&deg;F). At this point, we have two options. We can combine together
+the first, third, and fourth text items to produce a short summary
+of the extended weather. Or, we can extract the <code>alt</code> text
+of the <code>img</code> in the second paragraph. Below is code for
+both options.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-soup-nws-parse">
+% list = tree.find( 'ul', id='seven-day-forecast-list' )
+% item = list.find_all( 'li', class_='forecast-tombstone' )
+%
+% for li in item:
+%     txt = ''
+%     para = li.find_all( 'p' )
+%     for html in para:
+%         html = str( html ).replace( '&lt;br/&gt;', ' ' )
+%         soup = BeautifulSoup( html, 'html.parser' )
+%         soup_txt = soup.get_text().strip()
+%         txt += ( soup_txt + '. ' if len( soup_txt ) > 0 else '' )
+%     print( txt )
+  </div>
+</div>
+
+<p>
+Here, we extract the HTML for each list item, convert it to a string,
+and replace any line break <code>&lt;br/&gt;</code> with a
+space. Then, we re-use BeautifulSoup to parse the HTML, and ask for
+the text it contains. Joining these together produces a final set of
+extended forecast summary lines.
+</p>
+
+<div class="ex-div">
+Tonight. Clear. Low: 27 °F. 
+Wednesday. Sunny. High: 50 °F. 
+Wednesday Night. Clear. Low: 29 °F. 
+Thursday. Sunny. High: 56 °F. 
+Thursday Night. Partly Cloudy. Low: 36 °F. 
+Friday. Chance Showers. High: 59 °F. 
+Friday Night. Chance Showers. Low: 42 °F. 
+Saturday. Mostly Sunny. High: 57 °F. 
+Saturday Night. Partly Cloudy. Low: 36 °F. 
+</div>
+
+<p>
+If we instead wanted to use the <code>alt</code> text for the image
+embedded in the second paragraph, the following code would extract
+the <code>alt</code> text.
+</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-soup-nws-parse-alt">
+% list = tree.find( 'ul', id='seven-day-forecast-list' )
+% item = list.find_all( 'li', class_='forecast-tombstone' )
+%
+% for li in item:
+%     para = li.find_all( 'p' )
+%     txt = para[ 1 ].find( 'img' )[ 'alt' ]
+%     print( txt )
+  </div>
+</div>
+
+<p>
+This produces a result similar to the first code block, although with
+slightly more detail and in a grammatically correct format.
+</p>
+
+<div class="ex-div">
+Tonight: Clear, with a low around 27. West wind 7 to 9 mph, with gusts as high as 18 mph.
+Wednesday: Sunny, with a high near 50. West wind 6 to 9 mph. 
+Wednesday Night: Clear, with a low around 29. Light west wind. 
+Thursday: Sunny, with a high near 56. Calm wind. 
+Thursday Night: Partly cloudy, with a low around 36. Calm wind. 
+Friday: A chance of showers, mainly after 1pm.  Mostly cloudy, with a high near 59. Chance of precipitation is 30%. New precipitation amounts of less than a tenth of an inch possible. 
+Friday Night: A chance of showers before 1am.  Mostly cloudy, with a low around 42. Chance of precipitation is 30%.
+Saturday: Mostly sunny, with a high near 57.
+Saturday Night: Partly cloudy, with a low around 36.
+</div>
+
+
+
+<!-- The mod-date span will be updated by code in mod-date.js -->
+
+<hr class="fig_top">
+<div class="footer">
+  Updated <span id="mod-date">01-Jan-01</span>
+</div>
+
+</body>
+</html>
+
+<!--  LocalWords:  ui Analytics Healey analytics SAS CSS Javascript
+ -->
+<!--  LocalWords:  plotly pre conda webdriver programmatically sys bs
+ -->
+<!--  LocalWords:  webdrivers favourite labelled ncstate btn lastname
+ -->
+<!--  LocalWords:  WebDriverWait firstname tok len XPATH XPath XPaths
+ -->
+<!--  LocalWords:  flavours labourious tagname href coronavirus COVID
+ -->
+<!--  LocalWords:  ActionChains Webpage str BeautifulSoup html txt br
+ -->
+<!--  LocalWords:  strived bg attr htlm attrs NWS tooltip ul li img
+ -->
