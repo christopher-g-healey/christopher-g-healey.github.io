@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta charset="UTF-8" />
+
+<title>Dash: Institute for Advanced Analytics</title>
+</head>
+
+<script type="text/javascript" src="../js/header-code.js"></script>
+
+<body class="light">
+
+<div style="text-align: center;">
+  <span id="banner-img" style="
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 1050px;
+    height: 334px;
+    background-image: url( '../figs/dash/banner.png' );
+    background-repeat: no-repeat;
+  ">
+
+  <!-- NC State logo, upper-left corner -->
+
+  <div style="
+    position: absolute;
+    align: right;
+    top: 10px;
+    left: 10px;
+    ">
+
+    <a target="_blank" href="https://www.ncsu.edu">
+      <img src="../figs/nc-state-logo-blue.png"
+      style="
+        border-style: none;
+        -moz-box-shadow: 1px 1px 8px #646464;
+        -webkit-box-shadow: 1px 1px 8px #646464;
+        box-shadow: 1px 1px 8px #646464;
+        " alt="nc-state logo" />
+    </a>
+  </div>
+
+<!-- Dash text, lower-left corner -->
+
+  <div style="
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    font-size: 16pt;
+    font-weight: normal;
+    color: #646464;
+   ">
+
+  <div style="line-height: 90%;">Dash</div>
+    <div style="font-size: 10pt;">
+      <a target="_blank" href="http://healey.csc.ncsu.edu">
+        <i>Christopher G. Healey</i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Spacer after image of one "line" -->
+
+<div style="height: 1em;"></div>
+
+<!-- Navigation toolbar -->
+
+<div id="navWrap">
+  <div id="nav">
+    <ul id="nav-list">
+      <li id="nav-intro:intro">Introduction</li>
+      <li id="nav-HTML5:HTML5">HTML5</li>
+      <li id="nav-graphics:graphics">plotly Graphics</li>
+      <li id="nav-charts:charts">plotly Charts</li>
+      <li id="nav-maps:maps">plotly Maps</li>
+      <li id="nav-dash:dash-basic">Dash</li>
+      <li id="nav-dash-callback:dash-callbacks">Callbacks</li>
+      <li id="nav-publish:publish">Publishing</li>
+    </ul>
+  </div>
+
+  <div id="nav-footer">
+  </div>
+</div>
+
+
+<!-- Initially assume light theme (day), draw moon icon to switch to dark -->
+<!-- Javascript will automatically check this and switch if it's night -->
+
+<img id="light-dark" style="width: 24px; height: 24px; position: fixed; top: 2px; right: 20px; margin: 0; padding: 0; z-index: 200;" src="../figs/moon-icon-gradient.png" />
+
+
+
+<h2 id="intro">Introduction</h2>
+
+<p>This module will introduce you to <a target="_blank"
+href="https://plotly.com/dash/">Dash</a>, a framework that integrates
+<a target="_blank"
+href="https://python.org">Python</a>, <a target="_blank"
+href="https://plotly.com">plotly</a>, and <a target="_blank"
+href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> to
+construct web-based dashboard in Python. We will work through a number
+of simple examples of loading data, visualizing it with Python's built-in
+graphics operations, then integrating those visualizations into an
+interactive Dash web dashboard, which can be viewed online by anyone
+with a web browser.</p>
+
+<p>In order to fully understand how to use Dash, you need to also
+understand
+basic <a href="https://www.geeksforgeeks.org/html5-introduction/"
+target="_blank">HTML5</a>, plotly, and Python. HTML5 is used to define
+the layout of the elements in your dashboard. plotly is used to
+construct graphical components (visualizations) within your dashboard.
+Finally, Python ties everything together to control used interaction
+and changes on the dashboard based on the user's interaction
+choices.</p>
+
+
+<h4>Setup</h4>
+
+<p>In order to use the Dash examples in this tutorial, you will need
+to add the <code>dash</code> Python package. To do this, run the
+Anaconda Prompt as an administrator, and at the command line enter the
+following.</p>
+
+<div class="ex-div">
+(base) C:> conda install -c conda-forge dash
+</div>
+
+<h2 id="HTML5">HTML5</h2>
+
+<p><a href="https://www.hostinger.com/tutorials/what-is-html"
+target="_blank">HTML</a> (Hypertext Markup Language) is used to create
+the layout (sections, paragraphs, headings, links, and so on) for web
+pages and web applications. In 1989, Tim Berners-Lee developed the
+concept for HTML while working in the computer services section of
+CERN, the European Laboratory for Particle Physics in
+Geneva. Berners-Lee suggested that, rather than downloading research
+documents as files from individual computers, you could
+instead <i>link</i> to the text of the files themselves. This would
+form a cross-reference system between research documents. From one
+research paper, you could display the content of another paper that
+held relevant text or diagrams. The cross-reference system could be
+seen as a <i>web</i> of information held across computers throughout
+the world.</p>
+
+<p>Berners-Lee's idea was followed by <i>Hypercard</i>, a filing-card
+type application for the Apple Macintosh built by Bill Atkinson. The
+main limitation of this system was that <i>hypertext jumps</i> could
+only be made on files held on the same computer. In the mid 90s, the
+Internet developed the Domain Name System (DNS) that mapped
+easy-to-remember names like <code>www.ncsu.edu</code> to their
+corresponding IP addresses, a unique locator for a given
+domain. Berners-Lee built on this to develop the HyperText Transfer
+Protocol (HTTP) and the HyperText Markup Language (HTML), defining a
+method to transmit HTML documents between computers using HTTP.</p>
+
+<p>Up to this point, HTML was mostly a research-centered idea. In
+1992, the National Center for Supercomputer Applications (NCSA) at the
+University of Illinois-Urbana Champaign (UIUC) developed the first web
+browser, <i>Mosaic</i>. Mosaic was released on Sun Microsystems
+workstations in 1993. This was followed by Netscape in 1994, built by
+Marc Andreessen and Jim Clark. Next came Internet Explorer in 1995,
+Google Chrome in 1998, and the Mozilla foundation (the precursor to
+Firefox) in 2003.</p>
+
+<p>It is beyond the scope of our module to discuss all aspects of
+HTML, and for Dash, it is not required, since all we're concerned
+about is <i>how</i> different HTML tags affect the layout of
+information. To this end, we list below some of the common HTML tags
+important to Dash and their corresponding
+purpose. A <a target="_blank"
+href="https://www.w3schools.com/TAGS/default.ASP">complete list of
+tags</a> is available online.</p>
+
+
+<dl>
+
+<dt>&bull;&nbsp; <code>div</code></dt> <dd>A section of a document</dd>
+
+<dt>&bull;&nbsp; <code>H1, H2, H3, H4, H5, H6</code></dt> <dd>Headers
+in decreasing priority</dd>
+
+<dt>&bull;&nbsp; <code>p</code></dt> <dd>A paragraph</dd>
+
+<dt>&bull;&nbsp; <code>span</code></dt> <dd>A block of text, usually with
+properties different from the surrounding text</dd>
+
+<dt>&bull;&nbsp; <code>br</code></dt> <dd>A line break</dd>
+
+<dt>&bull;&nbsp; <code>ol</code></dt> <dd>An ordered list</dd>
+
+<dt>&bull;&nbsp; <code>ul</code></dt> <dd>An unordered list</dd>
+
+<dt>&bull;&nbsp; <code>li</code></dt> <dd>A list item in an ordered or
+unordered list</dd>
+
+<dt>&bull;&nbsp; <code>input</code></dt> <dd>An input component, where
+the type of input is defined by the
+input's <a href="https://www.w3schools.com/tags/tag_input.asp"
+target="_blank"><code>type</code> attribute</a>: input box,
+checkboxes, radiobuttons, and so on.</dd>
+
+<dt>&bull;&nbsp; <code>table</code></dt> <dd>A table</dd>
+
+<dt>&bull;&nbsp; <code>tbody</code></dt> <dd>Definition of where a
+table's body starts and stops</dd>
+
+<dt>&bull;&nbsp; <code>tr</code></dt> <dd>A single table row</dd>
+
+<dt>&bull;&nbsp; <code>td</code></dt> <dd>A single table column value
+(embedded within a table row defined
+with <code>&lt;tr&gt;</code>)</dd>
+
+<dt>&bull;&nbsp; <code>thead</code></dt> <dd>Definition of where a
+table's header starts and stops</dd>
+
+<dt>&bull;&nbsp; <code>th</code></dt> <dd>A single table column value
+in the table's header (embedded within a table row defined
+with <code>&lt;tr&gt;</code>)</dd>
+
+<dt>&bull;&nbsp; <code>tfoot</code></dt> <dd>Definition of where a
+table's footer starts and stops</dd>
+
+<dt>&bull;&nbsp; <code>tf</code></dt> <dd>A single table column value
+in the table's footer (embedded within a table row defined
+with <code>&lt;tr&gt;</code>)</dd>
+
+</dl>
+
+<p>Here is a very simple web page demonstrating some of these tags in
+use.</p>
+
+<div class="ex-div">
+&lt;html&gt;
+&lt;body&gt;
+
+&lt;div&gt;
+  &lt;p&gt;This is a paragraph&lt;/p&gt;
+  &lt;p&gt;This is a paragraph &lt;span style='font-size: 1.25em'&gt;with a larger font&lt;/span&gt; inside it.&lt;/p&gt;
+
+  &lt;ol&gt;
+    &lt;li&gt;This is the first item of a list ordered 1,2,...&lt;/li&gt;
+    &lt;li&gt;This is the second item&lt;/li&gt;
+  &lt;/ol&gt;
+
+  &lt;ul&gt;
+    &lt;li&gt;This is a bullet list (unordered)&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;table style='border-collapse: collapse;'&gt;
+  &lt;tr&gt;
+    &lt;th style='border: 1px solid black;'&gt;Header Column One&lt;/th&gt;
+    &lt;th style='border: 1px solid black;'&gt;Header Column Two&lt;/th&gt;
+  &lt;/tr&gt;
+
+  &lt;tr&gt;
+    &lt;td style='border: 1px solid black;'&gt;Normal Table Cell One&lt;/td&gt;
+    &lt;td style='border: 1px solid black;'&gt;Normal Table Cell Two&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</div>
+
+
+<div class="img-div" style="max-width: 340px;">
+  <img style="max-width: 340px;" src="../figs/dash/html-ex.png" alt="html-ex" />
+  <figcaption>The result of executing the HTML code in a web browser</figcaption>
+</div>
+
+
+<h2 id="graphics">plotly</h2>
+
+<p><code>plotly</code> is a Python library designed to provide a wide
+range of standard charts. plotly is built on the Plotly JavaScript
+library, and is meant to support creation of interactive web-based
+visualizations. As an example, here is a plotly program that can be
+run in a Jupyter notebook.
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-bar-ex">
+% import plotly.graph_objects as go
+%
+% fig = go.Figure( data=go.Bar( y=[2,3,1] ) )
+% fig.show()
+  </div>
+</div>
+
+<p>This produces the following simple bar chart.</p>
+
+<div class="img-div" style="max-width: 570px;">
+  <img style="max-width: 570px;" src="../figs/dash/plotly-01.png" alt="plotly-01">
+  <figcaption>A <code>plotly</code> bar chart</figcaption>
+</div>
+
+
+<h2 id="charts">Charts</h2>
+
+<p>Although plotly can be used directly to create charts, it is
+generally recommended to start with <i>Plotly Express</i>, which sits
+on top of plotly and allows entire figures to be created in a more
+efficient fashion.  Plotly Express functions use plotly graph objects
+internally and return a <code>plotly.graph_object.figure</code>
+instance. plotly's documentation shows examples of how to build a
+graph in Plotly Express, followed by code to build the equivalent
+graph in plotly. Since Plotly Express returns a basic plotly figure
+instance, modifications of the Plotly Express charts can be done in
+way that is identical to how plotly's charts are changed. We will use
+Plotly Express code whenever it is possible.</p>
+
+<p>To provide you with examples of how to build the basic charts and
+graphs you will want to use in your dashboards, we provide a
+collection of code and resulting graphs that Plotly Express
+supports.</p>
+
+<h4>Bar Graph</h4>
+
+<p>Plotly Express supports bar charts, stacked bar charts, and
+side-by-side bar charts.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-bar">
+% import plotly.express as px
+% import pandas as pd
+% 
+% df = px.data.medals_long()
+% 
+% canada = df[ df[ 'nation' ] == 'Canada' ]
+% fig = px.bar( canada, x='medal', y='count' )
+% fig.show()
+% 
+% fig = px.bar( df, x='nation', y='count', color='medal' )
+% fig.show()
+% 
+% fig = px.bar( df, x='nation', y='count', color='medal', barmode='group' )
+% fig.show()
+  </div>
+</div>
+
+<div class="img-div" style="max-width: 1400px;">
+  <img style="width: 100%; max-width: 1400px;" src="../figs/dash/plotly-02.png" alt="plotly-02" />
+
+  <figcaption>A <code>plotly</code> bar chart, stacked bar chart, and
+  side-by-side bar chart</figcaption>
+</div>
+
+
+<h4>Line Graph</h4>
+
+<p>Plotly Express supports line graphs with one or more lines.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-line">
+% import plotly.express as px
+% import pandas as pd
+% 
+% canada = px.data.gapminder().query( 'country=="Canada"' )
+% US = px.data.gapminder().query( 'country=="United States"' )
+% 
+% fig = px.line( canada, x='year', y='lifeExp' )
+% fig.show()
+% 
+% df = pd.concat( [ canada, US ] )
+% fig = px.line( df, x='year', y='lifeExp', color='country' )
+% fig.show()
+% 
+% fig.update_traces( mode='markers+lines' )
+% fig.show()
+  </div>
+</div>
+
+<div class="img-div" style="max-width: 1400px;">
+  <img style="width: 100%; max-width: 1400px;" src="../figs/dash/plotly-03.png" alt="plotly-03" />
+
+  <figcaption>A <code>plotly</code> single trace line chart, double
+  trace line chart, and double trace line chart with markers at each
+  sample point bar chart</figcaption>
+</div>
+
+<p>Notice the command
+<code>fig.update_traces(&nbsp;'markers+lines'&nbsp;)</code> that adds
+markers to the <i>traces</i> at each sample point, in addition to the
+default connected lines. This is an example of a plotly command used
+to augment a figure returned from Plotly Express. You might wonder
+what a "trace" is. From the plotly documentation, "a trace is just the
+name we give a collection of data and the specifications of which we
+want that data to be plotted." In other words, a trace is a
+visualization, or a component of a visualization. If you're curious,
+the same two-trace line chart with markers would be created in plotly
+as follows.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-bar-px">
+% import plotly.express as px
+% import plotly.graph_objects as go
+% import pandas as pd
+% 
+% canada = px.data.gapminder().query( 'country=="Canada"' )
+% US = px.data.gapminder().query( 'country=="United States"' )
+% 
+% fig = go.Figure()
+% fig.add_trace( go.Scatter( x=canada[ 'year' ], y=canada[ 'lifeExp' ], mode='markers+lines', name='Canada' ) )
+% fig.add_trace( go.Scatter( x=US[ 'year' ], y=US[ 'lifeExp' ], mode='markers+lines', name='United States' ) )
+% 
+% fig.show()
+  </div>
+</div>
+
+
+<h4>Pie Chart</h4>
+
+<p>Plotly Express supports standard line charts.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-pie">
+% import plotly.express as px
+% import pandas as pd
+% 
+% df = px.data.gapminder().query( 'year==2007' ).query( 'continent=="Americas"' )
+% df_small = df[ df[ 'pop' ] &lt; 5000000 ]
+% 
+% fig = px.pie( df_small, values='pop', names='country' )
+% fig.show()
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 801px;">
+  <img style="width: 100%; max-width: 801px;" src="../figs/dash/plotly-04.png" alt="plotly-04" />
+
+  <figcaption>
+  A <code>plotly</code> pie charts, default and augmented
+  with <code>update_traces</code>
+  </figcaption>
+</div>
+
+
+<p>The pie chart can be improved using <code>fig.update_traces</code>,
+for example, to order slices largest-to-smallest clockwise from the
+top of the chart, and to change the colours to ones more appropriate
+for a discrete six-value sequence.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-tree-pie-improve">
+% import plotly.express as px
+% import pandas as pd
+% 
+% df = px.data.gapminder().query( 'year==2007' ).query( 'continent=="Americas"' )
+% df_small = df[ df[ 'pop' ] &lt; 5000000 ]
+% 
+% fig = px.pie( df_small, values='pop', names='country' )
+% 
+% colours=[ '#edf8fb', '#8856a7', '#8c96c6', '#bfd3e6', '#810f7c', '#9ebcda' ]
+% fig.update_traces( direction='clockwise', sort=True, marker_colors=colours, textinfo='label+percent', showlegend=False )
+% fig.show()
+  </div>
+</div>
+
+
+<h4>Scatterplot</h4>
+
+<p>Plotly Express supports scatterplots, including linear and
+non-linear locally weighted scatterplot smoothing (LOWESS)
+trendlines.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-scatterplot">
+% import plotly.express as px
+% 
+% fig = px.scatter( x=[0,1,2,3,4], y=[0,1,4,9,16] )
+% fig.show()
+% 
+% import plotly.express as px
+% import pandas as pd
+% 
+% df = px.data.iris()
+% 
+% fig = px.scatter( df, x='sepal_width', y='sepal_length', color='species', size='petal_length', trendline='ols' )
+% fig.show()
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 1400px;">
+  <img style="width: 100%; max-width: 1400px;" src="../figs/dash/plotly-05.png" alt="plotly-05" />
+
+  <figcaption>A <code>plotly</code> scatterplot, scatterplot with
+  ordinary least squares trend lines, and scatterplot with non-linear
+  cubic trend lines </figcaption>
+  </td>
+
+</div>
+
+
+<p>More sophisticated non-linear trendlines (e.g., a cubic polynomial
+fit) can be constructed and added using numpy and plotly.</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-scatterplot-poly-fit">
+% import plotly.express as px
+% import plotly.graph_objects as go
+% import numpy as np
+% import pandas as pd
+% 
+% def cubic_fit( df, type, prop_x, prop_y ):
+%     x = df[ df[ 'species' ] == type ][ prop_x ].to_numpy()
+%     y = df[ df[ 'species' ] == type ][ prop_y ].to_numpy()
+%     z = np.polyfit( x, y, 3 )
+%     f = np.poly1d( z )
+%
+%     x_fit = np.linspace( x.min(), x.max(), 100 )
+%     y_fit = f( x_fit )
+%     return (x_fit,y_fit)
+% 
+% df = px.data.iris()
+% fig = px.scatter( df, x='sepal_width', y='sepal_length', color='species', size='petal_length' )
+% 
+% x_fit_setosa,y_fit_setosa = cubic_fit( df, 'setosa', 'sepal_width', 'sepal_length' )
+% x_fit_versicolor,y_fit_versicolor = cubic_fit( df, 'versicolor', 'sepal_width', 'sepal_length' )
+% x_fit_virginica,y_fit_virginica = cubic_fit( df, 'virginica', 'sepal_width', 'sepal_length' )
+% 
+% fig.add_trace( go.Scatter( x=x_fit_setosa, y=y_fit_setosa, name='Setosa Fit', marker=go.Marker( color='rgb(100,100,255)' ) ) )
+% fig.add_trace( go.Scatter( x=x_fit_versicolor, y=y_fit_versicolor, name='Versicolor Fit', marker=go.Marker( color='rgb(255,100,100)' ) ) )
+% fig.add_trace( go.Scatter( x=x_fit_virginica, y=y_fit_virginica, name='Virginica Fit', marker=go.Marker( color='rgb(100,200,100)' ) ) )
+% fig.show()
+  </div>
+</div>
+
+
+<h4>Histogram</h4>
+
+<p>Plotly Express supports histograms for both continuous and
+categorical (discrete) data.</p>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-histogram">
+% import plotly.express as px
+% import pandas as pd
+% 
+% df = px.data.tips()
+% fig = px.histogram( df, x='total_bill' )
+% fig.show()
+% 
+% fig = px.histogram( df, x='day' )
+% fig.show()
+% 
+% df[ 'tip_pct' ] = df[ 'tip' ] / df[ 'total_bill' ] * 100.0
+% fig = px.histogram( df, x='tip_pct', color='smoker', marginal='box' )
+% fig.show()
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 1400px;">
+  <img style="width: 100%; max-width: 1400px;" src="../figs/dash/plotly-06.png" alt="plotly-06" />
+
+  <figcaption>
+    A <code>plotly</code> continuous data histogram, categorical data
+    histogram, and continuous data histogram coloured by smoker, with
+    a boxplot by smoker shown as a marginal visualization above the
+    histogram
+  </figcaption>
+</div>
+
+
+<h4>Boxplot</h4>
+
+<p>Plotly Express supports boxplots, including outlier visualization
+and different methods of quartile computation.<br>
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-boxplot">
+% import plotly.express as px
+% 
+% df = px.data.iris()
+% fig = px.box( df, y='sepal_width' )
+% fig.show()
+% 
+% fig = px.box( df, y='sepal_width', color='species' )
+% fig.show()
+% 
+% df = px.data.tips()
+% fig = px.box( df, x='time', y='total_bill', color='smoker', notched=True )
+% fig.show()
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 1400px;">
+  <img style="width: 100%; max-width: 1400px;" src="../figs/dash/plotly-07.png" alt="plotly-07" />
+
+  <figcaption>
+    A <code>plotly</code> box plot with outliers, boxplot coloured by
+    category, and boxplot by multiple categories,
+    and <a href="https://en.wikipedia.org/wiki/Box_plot#Variations"
+    target="_blank">notched boxplots used to indicate significant
+    differences</a>
+  </figcaption>
+</div>
+
+
+<h2 id="maps">Maps</h2>
+
+<p>plotly supports maps using <a href="https://mapbox.com"
+target="_blank">Mapbox</a>, a map and location service for developers.
+Some plotly maps may require a Mapbox account and public Mapbox
+access token. Others do not. The documentation identifies when a
+public token is needed.</p>
+
+<p>To start, we show an example of a choropleth map visualizing
+unemployment rate by continental US county. Choropleth maps require
+two arguments.</p>
+
+<ol>
+
+  <li>A GeoJSON-formatted geometry variable, where each geographic
+  feature has a specific ID field: the field identifier.</li>
+
+  <li>A list of values to visualize, where each value has a specific
+  field identifier identical to the type used in the GeoJSON data.</li>
+
+</ol>
+
+<p>The GeoJSON data is passed as a <code>geojson</code> argument, and
+the data to visualize within the geography is passed as the
+<code>color</code> argument of a <code>px.choropleth_mapbox</code>
+object. The geography and value to visualize are mapped to one another
+using the field identifier, which must exist in both the GeoJSON and
+data structures. In our example, a county's Federal Information
+Processing Standards (FIPS) code is used as the field identifier, and
+exists in both the GeoJSON object and the unemployment data frame.</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-map">
+% import json
+% import pandas as pd
+% import plotly.express as px
+% from urllib.request import urlopen
+% 
+% with urlopen( 'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json' ) as response:
+%     counties = json.load( response )
+% 
+% df = pd.read_csv( 'https://raw.githubusercontent.com/plotly/datasets/master/fips-unemp-16.csv', dtype={ 'fips': str } )
+% 
+% fig = px.choropleth_mapbox(
+%   df,
+%   geojson=counties,
+%   locations='fips',
+%   color='unemp',
+%   color_continuous_scale='Viridis',
+%   range_color=(0,12),
+%   mapbox_style='carto-positron',
+%   zoom=3,
+%   center={'lat': 37.0902, 'lon': -95.7129},
+%   opacity=0.5,
+%   labels={'unemp': 'unemployment rate' }
+% )
+% fig.update_layout( margin={ 'r': 0, 't': 0, 'l': 0, 'b': 0 } )
+% fig.show()
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 700px;">
+  <img style="width: 100%; max-width: 700px;" src="../figs/dash/plotly-08.png" alt="plotly-08" />
+
+  <figcaption>
+    A <code>plotly</code> choropleth map of unemployment by US country
+  </figcaption>
+</div>
+
+
+<p>Mapbox maps do not support changing the map projection. To do this,
+<a
+href="https://plotly.com/python/map-configuration/#mapbox-maps-vs-geo-maps"
+target="_blank">outline-based Geo maps</a> must be used instead. A Geo
+map's projection type can be changed with
+<code>fig.update_geos(&nbsp;projection_type='mercator'&nbsp;)</code>. <a
+href="https://plotly.com/python/map-configuration/#map-projections"
+target="_blank">Numerous projects types</a> are supported.</p>
+
+<p>The example code below creates a population proportional dot map
+for the United States using a Geo map created with the
+<code>go.Scattergeo</code> plotly command.</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-map-albers">
+% import plotly.graph_objects as go
+% import numpy as np
+% import pandas as pd
+% 
+% df = pd.read_csv( 'https://raw.githubusercontent.com/plotly/datasets/master/2014_us_cities.csv' )
+% scale = 5000
+% 
+% fig = go.Figure()
+% 
+% fig.add_trace( go.Scattergeo(
+%     lon=df[ 'lon' ],
+%     lat=df[ 'lat' ],
+%     marker = {
+%       'size': df[ 'pop' ] / scale,
+%       'colorscale': 'Viridis',
+%       'color': np.log2( df[ 'pop' ] ),
+%       'line_color': 'rgb(200,200,200)',
+%       'line_width': 0.5,
+%       'sizemode': 'area',
+%       'colorbar': {
+%         'title': 'Pop',
+%         'titleside': 'top'
+%       }
+%     }
+%     
+% 
+% fig.update_layout(
+%     geo = dict(
+%       showland=True,
+%       lataxis = dict( range=[ 18, 51 ] ),
+%       lonaxis = dict( range=[ -124, -66 ] ),
+%       countrycolor = 'rgb(217,217,217)',
+%       countrywidth = 0.5
+%     )
+%     
+% 
+% fig.update_geos( projection_type='albers usa' )
+%
+% fig.show()
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 543px;">
+  <img style="width: 100%; max-width: 543px;" src="../figs/dash/plotly-09.png" alt="plotly-09" />
+
+  <figcaption>
+    A <code>plotly</code> proportional dot map of city location and
+    population
+  </figcaption>
+</div>
+
+
+<h2 id='dash-basic'>Dash</h2>
+
+<p>Finally, we can start our discussion of Dash dashboards. As we
+initially noted, Dash dashboards are made up of two parts:
+a <i>layout</i> that defines how elements are position on a web page,
+and <i>interactivity</i> that defines how users can manipulate
+elements of the web page to change what it displays.</p>
+
+<p>As a simple example, below is a Dash dashboard that displays
+a side-by-side bar graph of the number of fruit associated with the
+cities <code>SF</code> and <code>Montreal</code>. Dash dashboards
+are normally run as stand-alone python code, and not within a Jupyter
+notebook.</p>
+
+<ol>
+
+<li>Enter the Python code for the dashboard in an external file.
+
+<li>Use <code>python</code> to execute the file.
+
+<li>By default, Dash places the dashboard
+at <a href="http://127.0.0.1:8050/"
+target="_blank">http://127.0.0.1:8050/</a>, which is shorthand for the
+computer being used to access the address (i.e., your computer, or <i>
+localhost</i> in technical terms) over port 8050. By visiting that
+URL, you can view and interact with the dashboard defined in your
+Python file.
+
+</ol>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-dash">
+% from dash import Dash
+% from dash import html
+% from dash import dcc
+% from dash import Input
+% from dash import Output
+% import plotly.express as px
+% import pandas as pd
+% 
+% ext_SS = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+% app = Dash(__name__, external_stylesheets=ext_SS)
+% 
+% df = pd.DataFrame( {
+% &nbsp; 'Fruit': ['Apples','Oranges','Bananas','Apples','Oranges','Bananas'],
+% &nbsp; 'Amount': [4,1,2,2,4,5],
+% &nbsp; 'City': ['SF','SF','SF','Montreal','Montreal','Montreal']
+% } )
+% 
+% fig = px.bar( df, x='Fruit', y='Amount', color='City', barmode='group' )
+% 
+% app.layout = html.Div(
+% &nbsp; children=[
+% &nbsp; &nbsp; html.H1( children='Dash dashboard example' ),
+% &nbsp; &nbsp; html.Div( children='Fruit Counts for SF and Montreal' ),
+%
+% &nbsp; &nbsp; dcc.Graph( id='ex_graph', figure=fig )
+% ])
+% 
+% app.run_server(debug=True)
+  </div>
+</div>
+
+<p>Running this code, then visiting <a href="http://127.0.0.1:8050/"
+target="_blank">URL http://127.0.0.1:8050</a> produces the following
+(non-interactive) visualization in a web browser.</p>
+
+
+<div class="img-div" style="max-width: 1000px;">
+  <img style="max-width: 1000px;" src="../figs/dash/dash-01.png" alt="dash-01" />
+
+  <figcaption>
+    A Dash dashboard showing the number of three fruit for two different
+    cities, visualized as a side-by-side bar chart
+  </figcaption>
+</div>
+
+<p>To end the dashboard, terminate the Python program running
+<code>dash-app.py</code>. A very simple explanation of the components
+of this program is as follows.</p>
+
+<ul>
+
+<li><code>app = dash.Dash(&hellip;&thinsp;</code> creates the initial
+Dash application using the community-recommended styles loaded from
+plotly,
+
+<li><code>df = pd.DataFrame&hellip;&thinsp;</code> creates a pandas
+dataframe with the data we will visualize,
+
+<li><code>fig = px.bar&hellip;&thinsp;</code> creates a plotly bar
+graph,
+
+<li><code>app.layout = html.Div(&hellip;&thinsp;</code> defines the
+dashboard's layout as an initial HTML <code>div</code>,
+
+<li><code>children=[&hellip;&thinsp;</code> places an <code>H1</code>
+section title, a <code>div</code>, and a graph element within the
+parent <code>div</code>,
+
+<li><code>html.H1</code> and <code>html.Div</code> define the title
+and subtitle of the dashboard,
+
+<li><code>dcc.Graph&hellip;&thinsp;</code> displays the plotly bar
+graph, and assigns it an ID of <code>ex_graph</code>, and
+
+<li><code>app.run_server(debug=True)</code> interprets the code to
+create the dashboard at URL http://127.0.0.1:8050/
+
+</ul>
+
+<p>One clarifying note about setting <code>debug=True</code> in the
+<code>run_server</code> function: when debug is False, changes to the
+Python code will not update the dashboard. When debug is True, changes
+to the Python code will automatically be detected and used to update
+the dashboard in real-time. If you are using <code>debug=True</code>
+you can run your code (based on my testing) from an Anaconda Prompt or
+the Spyder IDE. We <b>DO NOT</b> recommend running the code in a
+Jupyter notebook. Although it will run correctly the first time, there
+is no easy way to terminate the dashboard if you want to re-run
+it.</p>
+
+<p>Setting <code>debug=True</code> will also add a blue button
+containing <code>&lt;&thinsp;&gt;</code> at the bottom-right of the
+screen. Clicking on this button allows you to check the status of the
+Dash server, view any errors that may have occurred, and visualize the
+callback graph for the dashboard.</p>
+
+<p>HTML objects have default <i>styles</i> that can be changed in
+various ways. Dash supports this ability by providing access to a
+tag's style properties through <code>update_layout()</code> for
+figures and <code>style</code> for Dash layouts. The following code is
+a modification of the original example.
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-dash-inv">
+% from dash import Dash
+% from dash import html
+% from dash import dcc
+% from dash import Input
+% from dash import Output
+% import plotly.express as px
+% import pandas as pd
+% 
+% ext_SS = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+% app = Dash(__name__, external_stylesheets=ext_SS)
+% colours = { 'background': '#111111', 'text': '#7fdbff' }
+% 
+% df = pd.DataFrame( {
+%   'Fruit': ['Apples','Oranges','Bananas','Apples','Oranges','Bananas'],
+%   'Amount': [4,1,2,2,4,5],
+%   'City': ['SF','SF','SF','Montreal','Montreal','Montreal']
+% } )
+% 
+% fig = px.bar( df, x='Fruit', y='Amount', color='City', barmode='group' )
+% fig.update_layout(
+%   plot_bgcolor=colours[ 'background' ],
+%   paper_bgcolor=colours[ 'background' ],
+%   font_color=colours[ 'text' ]
+% )
+% 
+% app.layout = html.Div(
+%   style={ 'backgroundColor': colours[ 'background' ] },
+%   children=[
+%     html.H1(
+%       children='Dash dashboard example',
+%       style={ 'textAlign': 'center', 'color': colours[ 'text' ] }
+%     ),
+%     html.Div(
+%       children='Fruit Counts for SF and Montreal',
+%       style={ 'textAlign': 'center', 'color': colours[ 'text' ] }
+%     ),
+%
+%     dcc.Graph( id='ex_graph', figure=fig )
+%   ]
+% )
+% 
+% app.run_server(debug=True)
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 1000px; background-color: var(--img-bg);">
+  <img style="max-width: 1000px;" src="../figs/dash/dash-02.png" alt="dash-02" />
+
+  <figcaption style="color: var(--txt-fg);">
+    A Dash dashboard showing the number of three fruit for two different
+    cities, visualized as a side-by-side bar chart, with HTML styles
+    applied to control dashboard colours
+  </figcaption>
+</div>
+
+<h4>Interactive Widgets</h4>
+
+<p>As with most applications, Dash provides a set of standard widgets
+to allow users to interact with an application. The code below shows a
+sample of Dash's interactive objects, including dropdown and
+multi-dropdown menus, radiobuttons, checkboxes, input fields, and
+sliders.</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-dash-interactive">
+% from dash import Dash
+% from dash import html
+% from dash import dcc
+% from dash import Input
+% from dash import Output
+% import plotly.express as px
+% import pandas as pd
+% 
+% ext_SS = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+% app = Dash(__name__, external_stylesheets=ext_SS)
+% 
+% app.layout = html.Div([
+% html.Label('Dropdown'),
+% dcc.Dropdown(
+%   options=[
+%     {'label': 'New York City', 'value': 'NYC'},
+%     {'label': 'Montreal', 'value': 'MTL'},
+%     {'label': 'San Francisco', 'value': 'SF'}
+%   ],
+%   value='MTL'
+% ),
+% html.Div(style={'padding': '20px'}),
+% 
+% html.Label('Multi-Select Dropdown'),
+% dcc.Dropdown(
+%   options=[
+%     {'label': 'New York City', 'value': 'NYC'},
+%     {'label': 'Montreal', 'value': 'MTL'},
+%     {'label': 'San Francisco', 'value': 'SF'}
+%   ],
+%   value=['MTL', 'SF'],
+%   multi=True
+% ),
+% html.Div(style={'padding': '20px'}),
+% 
+% html.Label('Radio Items'),
+% dcc.RadioItems(
+%   options=[
+%     {'label': 'New York City', 'value': 'NYC'},
+%     {'label': 'Montreal', 'value': 'MTL'},
+%     {'label': 'San Francisco', 'value': 'SF'}
+%   ],
+%   value='MTL'
+% ),
+% html.Div(style={'padding': '20px'}),
+% 
+% html.Label('Checkboxes'),
+% dcc.Checklist(
+%   options=[
+%     {'label': 'New York City', 'value': 'NYC'},
+%     {'label': 'Montreal', 'value': 'MTL'},
+%     {'label': 'San Francisco', 'value': 'SF'}
+%   ],
+%   value=['MTL', 'SF']
+% ),
+% html.Div(style={'padding': '20px'}),
+% 
+% html.Label('Text Input: '),
+% dcc.Input(value='MTL', type='text'),
+% html.Div(style={'padding': '20px'}),
+% 
+% html.Label('Slider'),
+% dcc.Slider(
+%   min=1,
+%   max=9,
+%   marks={i: 'Label {}'.format(i) if i == 1 else str(i) for i in range(1, 10)},
+%   value=5,
+% )
+% ]) 
+% 
+% app.run_server(debug=True)
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 1000px;">
+  <img style="max-width: 1000px;" src="../figs/dash/dash-03.png" alt="dash-03" />
+
+  <figcaption>
+    Examples of Dash dropdown, multi-dropdown, radiobutton group,
+    checkbox group, text input, and slider widgets
+  </figcaption>
+</div>
+
+<h2 id="dash-callbacks">Callbacks</h2>
+
+<p>Once interactive widgets are placed on a dashboard, we need a way
+to recognize when they are changed. This is done
+using <i>callbacks</i>, a standard method to monitor user interaction
+in an application. Whenever a widget is manipulated to change its
+value, a callback is made to the Python program controlling the
+dashboard. Code in the program captures the callback, so it can
+examine the new widget value and update the dashboard's content
+appropriately.</p>
+
+<p>As a very simple example of callbacks, the following Python program
+creates a Dash dashboard with an input text field, and an output label
+that displays the current value of the text field.</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-dash-callback">
+% from dash import Dash
+% from dash import html
+% from dash import dcc
+% from dash import Input
+% from dash import Output
+% import plotly.express as px
+% import pandas as pd
+% 
+% ext_SS = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+% app = Dash(__name__, external_stylesheets=ext_SS)
+% 
+% app.layout = html.Div( [
+%   html.H6( 'Change the value in the text box to invoke the callback' ),
+%   html.Div( [
+%     'Input: ',
+%     dcc.Input( id='inp', value='Initial Value', type='text' )
+%   ] ),
+%   html.Br(),
+%   html.Div( id='out' )
+% ] )
+% 
+% @app.callback(
+%   [ Output(component_id='out', component_property='children') ],
+%   [ Input(component_id='inp', component_property='value') ],
+% )
+% def update_output_div( input_value ):
+%     s = 'Output: {}'.format( input_value )
+%     return [ s ]
+% 
+% app.run_server(debug=True)
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 700px;">
+  <img style="max-width: 700px;" src="../figs/dash/dash-04.png" alt="dash-04" />
+
+  <figcaption>
+    A Dash input textbox and a callback that displays the current value
+    of the textbox in a <code>div</code>
+  </figcaption>
+</div>
+
+<p>We have already discussed the code used to create the dashboard and its
+corresponding widgets. The <code>@app.callback</code> function is where
+a callback to detect changes to the input textbox and modify the output
+<code>div</code> is contained.</p>
+
+<ul>
+
+<li><code>@app.callback</code> defines the <i>inputs</i>
+and <i>outputs</i> of the dashboard.
+
+<li><code>@app.callback</code> is described as
+a <code>decorator</code> in Dash. It tells Dash to call this function
+whenever the value of an input changes, presumably in order to update
+the children of an output.
+
+<li><code>Input</code> defines the input component and the input's
+property that contains a new input value. In our example, the input
+component is the <code>dcc.Input</code> textbox with the
+ID <code>inp</code>. The new input value is the <code>value</code>
+property of the textbox.
+
+<li><code>Output</code> defines the output recipient and the
+recipient's property. In our example, the recipient is the component
+in our layout with the ID <code>out</code> (a <code>div</code>). The
+recipient's <code>children</code> value will be updated with the new
+input value.
+
+<li>Immediately following <code>@app.callback</code> is a function
+that takes the new input value as an argument, and returns a new
+output value to store in the recipient's property. Note that the
+function must be defined <i>immediately</i> after
+the <code>@app.callback</code> function, with no blank lines or other
+intervening code.
+
+<li>The callback function can be named as desired, although it should
+usually reflect the purpose of the callback. In our
+code, <code>update_output_div</code> takes <code>input_value</code>,
+which is the new value of the textbox, and returns a string containing
+this new value.
+
+</ul>
+
+<p>Here is another, more realistic, example that uses a slider and a
+scatterplot to visualize the relationship between GDP per capita and
+life expectancy, subdivided by continent.</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-dash-lifeexp">
+% from dash import Dash
+% from dash import html
+% from dash import dcc
+% from dash import Input
+% from dash import Output
+% import plotly.express as px
+% import pandas as pd
+% 
+% df = pd.read_csv( 'https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv' )
+% 
+% ext_SS = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+% app = Dash(__name__, external_stylesheets=ext_SS)
+% 
+% app.layout = html.Div( [
+%   dcc.Graph( id='graph-with-slider' ),
+%   dcc.Slider(
+%     id='year-slider',
+%     min=df['year'].min(),
+%     max=df['year'].max(),
+%     value=df['year'].min(),
+%     marks={str(year): str(year) for year in df['year'].unique()},
+%     step=None
+%   )
+% ] )
+% 
+% @app.callback(
+%   [ Output('graph-with-slider', 'figure') ],
+%   [ Input('year-slider', 'value') ],
+% )
+% def update_figure( year ):
+%     filtered_df = df[ df.year==year ]
+%     
+%     fig = px.scatter(
+%       filtered_df,
+%       x='gdpPercap',
+%       y='lifeExp',
+%       size='pop',
+%       color='continent',
+%       hover_name='country',
+%       log_x=True,
+%       size_max=55
+%     )
+%     
+%     fig.update_layout( transition_duration=500 )
+%     return [ fig ]
+% 
+% app.run_server(debug=True)
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 1000px;">
+  <img style="max-width: 1000px;" src="../figs/dash/dash-05.png" alt="dash-05" />
+
+  <figcaption>
+    A Dash scatterplot showing GDP per capita versus life expectancy,
+    categorized by continent. The slider allows users to change the year
+    being visualized from 1952 to 2007
+  </figcaption>
+
+</div>
+
+<p>Of course, most dashboards will have multiple inputs and
+outputs. How is this handled in Dash? For inputs, notice that
+<code>Input</code> is embedded within a list. You can define multiple
+<code>Input</code> statements in this list. For each
+<code>Input</code> statement you add, another input argument is
+included in your callback function.</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-dash-lifexp-multi-inp">
+% from dash import Dash
+% from dash import html
+% from dash import dcc
+% from dash import Input
+% from dash import Output
+% import plotly.express as px
+% import pandas as pd
+% 
+% ext_SS = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+% app = Dash(__name__, external_stylesheets=ext_SS)
+% 
+% df = pd.read_csv( 'https://plotly.github.io/datasets/country_indicators.csv' )
+%
+% indicators = df[ 'Indicator Name' ].unique()
+% 
+% app.layout = html.Div( [
+%   html.Div( [
+%     html.Div( [
+%       dcc.Dropdown(
+%         id='xaxis-column',
+%         options=[{'label': i, 'value': i} for i in indicators],
+%         value='Fertility rate, total (births per woman)'
+%       ),
+%       dcc.RadioItems(
+%         id='xaxis-type',
+%         options=[{'label': i, 'value': i} for i in ['Linear','Log']],
+%         value='Linear',
+%         labelStyle={'display': 'inline-block'}
+%       )
+%     ],
+%     style={'width': '48%', 'display': 'inline-block'}),
+%
+%     html.Div( [
+%       dcc.Dropdown(
+%         id='yaxis-column',
+%         options=[{'label': i, 'value': i} for i in indicators],
+%         value='Life expectancy at birth, total (years)'
+%       ),
+%       dcc.RadioItems(
+%         id='yaxis-type',
+%         options=[{'label': i, 'value': i} for i in ['Linear','Log']],
+%         value='Linear',
+%         labelStyle={'display': 'inline-block'}
+%       )
+%     ],
+%     style={'width': '48%', 'float': 'right', 'display': 'inline-block'}),
+%   ] ),
+% 
+%   dcc.Graph( id='indicator-graph' ),
+% 
+%   dcc.Slider(
+%     id='year-slider',
+%     min=df['Year'].min(),
+%     max=df['Year'].max(),
+%     value=df['Year'].max(),
+%     marks={str(year): str(year) for year in df['Year'].unique()},
+%     step=None
+%   )
+% ] )
+% 
+% @app.callback(
+%   [ Output('indicator-graph', 'figure') ],
+%   [ Input('xaxis-column', 'value'),
+%     Input('yaxis-column', 'value'),
+%     Input('xaxis-type', 'value'),
+%     Input('yaxis-type', 'value'),
+%     Input('year-slider', 'value') ]
+% )
+% def update_graph( xaxis_col_nm, yaxis_col_nm, xaxis_type, yaxis_type, year ):
+%     dff = df[ df['Year']==year ]
+%     
+%     fig = px.scatter(
+%       x=dff[dff['Indicator Name']==xaxis_col_nm]['Value'],
+%       y=dff[dff['Indicator Name']==yaxis_col_nm]['Value'],
+%       hover_name=dff[dff['Indicator Name']==yaxis_col_nm]['Country Name'],
+%     )
+%     
+%     fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
+%     fig.update_xaxes(title=xaxis_col_nm, type='linear' if xaxis_type=='Linear' else 'log')
+%     fig.update_yaxes(title=yaxis_col_nm, type='linear' if yaxis_type=='Linear' else 'log')
+%     return [ fig ]
+% 
+% app.run_server(debug=True)
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 1000px;">
+  <img style="max-width: 1000px;" src="../figs/dash/dash-06.png" alt="dash-06" />
+
+  <figcaption>
+    A Dash scatterplot with variable <i>x</i> and <i>y</i>-axes, as well
+    as the ability to display linear or logarithmic axis spacing, and to
+    choose the year of data to plot
+  </figcaption>
+</div>
+
+<p>In this example, there are five input widgets: two dropdown menus,
+two radiobutton groups, and a slider. All five are included in the
+<code>Input</code> list: <code>xaxis-column</code>,
+<code>yaxis-column</code>, <code>xaxis-type</code>,
+<code>yaxis-type</code>, and <code>year-slider</code>,
+respectively. In the <code>update_graph</code> function the values for
+those five widgets are passed as <code>xaxis_col_nm</code>,
+<code>yaxis_col_nm</code>, <code>xaxis_type</code>,
+<code>yaxis_type</code>, and <code>year</code>. Other than this, the
+function operates identically, returning an updated scatterplot based
+on the five selected inputs.</p>
+
+<p>Multiple outputs work in a similar way. First, you specify each
+output as part of the list of <code>Output</code> statements. Then,
+specify each output element in order in the list returned by the
+callback function.</p>
+
+
+<div class="code-flex-div">
+  <div class="code-flex" id="code-plotly-dash-multi-out">
+% from dash import Dash
+% from dash import html
+% from dash import dcc
+% from dash import Input
+% from dash import Output
+% import plotly.express as px
+% import pandas as pd
+% 
+% ext_SS = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+% app = Dash(__name__, external_stylesheets=ext_SS)
+% 
+% df = px.data.gapminder().query( 'year==2007' )
+% continents = df[ 'continent' ].unique()
+% 
+% app.layout = html.Div(
+%   children=[
+%     dcc.Dropdown(
+%       id='continent',
+%       options=[ { 'label': c, 'value': c } for c in continents ],
+%       value=continents[ 0 ]
+%     ),
+% 
+%     dcc.Graph( id='bar' ),
+%     dcc.Graph( id='map' )
+% ] )
+% 
+% @app.callback(
+%   [ Output('bar', 'figure'),
+%     Output('map', 'figure') ],
+%   [ Input('continent', 'value') ]
+% )
+% def update_bar_map( continent ):
+%     dff = df[ df['continent']==continent ]
+%     
+%     bar = px.bar( dff, x='country', y='gdpPercap' )
+%     map = px.treemap(
+%       dff,
+%       path=['country'],
+%       values='pop',
+%       color='gdpPercap',
+%       color_continuous_scale='RdBu'
+%     )
+%     
+%     return [ bar, map ]
+% 
+% app.run_server(debug=True)
+  </div>
+</div>
+
+
+<div class="img-div" style="max-width: 1000px;">
+  <img style="max-width: 1000px;" src="../figs/dash/dash-07.png" alt="dash-07" />
+
+  <figcaption>
+    A Dash bar chart and treemap. The bar chart shows per capita GDP by country
+    for the user-chosen continent. The treemap show population by size and
+    per capita GDP by colour, by country for the user-chosen continent
+  </figcaption>
+</div>
+
+<p>This dashboard shows the GDP per capita for countries in a
+user-chosen continent. Continent selection is performed with a
+standard dropdown menu. GDP per capita is shown in two
+visualizations. The first uses a simple bar chart by country. The
+second uses a treemap, where the size of the rectangle assigned to a
+country represents its population, and the rectangle's colour
+represents the GDP per capita from a red&ndash;blue double-ended
+colour scale.</p>
+
+
+<h2 id="publish">Publishing</h2>
+
+<p>Unfortunately, publishing a Dash dashboard is not as straight
+forward as it is with other environments like R+Shiny. plotly does not
+maintain a public cloud to upload dashboards. Various options are
+suggested by different Dash users.</p>
+
+<p>Dash itself suggests
+the <a href="https://dash.plotly.com/deployment"
+target="_blank">following documentation</a> for deploying Dash
+applications. Your milage may vary on this, but it is probably the
+best starting point for attempt to build a Dash appliation that is
+accessible from the web.</p>
+
+<!-- The mod-date span will be updated by code in mod-date.js -->
+
+<hr class="fig_top">
+<div class="footer">
+  Updated <span id="mod-date">01-Jan-01</span>
+</div>
+
+</body>
+</html>
+
+<!--  LocalWords:  Analytics Healey plotly conda Berners CERN DNS px
+ -->
+<!--  LocalWords:  Hypercard HyperText NCSA Urbana Champaign UIUC edf
+ -->
+<!--  LocalWords:  Microsystems Andreessen Jupyter plotly's canada fb
+ -->
+<!--  LocalWords:  barmode lifeExp concat colours bfd ebcda textinfo
+ -->
+<!--  LocalWords:  showlegend Scatterplot scatterplots scatterplot np
+ -->
+<!--  LocalWords:  LOWESS trendlines trendline ols numpy polyfit rgb
+ -->
+<!--  LocalWords:  linspace coloured boxplots Mapbox GeoJSON FIPS lon
+ -->
+<!--  LocalWords:  json urllib urlopen dtype fips mapbox geojson geo
+ -->
+<!--  LocalWords:  unemp Viridis carto Scattergeo locationmode ui df
+ -->
+<!--  LocalWords:  sizemode landcolor checkboxes setosa versicolor nm
+ -->
+<!--  LocalWords:  virginica boxplot quartile choropleth csv str geos
+ -->
+<!--  LocalWords:  colorscale colorbar titleside showland lataxis usa
+ -->
+<!--  LocalWords:  lonaxis countrycolor countrywidth albers localhost
+ -->
+<!--  LocalWords:  dcc html DataFrame dataframe Spyder RStudio jQuery
+ -->
+<!--  LocalWords:  stylesheets fdbff bgcolor backgroundColor dropdown
+ -->
+<!--  LocalWords:  textAlign MTL RadioItems inp textbox radiobuttons
+ -->
+<!--  LocalWords:  radiobutton capita gdpPercap xaxis labelStyle dff
+ -->
+<!--  LocalWords:  yaxis hovermode xaxes yaxes treemap RdBu colour ol
+ -->
+<!--  LocalWords:  li ul th td
+ -->
