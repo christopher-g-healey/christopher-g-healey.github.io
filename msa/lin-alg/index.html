@@ -1,0 +1,5707 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta charset="UTF-8" />
+  
+<title>Linear Algebra: Institute for Advanced Analytics</title>
+
+<!-- Linear algebra-specific script to do non-blocking sleep, must be in -->
+<!-- head to ensure it is fully executed and available before body runs -->
+
+<script>
+function sleep_wo_block( ms ) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve( 'resolved' );
+    }, ms );
+  } );
+}
+  
+async function wait_to_draw( id, ul, ur, beg, end ) {
+  console.log( "Waiting to draw..." );
+  while( typeof draw_line !== "function" ) {
+    await sleep_wo_block( 250 );
+  }
+  draw_line( id, ul, ur, beg, end );
+}
+</script>
+
+</head>
+
+<script type="text/javascript" src="../../course/js/header-code.js"></script>
+
+<body class="light">
+
+<div style="text-align: center;">
+<span id="banner-img" style="
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 1622px;
+  height: 525px;
+  background-image: url( '../../course/figs/lin-alg/banner.png' );
+  background-repeat: no-repeat;
+">
+<div style="
+  position: absolute;
+  align: right;
+  bottom: 5px;
+  right: 30px;
+  font-family: 'Trebuchet MS', Helvetica, sans-serif;
+  font-size: 16pt;
+  font-weight: normal;
+  color: #646464;
+">
+  <div style="line-height: 90%; color: var(--title-fg);">Linear Algebra</div>
+  <div style="font-size: 10pt;">
+    <a target="_blank" href="http://www.csc2.ncsu.edu/faculty/healey">
+    <i>Christopher G. Healey</i>
+    </a>
+  </div>
+</div>
+</span>
+</div>
+
+<div style="
+  position: absolute;
+  align: right;
+  top: 10px;
+  left: 10px;
+">
+  <a target="_blank" href="https://www.ncsu.ed/u">
+    <img alt="NC State Logo" src="../../course/figs/nc-state-logo-blue.png"
+     style="
+       border-style: none;
+       -moz-box-shadow: 1px 1px 8px #646464;
+       -webkit-box-shadow: 1px 1px 8px #646464;
+       box-shadow: 1px 1px 8px #646464;
+     ">
+  </a>
+</div>
+
+<!--Spacer after image of one "line"-->
+
+<div style="height: 1em;"></div>
+
+<!-- Navigation toolbar -->
+
+<div id="navWrap">
+  <div id="nav">
+    <ul id="nav-list">
+      <li id="nav-intro:intro">Introduction
+      <li id="nav-vector:vector">Vectors
+      <li id="nav-matrix:matrix">Matrices
+      <li id="nav-elimination:elimination">Elimination
+      <li id="nav-vec-space:vec-space">Vector Spaces
+      <li id="nav-factor:factor">Factorization
+      <li id="nav-determinant:determinant">Determinants
+      <li id="nav-eigen:eigen">Eigen
+      <li id="nav-svd:svd">SVD
+      <li id="nav-pca:pca">PCA
+      <li id="nav-least-square:least-square">Least Squares
+    </ul>
+  </div>
+
+  <div id="nav-footer">
+  </div>
+</div>
+
+
+<!-- Initially assume light theme (day), draw moon icon to switch to dark -->
+<!-- Javascript will automatically check this and switch if it's night -->
+
+<img id="light-dark" style="width: 24px; height: 24px; position: fixed; top: 2px; right: 20px; margin: 0; padding: 0; z-index: 200;" src="../../course/figs/moon-icon-gradient.png" />
+
+
+<h2 id="intro">Introduction</h2>
+
+<p>
+This module offers a brief foundation to the basics of linear algebra.
+We will focus on topics relevant to upcoming data science techniques,
+which include vectors, matrices, linear equation solving, eigenvectors
+and eigenvalues, projections, and least squares. In spite of our
+limited focus, this covers much of what would be included in a
+first-year algebra course, highlighting that even the fundamentals
+of an important mathematical area like linear algebra are broad and
+rigorous.
+</p>
+
+
+<h3>What Is Linear Algebra?</h3>
+
+<p>
+So, what is linear algebra? Yes, it is a required course you probably
+took in high school or during your undergraduate degree. But more than
+that, it is a fundamental foundation to most areas in mathematics.
+For example, matrix factorization, which is part of linear algebra, is
+used to convert raw text into semantic concepts for text document
+clustering. Linear algebra also acts as a foundation to the computer
+graphics used in modern video games. Because of this, it is critical
+that you have a strong understanding of the basics of linear algebra
+as it pertains to the data science topics we will cover.
+</p>
+
+<p>
+In terms of the <em>technical</em> definition of linear algebra, it is
+an area of mathematics that focuses on linear equations and their
+representations as vectors and matrices. One common linear equation,
+and one I'm sure you'll recognize, is the slope&ndash;intercept form
+\(y = mx + b,\) a line with slope \(m\) and \(y\)-axis intercept \(b\)
+in 2D. A concrete example would be \(y = 3x + 1.\) Here, a unit
+increase in \(x\) produces a three unit increase in \(y\) (slope
+\(m=3,\)) and when \(x=0,\) \(y=1\) (the line intercepts the
+\(y\)-axis at \(b=1.\))
+</p>
+
+<canvas id="plane_2d_line" class="center-canvas"></canvas>
+<script>
+  wait_to_draw( "plane_2d_line", [ -1,4 ], [ 7,-1 ], [ -2,-5 ], [ 7,22 ] );
+</script>
+
+<p>
+Other representations exist, each with their own advantages. For
+example, the <em>parametric</em> representation of a 2D line is \(p(t)
+= (f_1(t),f_2(t)),\) where functions \(f_1\) and \(f_2\) define values
+for \(x\) and \(y\) in terms of parametric parameter \(t.\) The
+concrete example \(p(t) = (t,3t+1)\) is equivalent to \(y=3x+1,\)
+since it produces the same set of points forming the same line in 2D.
+</p>
+
+<p>
+Two advantages of a parametric representation versus the
+slope&ndash;intercept form are:
+
+<ol>
+<li>Vertical lines can be defined, for example, the vertical line
+passing through \(x=1\) is \(p(t)=(1,t).\)  This cannot be defined
+with slope&ndash;intercept form because it has an infinite slope and
+no \(y\)-intercept.
+
+<li>Line segments can be defined by bounding \(t.\) The most common
+use is \(0 \leq t \leq 1,\) for example, \(p(t)=(t,3t+1), \; 0 \leq t
+\leq 1\) defines the line <em>segment</em> running from
+\((x_0,y_0)=(0,1)\) to \((x_1,y_1)=(1,4).\)
+  
+</ol>
+
+<p>
+Much of first year linear algebra focuses on different ways to solve
+systems of linear equations, usually written in matrix&ndash;vector
+form \(Ax = b.\) Given an \(m\) row by \(n\) column matrix \(A\) and
+an \(n\) element vector \(b\), what values of the \(m\) element vector
+\(x\) satisfy this equation? Although solving systems of linear
+equations is used in data science, a more important take-away is the
+mechanics it teaches. Understanding <em>how</em> systems of linear
+equations are solved builds the foundation we need for more relevant
+operations like principal component analysis or minimizing least
+squares.
+</p>
+
+<h3>Terminology</h3>
+
+<p>
+My experience is that a critical requirement to understanding any
+topic, and in particular theoretical topics, is to understand the
+vocabulary or <i>terminology</i> of the topic. Without this
+understanding, many statements will seem nonsensical. For example,
+consider the following statement in the linear algebra domain.
+</p>
+
+<div class="defn-div">
+The vectors \(\vec{u}\) and \(\vec{v}\) are <b>orthonormal</b> to one
+another.
+</div>
+
+<p>
+If you don't know what <b>orthonormal</b> means, this sounds like some
+sort of unintelligible foreign language. However, if I tell you that:
+(1) <b>orthonormal</b> vectors are <b>orthogonal</b> to one another
+and <b>normalized</b>; (2) if two vectors are <b>orthogonal</b> it
+means they are perpendicular to one another, that is, they form a
+90&deg; right angle where they meet; and (3) if a vector
+is <b>normalized</b>, it means its <b>length</b> is 1 (we will define
+a vector's length in the next section.) Now, the idea of
+orthonormality should make more sense. Notice also that the definition
+of one term may involve other terms (<b>orthonormal</b> involves both
+<b>orthogonal</b> and <b>normalization</b>), so you need to understand
+the meaning of the term and all its subterms to fully understand what
+it represents.
+</p>
+
+<p>
+Throughout these notes I will try to define any linear algebra term
+that I think may be uncommon and important to our discussions. I
+strongly encourage you to commit these definitions to memory, so when
+you read explanations of different linear algebra theory and
+algorithms, you can quickly convert descriptions in linear algebra
+terminology to concrete, practical descriptions that are simple to
+understand.
+</p>
+
+
+<h3>Points versus Vectors</h3>
+
+<p>
+A common confusion when initially studying linear algebra is, "What is
+the difference between a point and a vector?" On a 2D plane, both are
+a two-valued \((x,y)\) element. The main difference is not in how they
+are represented, but <em>what</em> they represent. A point \(p =
+(x,y)\) is a fixed position in 2D space. A vector \(\vec{v} = [v_1,v_2]\)
+is a direction and a length from some user-chosen position or point.
+</p>
+
+<p>
+Consider a concrete example \(p=(1,2)\) and \(\vec{v}=[2,4].\)
+Anchoring \(\vec{v}\) at \(p\) says we want to create a line segment
+starting at \((1,2),\) and moving 2 units in the \(x\)-direction and 4
+units in the \(y\)-direction to an ending position \((3,6).\) That is,
+\(\vec{v}\) defines a <em>direction</em> to move, and
+a <em>distance</em> to move in the given direction. If we changed
+\(p,\) we would get a line segment with different starting and ending
+positions, but it would have exactly the same direction and length.
+That is, it would be exactly the same line segment, just shifted to
+some other position on the 2D plane.
+</p>
+
+<canvas id="plane_line_vect" class="center-canvas"></canvas>
+<script>
+  setTimeout(() => {
+    draw_line( "plane_line_vect", [ -1,7 ], [ 4,-1 ], [ 1,2 ], [ 3,6 ] );
+  }, 5000 );
+</script>
+
+
+<h2 id="vector">Vectors</h2>
+
+<p>
+Vectors are an ordered list of numbers in either row (horizontal)
+orientation \(\vec{v} = [ v_1, \ldots, v_n ]\) or column (vertical)
+orientation \(\vec{v} = \begin{bmatrix} v_1 \\ \ldots \\ v_n
+\end{bmatrix}.\) Vectors are represented in the notes as an italic
+letter with an arrow above it. One vector that is sometimes identified
+explicitly is the <em>zero vector</em>, a vector whose entries are all
+zero, \(\mathbf{\vec{0}} = [ 0, \ldots, 0 ].\)
+</p>
+
+
+<h3>Linear Combination</h3>
+
+<p>
+The linear combination of two vectors \(\vec{u}\) and \(\vec{v}\) adds
+the vectors, possibly with a scalar multiplication of one or both of
+the vectors by constant values \(c\) and \(d.\)
+
+\begin{equation}
+c \vec{u} + d \vec{v}
+\label{eq:lin-comb}
+\end{equation}
+</p>
+
+<p>
+<b>Practical Example.</b> Consider \(c=2,\) \(d=-3,\) \(\vec{u} =
+\begin{bmatrix} 3 \\ 4 \end{bmatrix}\) and \(\vec{v} = \begin{bmatrix}
+-1 \\ 2 \end{bmatrix}.\)
+
+\begin{equation}
+
+c\vec{u} + d\vec{v} = 2 \begin{bmatrix} 3 \\ 4 \end{bmatrix} - 3
+\begin{bmatrix} -1 \\ 2 \end{bmatrix} = \begin{bmatrix} 6 \\ 8
+\end{bmatrix} + \begin{bmatrix} 3 \\ -6 \end{bmatrix} =
+\begin{bmatrix} 9 \\ 2 \end{bmatrix}
+
+\end{equation}
+</p>
+
+
+<h3>Dot Product</h3>
+
+<div class="defn-div">
+<b>Dot Product:</b>&nbsp;&nbsp; The sum of corresponding entries in
+two equal-length vectors \(\vec{u}\) and \(\vec{v},\) \(\displaystyle
+\vec{u} \cdot \vec{v} = \sum_{i=1} u_i v_i\)
+</div>
+
+<p>
+The <em>dot product</em> or <em>inner product</em> of two vectors
+\(\vec{u} = \begin{bmatrix} u_1 & \cdots & u_n \end{bmatrix}\) and
+\(\vec{v} = \begin{bmatrix} v_1 \\ \vdots \\ v_n \end{bmatrix}\) is
+written as \(\vec{u} \cdot \vec{v}.\) The dot product takes
+corresponding entries from \(\vec{u}\) and \(\vec{v},\) multiples
+them, and sums them \(\sum_{i=1}^{n}u_i v_i\) to produce a single
+scalar value.
+
+\begin{equation}
+
+\vec{u} \cdot \vec{v} = \begin{bmatrix} u_1 & \cdot & u_n
+\end{bmatrix} \cdot \begin{bmatrix} v_1 \\ \vdots \\ v_n \end{bmatrix}
+= \sum_{i=1}^{n} u_i v_i
+
+\end{equation}
+</p>
+
+<p>
+<b>Practical Example.</b> Consider \(\vec{u} = \begin{bmatrix} 1 & 2
+\end{bmatrix}\) and \(\vec{v} = \begin{bmatrix} 4 \\ 5
+\end{bmatrix}.\)
+
+\begin{equation}
+
+\vec{u} \cdot \vec{v} = \begin{bmatrix} 1 & 2 \end{bmatrix} \cdot
+\begin{bmatrix} 4 \\ 5 \end{bmatrix} = (1)(4) + (2)(5) = 14
+
+\end{equation}
+</p>
+
+<p>
+Both Python and R have built-in dot product functions.
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-dot">
+<b>Python</b>
+
+% import numpy as np
+%
+% u = np.array( [1,2] )
+% v = np.array( [4,5] )
+% print( np.dot( u, v ) )
+
+14
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-dot">
+<b>R</b>
+
+% library(geometry)
+% 
+% u &lt;- c( 1, 2 )
+% v &lt;- c( 4, 5 )
+% dot( u, v )
+
+[1] 14
+  </div>
+</div>
+
+
+<h3>Orthogonal Vectors</h3>
+
+<div class="defn-div">
+<b>Orthogonal:</b>&nbsp;&nbsp; Perpendicular vectors \(\vec{u}\) and
+\(\vec{v}\) forming a 90&deg; right angle where they meet. If
+\(\vec{u} \cdot \vec{v} = 0,\) \(\vec{u}\) and \(\vec{v}\) are
+orthogonal
+</div>
+
+<p>
+Two vectors \(\vec{u} = \begin{bmatrix} u_1 & \cdots & u_n
+\end{bmatrix}\) and \(\vec{v} = \begin{bmatrix} v_1 \\ \vdots \\ v_n
+\end{bmatrix}\) are <em>orthogonal</em> when they are perpendicular to
+one another, forming a 90&deg; right angle where they meet. This
+occurs when the dot product between the two vectors is zero.
+</p>
+
+<p>
+<b>Practical Example.</b> Consider \(\vec{u} = \begin{bmatrix} 4 & 2
+\end{bmatrix}\) and \(\vec{v} = \begin{bmatrix} -1 \\ 2
+\end{bmatrix}.\)
+
+\begin{equation}
+
+\vec{u} \cdot \vec{v} = \begin{bmatrix} 4 & 2 \end{bmatrix} \cdot
+\begin{bmatrix} -1 \\ 2 \end{bmatrix} = (4)(-1) + (2)(2) = 0
+
+\end{equation}
+</p>
+
+<p>
+The graph below demonstrates this visually using an anchor point for
+both vectors of \(p=(1,1).\)
+</p>
+
+<canvas id="plane_ortho" class="center-canvas"></canvas>
+<script>
+  setTimeout(() => {
+    draw_line( "plane_ortho", [ -1,4 ], [ 6,-1 ], [ 1,1 ], [ 5,3 ] );
+    add_line( "plane_ortho", [ 0,3 ], [ 1,1 ] );
+  }, 5000 );
+</script>
+
+
+<h3>Vector Length</h3>
+
+<div class="defn-div">
+<b>Length:</b>&nbsp;&nbsp; The square root of a vector \(\vec{v}\)
+dotted with itself, \(\sqrt{\vec{v} \cdot \vec{v}}\)
+</div>
+
+<p>
+The <em>length</em> of a vector is related to its dot
+product. Specifically, the length of vector \(\vec{v}\) is
+\(\left\lVert \vec{v} \right\rVert = \sqrt{\vec{v} \cdot
+\vec{v}}\;\;\) (the hypotenuse of a right angle triangle with sides
+\((0,0)\)&ndash;\((x,0)\) and \((x,0)\)&ndash;\((x,y))\)
+</p>
+
+<p><b>Practical Example.</b> Consider \(\vec{v}\ = \begin{bmatrix} 4
+\\ 5 \end{bmatrix}\) from the dot product example.
+
+\begin{equation}
+
+\left\lVert \vec{v} \right\rVert = \sqrt{\begin{bmatrix} 4 & 5
+\end{bmatrix} \cdot \begin{bmatrix} 4 \\ 5 \end{bmatrix}} =
+\sqrt{(4)(4) + (5)(5)} = \sqrt{41} = 6.4
+
+\end{equation}
+</p>
+
+<canvas id="plane_len" class="center-canvas"></canvas>
+<script>
+  setTimeout(() => {
+    draw_line( "plane_len", [ -1,6 ], [ 5,-1 ], [ 0,0 ], [ 4,5 ] );
+    add_line( "plane_len", [ 0,0 ], [ 4,0 ], [ 1, 2 ] );
+    add_line( "plane_len", [ 4,0 ], [ 4,5 ], [ 1, 2 ] );
+  }, 5000 );
+</script>
+
+<p>
+Python has a built-in vector length function <code>norm</code>. In R,
+you can <code>geometry</code>'s <code>dot()</code> function or the
+built-in <code>%*%</code> operator, that performs vector dot product
+or full matrix multiplication.
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-norm">
+<b>Python</b>
+
+% import numpy as np
+% 
+% v = np.array( [4,5] )
+% print( np.linalg.norm( v ) )
+
+6.4031242374328485
+  </div>
+  <div class="code-flex-pair" id="code-flex-R-norm">
+<b>R</b>
+
+% v &lt;- c( 4, 5 )
+% sqrt( v %*% v )
+
+         [1,]
+[1,] 6.403124
+  </div>
+</div>
+
+
+<h3>Unit Vector</h3>
+
+<div class="defn-div">
+<b>Unit Vector:</b>&nbsp;&nbsp; Vector \(\vec{v}\) is unit if its
+length is 1, \(\left\lVert \vec{v} \right\rVert = 1\)
+</div>
+
+<p>
+An important class of vectors are <b>unit</b> vectors. A vector
+is <b>unit</b> if its length is 1, that is, \(\left\lVert \vec{v}
+\right\rVert = 1.\) Any \(\vec{v}\) can be converted to a unit vector
+or <em>normalized</em> by dividing its entries by \(\left\lVert
+\vec{v} \right\rVert.\)
+
+<p>
+<b>Practical Example.</b> Consider \(\vec{v} = \begin{bmatrix} 4 \\ 5
+\end{bmatrix}\) above. We know \(\left\lVert \vec{v} \right\rVert =
+6.4,\) so dividing \(\vec{v}\) by its length gives us a new vector
+\(\vec{v^{\prime}} = \frac{1}{6.4} \begin{bmatrix} 4 \\ 5
+\end{bmatrix} = \begin{bmatrix} 0.625 \\ 0.781 \end{bmatrix}.\) To
+confirm \(\vec{v^{\prime}}\) is unit, we compute its length
+\(\left\lVert \vec{v^{\prime}} \right\rVert.\)
+
+\begin{equation}
+
+\left\lVert \vec{v^{\prime}} \right\rVert = \sqrt{ 0.625^{2} +
+0.781^{2} } = \sqrt{ 0.40 + 0.60 } = \sqrt{ 1.0 } = 1.0
+
+\end{equation}
+</p>
+
+<p>
+Notice also that, importantly, \(\vec{v}\) and \(\vec{v^{\prime}}\)
+both point in the same direction. The only difference is in their
+lengths.
+</p>
+
+
+<h3>Angles Between Vectors</h3>
+
+<div class="defn-div">
+<b>Angle:</b>&nbsp;&nbsp; The cosine of the angle \(\theta\) between
+\(\vec{u}\) and \(\vec{v}\) is the dot product of \(\vec{u}\) and
+\(\vec{v}\) divided by the product of \(\vec{u}\) and \(\vec{v}\)'s
+lengths, \(\displaystyle \cos(\theta) = \frac{\vec{u} \cdot
+\vec{v}}{\left\lVert \vec{u} \right\rVert \left\lVert \vec{v}
+\right\rVert}\)
+</div>
+
+
+<p>
+The angle \(\theta\) between two vectors \(\vec{u}\) and \(\vec{v}\)
+is defined as \(\displaystyle \cos(\theta) = \frac{\vec{u} \cdot
+\vec{v}}{\left\lVert \vec{u} \right\rVert \left\lVert \vec{v}
+\right\rVert}.\) We can use the \(\arccos(\theta)\) function to obtain
+the value of \(\theta\) if necessary. Notice also that if \(\vec{u}\)
+and \(\vec{v}\) have been normalized to be unit vectors, the formula
+simplifies to dot product of the two vectors, \(\cos(\theta) = \vec{u}
+\cdot \vec{v}.\)
+</p>
+
+<p>
+<b>Practical Example.</b> Consider \(\vec{u} = \begin{bmatrix} 0 & 1
+\end{bmatrix}\) and \(\vec{v} = \begin{bmatrix} 2 \\ 2
+\end{bmatrix}.\) Given an anchor point \(p=(1,1),\) the vectors can be
+visualized on a 2D plane.
+</p>
+
+<canvas id="plane_ang" class="center-canvas"></canvas>
+<script>
+  setTimeout(() => {
+    draw_line( "plane_ang", [ -1,4 ], [ 4,-1 ], [ 1,1 ], [ 1,2 ] );
+    add_line( "plane_ang", [ 1,1 ], [ 3,3 ] );
+  }, 5000 );
+</script>
+
+<p>
+Computing \(\vec{u} \cdot \vec{v},\) \(\left\lVert \vec{u}
+\right\rVert,\) and \(\left\lVert \vec{v} \right\rVert\) allows us to
+determine the angle between \(\vec{u}\) and \(\vec{v}.\)
+
+\begin{align}
+\begin{split}
+\vec{u} \cdot \vec{v} &= (0)(2) + (1)(2) = 2\\
+\left\lVert \vec{u} \right\rVert &= \sqrt{0^2 + 1^2} = 1\\
+\left\lVert \vec{v} \right\rVert &= \sqrt{2^2 + 2^2} = 2.8284\\
+\cos(\theta) &= \frac{2}{(1)(2.8284)} = 0.7071\\
+\theta &= \arccos(0.7071) = 45^\circ\\
+\end{split}
+\end{align}
+</p>
+
+<p>
+If we take a theoretical aside, remember that \(\cos(\theta)\) never
+exceeds one, since its range is \([-1, 1].\) Combining this with the
+formula for the angle between vectors gives us two famous inequalities:
+the Schwarz inequality and the triangle inequality.
+</p>
+
+<div class="defn-div">
+<table style="border: 0px; margin: 0px; padding: 0px;">
+<tr style="border: 0px; margin: 0px; padding: 0px;">
+<td style="border: 0px; margin: 0px; padding: 0px 10px 0px 0px; font-size: 10pt;"><b>Schwarz Inequality:</b><br></td>
+<td style="border: 0px; margin: 0px; padding: 0px;">
+\(\left\lvert \vec{u} \cdot \vec{v} \right\rvert
+\leq
+\left\lVert \vec{u} \right\rVert
+\left\lVert \vec{v} \right\rVert\)
+</td>
+</tr>
+<tr style="border: 0px; margin: 0px; padding: 0px;">
+<td style="border: 0px; margin: 0px; padding: 0px 10px 0px 0px; font-size: 10pt;"><b>Triangle Inequality:</b><br></td>
+<td style="border: 0px; margin: 0px; padding: 0px;">
+\(\left\lVert \vec{u} + \vec{v} \right\rVert
+\leq
+\left\lVert \vec{u} \right\rVert
++
+\left\lVert \vec{v} \right\rVert\)
+</td>
+</tr>
+</table>
+</div>
+
+<p>
+Although these aren't necessarily critical for our data science discussions,
+they are two of the most famous formulas in mathematics, so if you wondered
+where they came from or how to prove them, this is one possible approach.
+</p>
+
+
+<h2 id="matrix">Matrices</h2>
+
+<p>
+A <em>matrix</em> is a rectangular combination of values arranged as
+\(m\) rows and \(n\) columns. The size of a matrix is row major, so a
+\(3 \times 2\) matrix \(A\) has \(m=3\) rows and \(n=2\) columns \(A =
+\begin{bmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6 \end{bmatrix}.\)
+</p>
+
+
+<h3>Transpose</h3>
+
+<p>
+Transpose swaps rows and columns, where rows from top-to-bottom become
+columns from left-to-right. A transposed row vector is a column
+vector, and a transposed column vector is a row vector. A transposed
+matrix \(A^{T}\) converts the rows of \(A\) to columns and the columns
+of \(A\) to rows, that is, \(a_{ij} \in A = a_{ji} \in A^{T}.\) Four
+useful properties of transpose are often applied.
+</p>
+
+<ol>
+
+<li> \((A^{T})^{T} = A.\)
+<li> \((A + B)^{T} = A^{T} + B^{T}.\)
+<li> \((cA)^{T} = cA^{T}.\)
+<li> \((AB)^{T} = B^{T}A^{T}.\)
+
+</ol>
+
+
+<div class="defn-div">
+<b>Transpose:</b>&nbsp;&nbsp; Transposing a vector \(\vec{v}\)
+converts it from column form to row form or vice-versa. Transposing a
+matrix \(A\) converts its columns to rows and its rows to
+columns. Intuitively, you can think of transpose as a 90&deg; rotation
+of each row in order.
+</div>
+
+
+<p>
+\begin{align}
+\begin{split}
+
+A = \begin{bmatrix} 1 & 0 & 0 \\ -1 & 1 & 0 \\ 0 & -1 & 0 \end{bmatrix}
+& \quad \Rightarrow \quad
+A^{T} = \begin{bmatrix} 1 & -1 & 0 \\ 0 & 1 & -1 \\ 0 & 0 & 0 \end{bmatrix}\\[8pt]
+
+\begin{bmatrix}
+\quad\quad R_1 \quad\quad \\
+\quad\quad R_2 \quad\quad \\
+\quad\quad \vdots \quad\quad \\
+\quad\quad R_n \quad\quad \\
+\end{bmatrix}
+& \quad \Rightarrow \quad
+\begin{bmatrix}
+\\
+R_1^{T} & R_2^{T} & \cdots & R_n^{T}\\
+\\
+\end{bmatrix}
+
+\end{split}
+\end{align}
+</p>
+
+
+<h3>Linear Combination</h3>
+
+<p>
+Consider a \(3 \times 3\) matrix \(A = \begin{bmatrix} 1 & 0 & 0 \\ -1
+& 1 & 0 \\ 0 & -1 & 1 \end{bmatrix}.\) The linear combination of \(A\)
+with a column vector \(\vec{x} = \begin{bmatrix} x_1 & x_2 & x_3
+\end{bmatrix}^{T}\) produces a resulting column matrix of the same
+height as \(A.\) One way to approach this problem is known
+as <em>combination of columns</em>. If we divide \(A\) into three
+column vectors \(A_{\ast 1} = \begin{bmatrix}1 & -1 & 0
+\end{bmatrix}^{T}\) \(A_{\ast 2} = \begin{bmatrix}0 & 1 & -1
+\end{bmatrix}^{T},\) and \(A_{\ast 3} = \begin{bmatrix}0 & 0 & 1
+\end{bmatrix}^{T},\) then we can combine individual elements of
+\(\vec{x}\) with \(A_{\ast 1},\) \(A_{\ast 2},\) and \(A_{\ast 3}\) by
+<em>weighting</em> them with the elements in \(\vec{x}\) to generate the
+linear combination.
+
+\begin{equation}
+\label{eq:vec_mult}
+
+x_1 \begin{bmatrix} 1 \\ -1 \\ 0 \end{bmatrix} + x_2 \begin{bmatrix} 0
+\\ 1 \\ -1 \end{bmatrix} + x_3 \begin{bmatrix} 0 \\ 0 \\ 1
+\end{bmatrix} = \begin{bmatrix} x_1 \\ x_2 - x_1 \\ x_3 - x_2
+\end{bmatrix}
+
+\end{equation}
+</p>
+
+<p>
+Notice that combination of columns is different that the traditional
+approach of <em>row combination</em> where we take each row of \(A,\)
+for example \(A_{1 \ast} = \begin{bmatrix} 1 & 0 & 0 \end{bmatrix}\)
+and multiply it by \(\vec{x}\) to produce the first element of the
+linear combination vector. Based on our discussion of vectors,
+what actually happens is each entry of the resulting vector is the
+dot product of the corresponding row of \(A\) with \(\vec{x}.\)
+
+\begin{equation}
+
+A\vec{x} =
+\begin{bmatrix} 1 & 0 & 0 \\ -1 & 1 & 0 \\ 0 & -1 & 1
+\end{bmatrix}
+\begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix} =
+\begin{bmatrix}
+\begin{bmatrix} 1 & 0 & 0 \end{bmatrix}
+\cdot \begin{bmatrix} x_1 & x_2 & x_3 \end{bmatrix}^{T} \\
+\begin{bmatrix} -1 & 1 & 0 \end{bmatrix}
+\cdot \begin{bmatrix} x_1 & x_2 & x_3 \end{bmatrix}^{T} \\
+\begin{bmatrix} 0 & -1 & 1 \end{bmatrix}
+\cdot \begin{bmatrix} x_1 & x_2 & x_3 \end{bmatrix}^{T}
+\end{bmatrix} =
+\begin{bmatrix} x_1 \\ x_2 - x_1 \\ x_3 - x_2 \end{bmatrix}
+
+\end{equation}
+</p>
+
+<p>
+Another important point shown above is that we normally do not divide
+\(A\) into individual row vectors. Instead we perform
+matrix&ndash;vector multiplication \(A\vec{x}\) to generate the linear
+combination vector \(\vec{b}.\)
+
+\begin{equation}
+\label{eq:mat_mult}
+
+A\vec{x} = \begin{bmatrix} 1 & 0 & 0 \\ -1 & 1 & 0 \\ 0 & -1 & 1
+\end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix} =
+\begin{bmatrix} x_1 \\ x_2 - x_1 \\ x_3 - x_2 \end{bmatrix} =
+\begin{bmatrix} b_1 \\ b_2 \\ b_3 \end{bmatrix} = \vec{b}
+
+\end{equation}
+</p>
+
+<p>
+Conceptually, there is a difference between Eqns \eqref{eq:vec_mult}
+and \eqref{eq:mat_mult}. In Eqn \eqref{eq:vec_mult}, \(x_1,\) \(x_2,\)
+and \(x_3\) multiply, or weight, the column vectors of \(A.\) In Eqn
+\eqref{eq:mat_mult}, \(A\) is acting on the column vector \(\vec{x}.\)
+The output \(A\vec{x}\) is a combination \(\vec{b}\) of the columns of
+\(A.\)
+</p>
+
+
+<h3>Linear Equations</h3>
+
+<p>
+Our examples to this point provide known values for \(A\) and
+\(\vec{x},\) allowing us to calculate \(\vec{b}.\) In a <em>linear
+equation</em>, we are given values for \(A\) and \(\vec{b},\) and
+asked to calculate an \(\vec{x}\) that multiplies with \(A\) to
+produce the desired \(\vec{b}.\) This is the <em>inverse problem</em>,
+so named because the inverse of \(A,\) denoted \(A^{-1},\) can be used
+to calculate the required \(\vec{x},\) \(\vec{x} = A^{-1}\vec{b}.\)
+</p>
+
+<p>
+Consider Eqn \eqref{eq:mat_mult}. Here we know \(x_1 = b_1,\) so for
+the second element \(x_2 - x_1 = b_2\) we can substitute \(x_1 = b_1\)
+to produce \(x_2 = b_1 + b_2.\) Finally, we use the same approach on
+the third element to produce \(x_3 = b_1 + b_2 + b_3.\) Now, given
+values for \(\vec{b},\) we can directly calculate
+\(\vec{x}.\) Obviously, this is a very simple example. We did not need
+to derive \(A^{-1}\) to solve for \(\vec{x}.\) Notice, however, that
+since we know \(\vec{x} = A^{-1}\vec{b}\) and we've determine how to
+generate each \(x_i\) from \(\vec{b},\) we have indirectly solved for
+\(A^{-1}.\)
+
+\begin{equation}
+\begin{split}
+
+\begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix}
+=
+\begin{bmatrix} b_1 \\ b_1 + b_2 \\ b_1 + b_2 + b_3 \end{bmatrix}
+&\Rightarrow \begin{bmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 1 & 1 \end{bmatrix}
+\begin{bmatrix} b_1 \\ b_2 \\ b_3 \end{bmatrix}
+=
+A^{-1} \vec{b}\\
+
+\therefore \;\; A^{-1} &= \begin{bmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 1 &
+1 \end{bmatrix}
+
+\end{split}
+\end{equation}
+</p>
+
+<p>
+We will talk in more detail about the inverse matrix below, including
+examples to solve the matrix both mathematically and programatically.
+At this point, you can think intuitively of \(A^{-1}\) as canceling
+\(A\) in a matrix equation.
+</p>
+
+
+<h3>Matrix Multiplication</h3>
+
+<p>
+To begin, recall that a matrix is an \(m \times n\) rectangular
+collection of numbers made up of \(m\) rows and \(n\)
+columns. Individual entries in a matrix \(A\) are denoted \(a_{ij}\)
+for the entry in row \(i\) and column \(j.\) Row \(i\) of \(A\) is
+written as \(A_{i \ast}\) and column \(j\) of \(A\) is written as
+\(A_{\ast j}.\)
+
+\begin{align}
+
+A &= \begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \cdots & a_{mn} \\
+\end{bmatrix}
+
+\end{align}
+</p>
+
+<p>
+Matrices \(A\) and \(B\) with the same shape can be added \(C = A +
+B\) by combining corresponding entries \(c_{ij} = a_{ij} + b_{ij}.\)
+A matrix \(A\) can be multiplied by a constant value \(s,\) \(C = s
+A\) by multiplying each entry in \(A\) by \(s,\) \(c_{ij} =
+s\,a_{ij}.\) It is also important to understand that matrix
+multiplication is
+<em>associative</em> and <em>distributive</em>, but it is normally
+not <em>commutative</em>.
+</p>
+
+<div class="defn-div">
+<table style="border: 0px; margin: 0px; padding: 0px;">
+<tr style="border: 0px; margin: 0px; padding: 0px;">
+<td style="border: 0px; margin: 0px; padding: 0px 10px 0px 0px; font-size: 10pt;"><b>Associative:</b><br></td>
+<td style="border: 0px; margin: 0px; padding: 0px; font-size: 10pt;">\(A(BC) = (AB)C\)</td>
+</tr>
+<tr style="border: 0px; margin: 0px; padding: 0px;">
+<td style="border: 0px; margin: 0px; padding: 0px 10px 0px 0px; font-size: 10pt;"><b>Left Distributive:</b><br></td>
+<td style="border: 0px; margin: 0px; padding: 0px; font-size: 10pt;">\(A(B+C) = AB + AC\)</td>
+</tr>
+<tr style="border: 0px; margin: 0px; padding: 0px 0px 6px 0px;">
+<td style="border: 0px; margin: 0px; padding: 0px 10px 6px 0px; font-size: 10pt;"><b>Right Distributive:</b><br></td>
+<td style="border: 0px; margin: 0px; padding: 0px 0px 6px 0px; font-size: 10pt;">\((A+B) C = AC + BC\)</td>
+</tr>
+<tr style="border: 0px; margin: 0px; padding: 0px;">
+<td style="border: 0px; margin: 0px; padding: 0px 10px 0px 0px; font-size: 10pt;"><b>Commutative:</b><br></td>
+<td style="border: 0px; margin: 0px; padding: 0px; font-size: 10pt;">\(AB \neq BA\) <span style="text-size: 10pt;">(except in special cases)</span></td>
+</tr>
+</table>
+</div>
+
+<p>
+In order to multiple two matrices \(A\) and \(B,\) the number of
+columns in \(A\) <b>MUST</b> be identical to the number of rows in
+\(B.\)
+
+\begin{align}
+\label{eq:mat_mult_ex}
+
+\begin{split}
+\begin{bmatrix} \; \\ \;m \times n\; \\ \; \end{bmatrix}
+\begin{bmatrix} \; \\ \;n \times p\; \\ \; \end{bmatrix}
+&=
+\begin{bmatrix} \; \\ \;m \times p\; \\ \; \end{bmatrix}\\[24pt]
+\begin{bmatrix} 2 & 3 \\ 4 & 5 \\ 6 & 7 \\ 8 & 9 \end{bmatrix}
+\begin{bmatrix} 1 & 1 & 2 \\ 3 & 5 & 8 \end{bmatrix}
+&=
+\begin{bmatrix}
+11 & 17 & 28 \\
+19 & 29 & 48 \\ 
+27 & 41 & 68 \\
+35 & 53 & 88
+\end{bmatrix}\\[8pt]
+
+\begin{bmatrix}m=4 \times n=2\end{bmatrix}
+\begin{bmatrix}n=2 \times p=3\end{bmatrix}
+&=
+\begin{bmatrix}m=4 \times p=3\end{bmatrix}
+\end{split}
+\end{align}
+</p>
+
+<p>
+So, the shape of \(A\) and \(B\) determine the shape of \(C = AB.\)
+But what do we <em>actually do</em> to calculate the entries \(c_{ij}
+\in C\)?
+</p>
+
+<p>
+There are numerous ways to explain how to multiply matrices. We will
+start with the most common method, which involves taking the dot
+product of row \(i\) of \(A\) and column \(j\) of \(B\) to calculate
+\(c_{ij}.\)
+
+\begin{align}
+\begin{array}{c c c c}
+\begin{bmatrix}
+\ast \\
+a_{i1} & a_{i2} & \cdots & a_{i5} \\
+\ast \\
+\ast \\
+\end{bmatrix} &
+
+\begin{bmatrix}
+\ast & \ast & b_{1j} & \ast & \ast & \ast \\
+ & & b_{2j} \\
+ & & \vdots \\
+ & & b_{5j}
+\end{bmatrix} &
+
+= &
+
+\begin{bmatrix}
+ & & \ast \\
+\ast & \ast & c_{ij} & \ast & \ast & \ast\\
+ & & \ast \\
+ & & \ast \\
+\end{bmatrix}\\[8pt]
+
+A: [4 \times 5] &
+B: [5 \times 6] &
+= &
+C: (4 \times 5) \; (5 \times 6) = 4 \times 6
+
+\end{array}
+\end{align}
+</p>
+
+<p>
+Here \(i=2\) and \(j=3,\) so \(c_{23}\) is \(A_{2 \ast} \cdot B_{\ast
+3}.\)
+
+<p>
+<b>Practical Example.</b> Consider the matrices in Eqn
+\eqref{eq:mat_mult_ex}.
+
+\begin{equation}
+c_{23} = A_{2 \ast} B_{\ast 3} = \begin{pmatrix} 4 & 5 \end{pmatrix} \cdot \begin{pmatrix} 2 & 8
+\end{pmatrix} = (4)(2) + (5)(8) = 48.
+\end{equation}
+</p>
+
+<p>
+And indeed, \(c_{23}\) in Eqn \eqref{eq:mat_mult_ex} is \(48.\)
+Exactly the same approach is used to calculate \(c_{ij} \; \forall \,
+i,j.\)
+</p>
+
+<p>
+Another way of looking at matrix multiplication is through a column
+perspective. \(A\) is multiplied against each column in \(B\) to
+produce a corresponding column in \(C.\)
+</p>
+
+\begin{align*}
+\begin{split}
+
+A
+\begin{bmatrix} B_{\ast j} \end{bmatrix}
+&=
+\begin{bmatrix} C_{\ast j} \end{bmatrix}^{T}
+
+\end{split}
+\end{align*}
+
+<p>
+<b>Practical Example.</b> Calculate \(C_{\ast 3}\) in Eqn
+\eqref{eq:mat_mult_ex}.
+
+\begin{equation}
+
+C_{\ast 3} = A B_{\ast 3} = \begin{bmatrix} 2 & 3 \\ 4 & 5 \\ 6 & 7 \\
+8 & 9 \end{bmatrix} \begin{bmatrix} 2 \\ 8 \end{bmatrix} =
+\begin{bmatrix} 28 & 48 & 68 & 88\end{bmatrix}^{T}
+
+\end{equation}
+</p>
+
+<p>
+The result corresponds to \(C_{\ast 3}^{T}\) as expected.  If we
+apply this approach \(\forall \, j\) will will generate all \(C_{\ast
+j} \in C.\)
+</p>
+
+<p>
+Not surprisingly, you can take a row perspective as well, if you
+prefer.  Here, we multiple rows \(A_{i \ast}\) of \(A\) against \(B\)
+to produce rows \(C_{i \ast}.\)
+</p>
+
+<p>
+<b>Practical Example.</b> Calculate \(C_{2 \ast}\) in Eqn
+\eqref{eq:mat_mult_ex}.
+
+\begin{equation}
+
+C_{2 \ast} = A_{2 \ast} B = \begin{bmatrix} 4 & 5
+\end{bmatrix} \begin{bmatrix} 1 & 1 & 2 \\ 3 & 5 & 8 \end{bmatrix} =
+\begin{bmatrix} 19 & 29 & 48 \end{bmatrix}
+
+\end{equation}
+</p>
+
+<p>This corresponds to \(C_{2 \ast}\) as expected.
+</p>
+
+<p>
+Both Python and R support matrix multiplication. Python does this with
+the <code>matmul</code> function (or more recently with
+the <code>@</code> operator). You can create numpy arrays and multiply
+them with <code>matmul</code> (assuming they satisfy the shape
+constraints described above) to obtain results. In R, the operator
+<code>%*%</code> performs matrix multiplication. One important
+difference between Python and R is that Python defines its matrices in
+a <em>row major</em> fashion, that is, row by row, where R defines its
+matrices column by column using a <em>column major</em>
+approach. Consider the matrices \(A = \begin{bmatrix} 1 & 2 & 3 \\ 4 &
+5 & 6 \\ 7 & 8 & 9 \end{bmatrix},\) \(B = \begin{bmatrix} 1 & 1 & 2 \\
+3 & 5 & 8 \\ 13 & 21 & 34 \end{bmatrix},\) and \(\vec{v} =
+\begin{bmatrix} 10 \\ 11 \\ 12 \end{bmatrix}.\)
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-matmul">
+<b>Python</b>
+
+% import numpy as np
+% 
+% a = np.array( [[1, 2, 3], [4, 5, 6], [7, 8, 9]] )
+% b = np.array( [[1, 1, 2], [3, 5, 8], [13, 21, 34]] )
+% v = np.array( [[10], [11], [12]] )
+% print( np.matmul( a, v ) )
+
+[[ 68]
+&nbsp;[167]
+&nbsp;[266]]
+
+% print( np.matmul( a, b ) )
+
+[[ 46 &nbsp;74 120]
+&nbsp;[ 97 155 252]
+&nbsp;[148 236 384]]
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-matmul">
+<b>R</b>
+
+% a &lt;- matrix( c( 1,4,7, 2,5,8, 3,6,9 ), nrow=3, ncol=3 )
+% b &lt;- matrix( c( 1,3,13, 1,5,21, 2,8,4 ), nrow=3, ncol=3 )
+% v &lt;- c( 10,11,12 )
+% a %*% v
+
+&nbsp; &nbsp; &nbsp;[,1]
+[1,] &nbsp; 68
+[2,] &nbsp;167
+[3,] &nbsp;266
+
+% a %*% b
+
+&nbsp; &nbsp; &nbsp;[,1] [,2] [,3]
+[1,] &nbsp; 46 &nbsp; 74 &nbsp;120
+[2,] &nbsp; 97 &nbsp;155 &nbsp;252
+[2,] &nbsp;148 &nbsp;236 &nbsp;384
+  </div>
+</div>
+
+
+<h3>Identity Matrix</h3>
+
+<div class="defn-div">
+<b>Identity Matrix:</b>&nbsp;&nbsp; The identity matrix \(I\) is an
+\(m \times m\) square matrix with 1s on its diagonal and 0s everywhere
+else. Multiplying \(I\) by a vector or matrix returns the same vector
+or matrix, \(\vec{v} I = I \vec{v} = \vec{v}\) and \(A I = I A = A\)
+</div>
+
+<p>
+The identity matrix \(I\) is a special matrix with the following
+properties.
+</p>
+
+<ol>
+
+<li> \(I\) is a square matrix, that is, \(m = n.\)
+
+<li> Entries along the diagonal of \(I\) are 1.
+
+<li> Entries off the diagonal of \(I\) are 0.
+
+<li> \(I\) acts like the scalar value 1, so any matrix \(A\) with size
+\(m \times n\) multiplied by an \(n \times n\) identity matrix \(I_n\)
+produces \(A,\) \(A I_n = A.\)
+
+<li> Since matrix multiplication is not commutative (that is, \(A B
+\neq B A\) in general), if you want to put \(I\) in front of \(A,\)
+you need to change its size to \(m,\) \(I_m A = A.\)
+
+</ol>
+
+<p>
+\begin{equation}
+
+A I_2 =
+\begin{bmatrix} 2 & 3 \\ 4 & -1 \\ 0 & 5 \end{bmatrix}
+\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}
+=
+\begin{bmatrix}
+(2)(1) + (3)(0) & (2)(0) + (3)(1) \\
+(4)(1) + (-1)(0) & (4)(0) + (-1)(1) \\
+(0)(1) + (5)(0) & (0)(0) + (5)(1)
+\end{bmatrix}
+=
+\begin{bmatrix} 2 & 3 \\ 4 & -1 \\ 0 & 5 \end{bmatrix}
+= A
+
+\end{equation}
+
+\begin{equation}
+
+I_3 A =
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \\ \end{bmatrix}
+\begin{bmatrix} 2 & 3 \\ 4 & -1 \\ 0 & 5 \end{bmatrix}
+=
+\begin{bmatrix}
+(1)(2) + (0)(4) + (0)(0) & (1)(3) + (0)(-1) + (0)(5) \\
+(0)(0) + (1)(4) + (0)(0) & (0)(3) + (1)(-1) + (0)(5) \\
+(0)(0) + (0)(4) + (1)(0) & (0)(3) + (0)(-1) + (1)(5) \\
+\end{bmatrix}
+=
+\begin{bmatrix} 2 & 3 \\ 4 & -1 \\ 0 & 5 \end{bmatrix}
+= A
+
+\end{equation}
+</p>
+
+<p>Both Python and R have built-in functions to create identity matrices
+of a user-chosen size.</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-I">
+<b>Python</b>
+
+% import numpy as np
+%
+% a = np.identity( 3 )
+% print( a )
+
+  [[ 1. 0. 0. ]
+   [ 0. 1. 0. ]
+   [ 0. 0. 1. ]
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-I">
+<b>R</b>
+
+% diag( 3 )
+
+     [,1] [,2] [,3]
+[1,]    1 0 0
+[2,]    0 1 0
+[3,]    0 0 1
+  </div>
+</div>
+
+
+<h3>Inverse Matrix</h3>
+
+<div class="defn-div">
+<b>Inverse Matrix:</b>&nbsp;&nbsp; The inverse \(A^{-1}\) of square
+matrix \(A\) converts \(A\) via matrix multiplication to an identity
+matrix, \(A A^{-1} = A^{-1} A = I\)
+</div>
+
+<p>
+Given a matrix \(A,\) its <em>inverse</em> is denoted \(A^{-1}.\) You
+can think of \(A^{-1}\) as the <em>reciprocal</em> of \(A.\) For
+numbers, the reciprocal of \(n\) is \(\frac{1}{n}.\) For example, the
+reciprocal of 8 is \(\frac{1}{8}.\) The reciprocal has the property
+that a number multiplied by its reciprocal equals one, \((8)
+(\frac{1}{8}) = 1.\) There is no notion of division for matrices,
+however, the inverse acts similarly to reciprocals for numbers. A
+matrix \(A\) multiplied by its inverse \(A^{-1}\) produces the
+identity matrix \(I,\) \(A A^{-1} = A^{-1} A = I,\) which can be seen
+as the matrix equivalent of the number 1.
+</p>
+
+<p>
+What is the purpose of \(A^{-1}?\) The inverse matrix has many
+important functions, but consider a simple case. Suppose I have the
+formula \(A \vec{x} = \vec{b}\) and I know the values for \(A\) and
+\(\vec{b},\) but need to solve for \(\vec{x}.\) If these were numbers
+and not matrices and vectors, I would simply divide through by \(A.\)
+</p>
+
+\begin{equation*}
+\vec{x} = \frac{\vec{b}}{A}
+\end{equation*}
+
+<p>
+As we noted above, however, there is no notion of division for matrices.
+However, we can perform an operation that produces an identical result
+using the inverse matrix \(A^{-1}.\)
+</p>
+
+\begin{equation*}
+\begin{split}
+A^{-1} A \vec{x} &= A^{-1} \vec{b} \\
+I \vec{x} &= A^{-1} \vec{b} \\
+\vec{x} &= A^{-1} \vec{b}
+\end{split}
+\end{equation*}
+
+<p>
+So, given \(A,\) how do you calculate \(A^{-1}.\) A simple equation
+can be used for \(2 \times 2\) matrices, but as the size of the matrix
+increases, it becomes more difficult to compute its inverse. There are
+also two important points to state about a matrix's inverse. The first
+is that (true) inverses only exist for square matrices \(A\) where \(n
+= m.\) The second is that an inverse may not exist. In this case,
+\(A\) is called <em>singular</em> or <em>degenerate</em>.
+</p>
+
+<p>
+For a \(2 \times 2\) matrix \(A = \begin{bmatrix} a_{11} & a_{12} \\
+a_{21} & a_{22} \end{bmatrix},\) we first calculate
+the <em>determinant</em> of \(A,\) \(\textrm{det}(A) = |A| = a_{11}
+a_{22} - a_{12} a_{21}.\) If \(|A|=0\) then \(A\) is singular and no
+inverse exists. Otherwise, \(A^{-1} = \frac{1}{|A|} \begin{bmatrix}
+a_{22} & -a_{12} \\ -a_{21} & a_{11} \end{bmatrix}.\) As a practical
+example, consider \(A = \begin{bmatrix} 4 & 7 \\ 2 & 6
+\end{bmatrix}.\)
+
+\begin{equation}
+\label{eq:det_2x2}
+
+\begin{split}
+
+|A| &= (4)(6) - (7)(2) = 24 - 14 = 10 \\
+
+A^{-1} &= \frac{1}{10} \begin{bmatrix} 6 & -7 \\ -2 & 4 \end{bmatrix}
+= \begin{bmatrix} 0.6 & -0.7 \\ -0.2 & 0.4 \end{bmatrix}
+
+\end{split}
+\end{equation}
+</p>
+
+<div class="defn-div">
+<b>Determinant:</b>&nbsp; &nbsp; A unique scalar value calculated from a
+square matrix \(A\)
+</div>
+
+<p>
+We will discuss determinants to large \(A\) in detail later in the
+notes. To validate \(A^{-1}\) we compute \(A A^{-1}\) and \(A^{-1} A\)
+to confirm they both produce \(I_2.\)
+
+\begin{equation}
+\begin{split}
+
+A A^{-1} &=
+\begin{bmatrix} 4 & 7 \\ 2 & 6 \end{bmatrix}
+\begin{bmatrix} 0.6 & -0.7 \\ -0.2 & 0.4 \end{bmatrix} \\
+
+&=
+\begin{bmatrix} (4)(0.6) - (7)(0.2) & -(4)(0.7) + (7)(0.4) \\ (2)(0.6) - (6)(0.2) & -(2)(0.7) + (6)(0.4) \end{bmatrix}
+= \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = I_2 \\[8pt]
+
+A^{-1} A &=
+\begin{bmatrix} 0.6 & -0.7 \\ -0.2 & 0.4 \end{bmatrix}
+\begin{bmatrix} 4 & 7 \\ 2 & 6 \end{bmatrix} \\
+
+&=
+\begin{bmatrix} (0.6)(4) - (0.7)(2) & (0.6)(7) - (0.7)(6) \\ -(0.2)(4) + (0.4)(2) & -(0.2)(7) + (0.4)(6) \end{bmatrix}
+= \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = I_2 \\
+
+\end{split}
+\end{equation}
+</p>
+
+<p>
+For larger matrices, methods like
+<a href="https://online.stat.psu.edu/statprogram/reviews/matrix-algebra/gauss-jordan-elimination"
+target="_blank">Gauss&ndash;Jordan</a>
+or <a href="https://www.toppr.com/guides/maths/determinants/adjoint-and-inverse-of-a-matrix/"
+target="_blank">Adjoint&ndash;Determinant</a> can be used to identify
+singular matrices and inverses. In practice, however, we normally use
+a library in Python or R to return \(A^{-1}\) or identify \(A\) as
+singular.
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-inv">
+<b>Python</b>
+
+% import numpy as np
+%
+% a = np.array( [[6, 1, 1], [4, -2, 5], [2, 8, 7]] )
+% print( np.linalg.inv( a ) )
+
+  [[ 0.17647059 -0.00326797 -0.02287582]
+   [ 0.05882353 -0.13071895  0.08496732]
+   [-0.11764706  0.1503268   0.05228758]]
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-inv">
+<b>R</b>
+
+% a = matrix( c( 6,4,2, 1,-2,8, 1,5,7 ), nrow=3, ncol=3 )
+% solve( a )
+
+            [,1]         [,2]        [,3]
+[1,]  0.17647059 -0.003267974 -0.02287582
+[2,]  0.05882353 -0.130718954  0.08496732
+[3,] -0.11764706  0.150326797  0.05228758
+  </div>
+</div>
+
+
+<h2 id="elimination">Solving Linear Equations</h2>
+
+<p>
+Our discussion of computing \(\vec{x}\) for an equation \(A\vec{x} =
+\vec{b}\) used the inverse \(A^{-1}\) to "simulate" dividing through
+by matrix \(A.\) Another way of viewing this problem is solving a
+collection of \(n\) equations with \(n\) unknowns. For example, given
+\(A = \begin{bmatrix} 1 & -2 \\ 3 & 2 \end{bmatrix},\) \(\vec{b} =
+\begin{bmatrix} 1 & 11 \end{bmatrix}^{T}\) and \(\vec{x} =
+\begin{bmatrix} x_1 & x_2 \end{bmatrix}^{T},\) we can rewrite \(Ax =
+b\) as two equations and two unknowns.
+
+\begin{align}
+\label{eq:two_var_eqn}
+
+\begin{split}
+x_1 -2 x_2 &= 1\\
+3 x_1 + 2 x_2 &= 11
+\end{split}
+
+\end{align}
+</p>
+
+<p>
+The simplest and most well-known way to solve a collection of \(n\)
+simultaneous equations is through <em>Gaussian
+elimination</em>. Individual unknowns \(x_1, \ldots\, x_{n-1}\) are
+successively removed or <em>eliminated</em> from a subset of the
+equations, eventually producing an equation of the form \(x_n =
+b_n^{\prime}.\) At this point, we know the value for one of the
+unknown variables. Because of the way Gaussian elimination works, the
+remaining equations have two unknowns, three unknowns, up to \(n\)
+unknowns. We can <em>back-substitute</em> the known \(x_n\) into the
+equation \(x_{n-1} + x_n = b_{n-1}^{\prime}\) to solve for
+\(x_{n-1}.\)  Now we have known values for two unknowns \(x_n\) and
+\(x_{n-1}.\) We continue back-substituting to solve for \(x_{n-2},\)
+\(x_{n-3},\) up to the final unknown \(x_1.\) At this point, we have
+fully solved for \(\vec{x}.\)
+</p>
+
+<p>
+We will use Eqn \eqref{eq:two_var_eqn} as a very simple example of
+Gaussian elimination. Here, \(n=2,\) the smallest \(n\) we would
+consider. We require values for \(x_1\) and \(x_2\) where the first
+equations produces 1 and the second equation produces 11. Visually, we
+are searching for the intersection of the two lines represented by \(y
+= \frac{1}{2}x - \frac{1}{2}\) and \(y = -\frac{3}{2} + \frac{11}{2}\)
+(these are simple rewritings of the two equations in Eqn
+\eqref{eq:two_var_eqn} to isolate \(y.\))
+</p>
+
+<canvas id="plane_eqn_solve" class="center-canvas"></canvas>
+<script>
+  setTimeout(() => {
+    draw_line( "plane_eqn_solve", [ -1,4 ], [ 4,-1 ], [ -2,-1.5 ], [ 10,4.5 ] );
+    add_line( "plane_eqn_solve", [ 5,-2 ], [ -1,7 ] );
+    add_line( "plane_eqn_solve", [ 5,-2 ], [ 3,1 ] );
+  }, 5000 );
+</script>
+
+<p>
+The lines intersection at \(x_1=3,\) \(x_2=1.\) This is a solution (in
+fact, <em>the</em> solution) to the system of equations, since
+\((1)(3) - (2)(1) = 1\) and \((3)(3) + (2)(1) = 11.\) Unfortunately,
+this type of "visual intersection" becomes significantly more
+complicated as \(n\) increases. For \(n=3\) we would look for the
+point where three planes intersect. For \(n > 3\) we begin discussing
+hyperplanes, which are very difficult to conceptualize visually.
+</p>
+
+<p>
+This is why we use Gaussian elimination to solve systems of linear
+equations of arbitrary size. I'll provide a simple set of steps we
+apply repeatedly until we isolate a single variable and its
+corresponding value. Although <b>there is no guarantee this will be
+    possible</b>, for now we will assume no issues arise. Once we understand
+the basic approach, we will discuss exceptions and what they mean.
+</p>
+
+<p>
+Our basic "goal" is to take the original system of equations, and
+reduce it to an upper-triangular form.
+
+\begin{equation}
+\label{eq:sys_eq_ex}
+
+\begin{aligned}
+a_{11} x_1 + a_{12} x_2 + \cdots + a_{1n} x_n &= b_1\\
+a_{21} x_1 + a_{22} x_2 + \cdots + a_{2n} x_n &= b_2\\
+\cdots \\
+a_{n1} x_1 + a_{n2} x_2 + \cdots + a_{nn} x_n &= b_n
+\end{aligned}
+\qquad
+\Longrightarrow
+\qquad
+\begin{aligned}
+a_{11} x_1 + a_{12} x_2 + \cdots + a_{1n} x_n &= b_1 \\
+a_{22}^{\prime} x_2 + \cdots + a_{2n}^{\prime} x_n &= b_2^{\prime} \\
+\cdots \\
+a_{nn}^{\prime} x_n &= b_{n}^{\prime}
+\end{aligned}
+\end{equation}
+</p>
+
+<div class="defn-div">
+<b>Upper-Triangular:</b> &nbsp; &nbsp; A square \(n \times n\) matrix
+where all non-zero entries lie on or above the diagonal:
+
+\(
+\begin{bmatrix}
+1 & a_{12} & a_{13} & \cdots & a_{1n} \\
+0 & 1 & a_{23} & \cdots & a_{2n} \\
+\vdots  & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & a_{(n-1)n} \\
+0 & 0 & 0 & \cdots & 1
+\end{bmatrix}
+\)
+</div>
+
+<div class="defn-div">
+<b>Lower-Triangular:</b>&nbsp;&nbsp; A square \(n \times n\) matrix
+where all non-zero matrix entries lie on or below the diagonal:
+
+\(
+\begin{bmatrix}
+1 & 0 & 0 & \cdots & 0 \\
+a_{21} & 1 & 0 & \cdots & 0 \\
+\vdots  & \vdots & \vdots & \ddots & \vdots \\
+a_{(n-1)0} & a_{(n-1)1} & a_{(n-1)2} & \cdots & 0 \\
+a_{n1} & a_{n2} & a_{n3} & \cdots & 1
+\end{bmatrix}
+\)
+</div>
+
+<p>
+We use some specific terminology to discuss Gaussian elimination. Our
+first step would be to take the first equation \(eq_1\) and use it to
+eliminate \(x_1\) from the second equation \(eq_2.\) To do this, we
+create a new equation \(eq_2^{\prime} = eq_2 - m\,eq_1\). To calculate
+the <b>multiplier</b> \(m,\) we divide the <b>coefficient</b> \(c\) of \(x_1\)
+in \(eq_2\) by the coefficient \(p\) of \(x_1\) in
+\(eq_1, m = \frac{c}{p}.\) We call \(p\) the <b>pivot</b>.
+</p>
+
+<p>
+<b>Practical Example</b>. In Eqn \eqref{eq:sys_eq_ex} <b>pivot</b>
+\(p=a_{11},\) coefficient \(c=a_{21},\) and <b>multiplier</b>
+\(m=\frac{a_{21}}{a_{11}}.\)
+</p>
+
+<p>
+Once we know \(a_{nn}^{\prime} x_n = b_n^{\prime},\) we back-substitute
+the (now) known value of \(x_n = \frac{b_{n}^{\prime}}{a_{nn}^{\prime}}\) into the preceding
+equation \(a_{(n-1)(n-1)}^{\prime} x_{n-1} + a_{nn}^{\prime} x_n =
+b_{(n-1)}^{\prime}\) to solve for \(x_{n-1}.\) This
+continues, allowing us to solve for all remaining \(a_{ij}\) and
+obtain a final solution to the values for every \(x_i.\)
+</p>
+
+<div id="gauss-accordion" class="detail">
+  <h3>Gaussian Elimination Detail</h3>
+  <div>
+    <p> Given our goal of converting \(A \vec{x}\) into an
+    upper-triangular form, we complete the following steps to
+    iteratively work towards the upper-triangular equation set. </p>
+
+    <ol>
+
+    <li> Take the coefficient \(p=a_{11}\) of \(x_1\) in the first
+    equation. This is the <b>pivot</b>, and the first equation
+    \(eq_1\) is the <b>eliminator</b>.
+
+    <li> Take the coefficient \(c=a_{21}\) of \(x_1\) in the second
+    equation \(eq_2.\) Calculate the coefficient divided by the pivot,
+    \(m = \frac{c}{p}.\) \(m\) is called the <b>multiplier</b>.
+
+    <li> Replace \(eq_2\) with \(eq_2^{\prime} = eq_2 - m \, eq_1.\)
+    This <em>eliminates</em> \(x_1\) from \(eq_2^{\prime}.\)
+
+    <li> Apply steps 2 and 3 to each of the remaining equations
+    \(eq_3\) through \(eq_n.\) Now, \(x_1\) has been eliminated from
+    all equations \(eq_2, \ldots, eq_n.\)
+
+    <li> If we now consider only \(eq_2^{\prime}, \ldots,
+    eq_n^{\prime},\) we have \(n-1\) equations and \(n-1\) unknowns.
+
+    <li> Repeat the elimination process on the subset of equations
+    \(eq_2^{\prime}, \ldots, eq_n^{\prime}\) to eliminate \(x_2.\)
+
+    <li> Continue this approach to eliminate \(x_3,\) \(x_4,\) and so
+    on until we are left with one equation and one unknown
+    \(x_n^{\prime} = b_n^{\prime}.\)
+
+    <li> At this point, the final equation combined with each
+    elimination equation produces the upper-triangular form we
+    require.
+
+    <li> Back-substitution can now be used to solve for each \(x_i,\)
+    producing an \(\vec{x}\) that correctly solves <b>both</b> the
+    upper-triangular equations <b>and</b> the original \(A\vec{x} =
+    \vec{b}.\)
+
+    </ol>
+
+    <p><b>Practical Example.</b> Walk through these steps for the
+    linear equations in Eqn \eqref{eq:two_var_eqn}. </p>
+
+    <div class="code-flex-div">
+    <div class="eq-flex-pair-accordion">
+      \begin{align*}
+      \begin{split}
+      x_1 -2 x_2 &= 1\\
+      3 x_1 + 2 x_2 &= 11
+      \end{split}
+      \end{align*}
+    </div>
+    </div>
+
+    <ol>
+
+    <li> The initial pivot from \(eq_1\) is \(p=1.\)
+
+    <li> The coefficient from \(eq_2\) is \(c=3,\) producing a
+    multiplier \(m=\frac{3}{1} = 3.\)
+
+    <li> \(eq_2\) is replaced by \(eq_2^{\prime} = eq_2 - m \, eq_1 =
+    ( 3 x_1 + 2 x_2 = 11 ) - ( 3 x_1 - 6 x_2 = 3 ),\) producing \(8
+    x_2 = 8\)
+
+    <li> Because we started with a very small \(2 \times 2\) example,
+    we have reached an upper-triangular matrix with \(x_2 = 1.\) We
+    can now begin back-substitution.
+
+    <li> Substitution \(x_2 = 1\) into \(eq_1\) produces \(x_1 - 2(1)
+    = 1,\) or \(x_1 = 3.\)
+
+    </ol>
+
+    <p> We now have a solution to \(A\vec{x} = \vec{b},\)
+    specifically, \(\vec{x} = \begin{bmatrix} 3 & 1
+    \end{bmatrix}^{T}.\) Substituting these values into the original
+    \(eq_1\) and \(eq_2\) shows that they are correct: \(eq_1: (1)(3)
+    - (2)(1) = 1\) and \(eq_2: (3)(3) + (2)(1) = 11.\) Alternatively,
+    we can solve \(A \vec{x} = \begin{bmatrix} 1 & -2 \\ 3 & 2
+    \end{bmatrix} \begin{bmatrix} 3 \\ 1 \end{bmatrix} =
+    \begin{bmatrix} (1)(3) + (-2)(1) \\ (3)(3) + (2)(1) \end{bmatrix}
+    = \begin{bmatrix} 1 \\ 11 \end{bmatrix} = \vec{b}.\) </p>
+
+
+    <h3>Failure Cases</h3>
+
+    <p> Unfortunately, it is not always possible to obtain a solution
+    to \(Ax = b\) using Gaussian elimination. This should not be
+    surprising, since it is analogous to when the inverse matrix
+    \(A^{-1}\) does not exist. Three types of issues can arise during
+    Gaussian elimination. The first two cannot be corrected. In the
+    third, however, it may be possible to recover by applying <em>row
+    exchange</em>.
+
+    <p> <b>No Solutions.</b> The first permanent failure case is one
+    where no solutions exist. Consider the following \(2 \times 2\)
+    system of equations. </p>
+
+    <div class="code-flex-div">
+    <div class="eq-flex-pair-accordion">
+      \begin{align*}
+      \begin{split}
+      x_1 - 2 x_2 &= 1\\
+      3 x_1 - 6 x_2 &= 11
+      \end{split}
+      \end{align*}
+    </div>
+    </div>
+
+    <p> If we apply the steps to Gaussian elimination, our multiplier
+    \(m = \frac{3}{1}\) and we replace \(eq_2\) with \(eq_2 - 3 \,
+    eq_1 \rightarrow 0 x_2 = 8.\) Obviously, no value of \(x_2\) can
+    satisfy this equality, so no solution exists for this system of
+    equations.  Visually, this corresponds to two parallel
+    lines. Since parallel lines never meet, there is no intersection
+    point to act as a solution. </p>
+
+    <canvas id="plane_parallel" class="center-canvas"></canvas>
+    <script>
+      setTimeout(() => {
+        draw_line(
+          "plane_parallel", [ -1,1 ], [ 4,-4 ], [ -2,-1.5 ], [ 10,4.5 ] );
+        add_line( "plane_parallel", [ -2,-2.833 ], [ 12,4.1666 ] );
+      }, 5000 );
+    </script>
+
+    <p> <b>Infinite Solutions.</b> The second permanent failure case
+    is one where an infinite number of solutions exist. Consider again
+    a \(2 \times 2\) system of equations. </p>
+
+    <div class="code-flex-div">
+    <div class="eq-flex-pair-accordion">
+      \begin{align*}
+      \begin{split}
+      x_1 - 2 x_2 &= 1\\
+      3 x_1 - 6 x_2 &= 3
+      \end{split}
+      \end{align*}
+    </div>
+    </div>
+
+    <p> As before, the multiplier \(m = \frac{3}{1} = 3\) and we
+    replace \(eq_2\) with \(eq_2 - 3 \, eq_1 \rightarrow 0 x_2 = 0.\)
+    In this case, any value of \(x_2\) will satisfy the new equation,
+    so we have an infinite choice of possible solutions. Visually,
+    this corresponds to two parallel lines that lie on top of one
+    another, or a second line equation that is a constant multiple of
+    (<em>i.e.,</em> that is dependent on) the first. </p>
+
+    <canvas id="plane_inf" class="center-canvas"></canvas>
+    <script>
+      setTimeout(() => {
+        draw_line( "plane_inf", [ -1,2 ], [ 4,-3 ], [ -2,-1.5 ], [ 10,4.5 ] );
+      }, 5000 );
+    </script>
+
+    <p> <b>Row Exchange.</b> A third problem occurs when the pivot
+    \(p=0.\) We cannot compute a multiplier \(m = \frac{c}{p}\) since
+    this produces division by zero. However, if we can find another
+    equation where \(p \neq 0,\) we can swap the two equations and
+    continue with the Gaussian elimination steps. </p>
+
+    <div class="code-flex-div">
+    <div class="eq-flex-pair-accordion">
+      \begin{equation*}
+      \begin{aligned}
+      0 x_1 + 2 x_2 &= 4\\
+      3 x_1 - 2 x_2 &= 5\\
+      \end{aligned}
+      \qquad
+      \Longrightarrow
+      \qquad
+      \begin{aligned}
+      3 x_1 - 2 x_2 &= 5\\
+      0 x_1 + 2 x_2 &= 4\\
+      \end{aligned}
+      \end{equation*}
+    </div>
+    </div>
+
+    <p> Here, the pivot in \(eq_1\) is \(p=0.\) To correct this, we
+    exchange \(eq_1\) and \(eq_2.\) Now, \(p=3\) and we can continue
+    with a multiplier of \(m=\frac{0}{3}=0.\) A multiplier of \(m=0\)
+    means we subtract nothing from the (newly exchanged) \(eq_2,\) but
+    this is fine, since \(x_1\) is effectively removed from \(eq_2\)
+    because its coefficient is 0. This results in \(x_2 = 2\) and
+    through back-substitution \(x_1=3,\) which satisfies the original
+    simultaneous linear equations. Note, however, that if there were
+    no other equation with a non-zero \(x_1\) coefficient, there would
+    be no way to perform row exchange to correct our problem and no
+    solution could be found. </p>
+  </div>
+</div>
+
+
+<h3>Elimination Matrices</h3>
+
+<p>
+Rather than performing equation subtraction, we can eliminate
+variables from a system of equations using <em>elimination
+matrices</em>. These matrices are a modified identity matrix, and use
+exactly the same multiplier we defined previously to perform
+elimination of one variable from one equation in the system of
+equations. Obviously, for even a moderately-sized system, many
+elimination matrices will be needed. However, we will see later that
+the elimination matrices can be easily inverted and combined into a
+single elimination matrix \(L\) that performs all elimination steps in
+a single matrix multiplication.
+</p>
+
+<p>
+To start, consider the following \(3 \times 3\) system of equations
+where we want to solve for \(\vec{x},\) shown in both equation and
+\(A\vec{x} = \vec{b}\) form.
+
+\begin{align}
+\label{eq:elim_ex}
+
+\begin{matrix}
+2 x_1 + 4 x_2 - 2 x_3 = 2\\
+4 x_1 + 9 x_2 - 3 x_3 = 8 \\
+-2 x_1 -3 x_2 + 7 x_3 = 10
+\end{matrix}
+
+&\qquad \qquad \equiv \qquad \qquad
+
+\begin{bmatrix}
+2 & 4 & -2 \\ 4 & 9 & -3 \\ -2 & -3 & 7
+\end{bmatrix}
+\begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix}
+=
+\begin{bmatrix} 2 \\ 8 \\ 10 \end{bmatrix}\\
+
+\end{align}
+</p>
+
+<p>
+If we were performing Gaussian elimination, the pivot \(p=2,\) the
+coefficient \(c=4,\) and the multiplier \(m=\frac{c}{p}=2.\) We would
+then perform \(eq_2^{\prime} = eq_2 - 2\,eq_1\) to remove \(x_1\) from
+\(eq_2.\)
+</p>
+
+<p>
+Instead, we'll perform this using an elimination matrix \(E_{21},\) so
+subscripted because we're eliminating (adjusting to 0) coefficient
+\(a_{21}\) from \(A\) (<i>i.e.,</i> we're eliminationg \(x_1\) from
+\(eq_2\).) First, we combined \(A\) and \(\vec{b}\) into a
+single matrix \(AB.\)
+
+\begin{equation}
+AB =
+\left[
+\begin{array}{c c c | c}
+2 & 4 & -2 & 2\\
+4 & 9 & -3 & 8\\
+-2 & -3 & 7 & 10
+\end{array}
+\right]
+\end{equation}
+</p>
+
+<p>
+Next we take the multiplier \(m=2,\) negate it to represent
+subtraction, and place it in position \(e_{21}\) of a \(3 \times 3\)
+identity matrix \(E_{21}\).
+
+\begin{align}
+\label{eq:e_21}
+
+E_{21} &=
+\begin{bmatrix}
+1 & 0 & 0 \\
+-2 & 1 & 0 \\
+0 & 0 & 1
+\end{bmatrix}
+\end{align}
+</p>
+
+<p>
+Since the only difference between \(E_{21}\) and \(I_3\) lies in
+position \(e_{21},\) if we compute \(E_{21}\,AB,\) the only entries of
+AB that could possibly be changed are \(AB_{21},\) \(AB_{22},\)
+\(AB_{23},\) and \(AB_{24}.\) This corresponds to our goal: adjusting
+\(AB_{21}\) to 0 and updating the remaining values on row 2 of \(AB,\)
+exactly as if we'd performed \(eq_2 - 2\,eq_1.\)
+
+\begin{equation}
+
+AB^{\prime} = E_{21}\,AB =
+\begin{bmatrix} 1 & 0 & 0 \\ -2 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+
+\left[
+\begin{array}{c c c | c}
+2 & 4 & -2 & 2 \\ 4 & 9 & -3 & 8 \\ -2 & -3 & 7 & 10
+\end{array}
+\right]
+
+=
+\begin{bmatrix} 2 & 4 & -2 & 2 \\ 0 & 1 & 1 & 4 \\ -2 & -3 & 7 & 10 \end{bmatrix}
+
+\end{equation}
+</p>
+
+<p>
+Notice that the coefficient for \(x_1\) in \(eq_2\) has adjusted to 0,
+exactly as we wanted. We could then eliminate the \(x_1\) coefficient
+in \(eq_3\) by computing the multiplier \(m=-1,\) negating it, and
+placing it in \(I_3\) at position \(i_{31}\) to create \(E_{31} =
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 1 & 0 & 1
+\end{bmatrix}.\) We could now eliminate \(x_1\) from both \(eq_1\) and
+\(eq_2\) by calculating \(E_{31}\,E_{21}\,AB.\)
+
+\begin{equation}
+AB^{\prime\prime} = E_{31}\,E_{21}\,AB =
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 1 & 0 & 1 \end{bmatrix}
+\begin{bmatrix} 2 & 4 & -2 & 2 \\ 0 & 1 & 1 & 4 \\ -2 & -3 & 7 & 10 \end{bmatrix}
+=
+\begin{bmatrix} 2 & 4 & -2 & 2 \\ 0 & 1 & 1 & 4 \\ 0 & 1 & 5 & 12 \end{bmatrix}
+
+\end{equation}
+</p>
+
+<p>
+Now we have our \(2 \times 2\) submatrix with two equations and two
+unknowns in the lower-right corner of the resulting matrix. To
+complete the example, we would zero \(ab_{32}^{\prime\prime}\) by
+calculating a multiplier of \(m=1,\) negating it, and inserting it
+into position \(e_{32}.\)
+
+\begin{equation}
+AB^{\prime\prime\prime} = E_{32}\,E_{31}\,E_{21}\,AB =
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & -1 & 1 \end{bmatrix}
+\begin{bmatrix} 2 & 4 & -2 & 2 \\ 0 & 1 & 1 & 4 \\ 0 & 1 & 5 & 12 \end{bmatrix}
+=
+\begin{bmatrix} 2 & 4 & -2 & 2 \\ 0 & 1 & 1 & 4 \\ 0 & 0 & 4 & 8 \end{bmatrix}
+\end{equation}
+</p>
+
+<p>
+At this point we have \(4 x_3 = 8,\) or \(x_3 = 2.\) Back-substitution
+produces \(x_2 = 4 - x_3 = 4 - 2 = 2\) and \(\displaystyle x_1 =
+\frac{2 - 4 x_2 + 2 x_3}{2} = \frac{-2}{2} = -1,\) for a final
+solution of \(\vec{x} = \begin{bmatrix} -1 & 2 & 2
+\end{bmatrix}^{T}.\)  Substitution \(\vec{x}\) into Eqn
+\eqref{eq:elim_ex} confirms it is correct.
+</p>
+
+<p>
+<b>Permutation Matrix.</b> To use elimination matrices for solving
+systems of equations, we need a matrix method for row exchange. This
+is known as a <em>permutation matrix</em>, and is a simple
+modification of the identity matrix. To exchange equations \(s\) and
+\(t,\) simply exchange the rows \(i_{s \ast}\) and \(i_{t \ast} \in
+I.\) For example, to exchange rows \(s=2\) and \(t=3\) in our previous
+example, we would use the permutation matrix \(p_{23}.\)
+</p>
+
+\begin{equation*}
+p_{23} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 0 & 1 \\ 0 & 1 & 0 \end{bmatrix}
+\end{equation*}
+
+<p>
+This is simply \(I_3\) with rows \(2\) and \(3\) exchanged.
+</p>
+
+
+<div id="elim-matrix-accordion" class="detail">
+  <h3>Elimination Matrix Triangulation</h3>
+  <div>
+    <p>
+    As far as I know, neither Python nor R has built-in code to
+    perform Gaussian triangulation of a system of equations using
+    elimination matrices. This is probably because there are other
+    ways of solving \(A \vec{x} = \vec{b}\) (<em>e.g.</em>, by using
+    \(A^{-1}\)) that are directly available. It's not that difficult
+    to write a small amount of code to perform Gaussian triangulation
+    with elimination matrices, however. So, if you're curious, the
+    code below should be able to do this in either Python or R. It
+    takes the matrix of coefficients \(A\) for the system of equations
+    and the values of \(\vec{b},\) then returns the upper-diagonal
+    matrix \(A^{\prime}\,|\,\vec{b},\) or tells you the systems of
+    equations cannot be diagonalized.
+    </p>
+
+    <div class="code-flex-pair-div">
+      <div class="code-flex-pair-accordion" id="code-flex-py-elim">
+<b>Python</b>
+
+% import numpy as np
+% import sys
+%
+% def elim_E( AB, e1, e2, elim_c ):
+%     #  Build elimination matrix for two equations and column elim_c to
+%     #  zero coefficient
+% 
+%     #  AB {matrix}:   Ab, system of equations to diagonalize
+%     #  e1 {int}:      Row of equation to subtract
+%     #  e2 {int}:      Row of equation to zero coefficient
+%     #  elim_c {int}:  Column (x_c) to zero coefficient
+% 
+%     coeff = AB[ e2 ][ elim_c ]
+%     pivot = AB[ e1 ][ elim_c ]
+% 
+%     E = np.identity( AB.shape[ 0 ] )
+%     E[ e2 ][ elim_c ] = -( coeff / pivot )
+%     return E
+% #  End method elim_E
+% 
+% def row_exchg( AB, e1, elim_c ):
+%     #  If pivot is zero, try to find another equation to swap
+%     #  with where pivot is not zero
+%     #
+%     #  AB {matrix}:   Ab, system of equations to diagonalize
+%     #  e1 {int}:      Row of equation to exchange
+%     #  elim_c {int}:  Column (x_c) with zero pivot
+% 
+%     row_n = len( AB )
+% 
+%     for i in range( e1 + 1, row_n ):
+%         if AB[ i ][ elim_c ] == 0:
+%             continue
+% 
+%         P = np.identity( row_n )
+%         tmp = P[ e1 ].copy()
+%         P[ e1 ] = P[ i ].copy()
+%         P[ i ] = tmp.copy()
+% 
+%         return( np.matmul( P, AB ) )
+% 
+%     return None
+% # End function row_exchg
+%
+% def triangulate( A, b ):
+%     AB = np.append( A, b, 1 )
+%     row_n = len( AB )
+% 
+%     for eq_1 in range( 0, row_n - 1 ):
+%         for eq_2 in range( eq_1 + 1, row_n ):
+%             col = eq_1
+% 
+%             if AB[ eq_1 ][ col ] == 0:
+%                 AB = row_exchg( AB, eq_1, col )
+% 
+%             if AB is None:
+%                 print( 'triangulate(), pivot=0 for elim column' )
+%                 return None
+% 
+%             E_elim = elim_E( AB, eq_1, eq_2, col )
+%             AB = np.matmul( E_elim, AB )
+% 
+%     return AB
+% # End method triangulate
+%
+% # Mainline
+%
+% A = np.array( [[0, 4, -2], [4, 9, -3], [-2, -3, 7 ]] )
+% b = np.array( [[2], [8], [10]] )
+%
+% AB_tri = triangulate( A, b )
+% if AB_tri is not None:
+%     print( AB_tri )
+% else:
+%     print( 'main(), A cannot be triangulated' )
+  </div>
+
+  <div class="code-flex-pair-accordion" id="code-flex-R-elim">
+<b>R</b>
+
+% elim_E &lt;- function( AB, e1, e2, elim_c ) {
+%     #  Build elimination matrix for two equations and column elim_c to
+%     #  zero coefficient
+%     #
+%     #  AB {matrix}:   Ab, system of equations to diagonalize
+%     #  e1 {int}:      Row of equation to subtract
+%     #  e2 {int}:      Row of equation to zero coefficient
+%     #  elim_c {int}:  Column (x_c) to zero coefficient
+% 
+%     coeff &lt;- AB[ e2, elim_c ]
+%     pivot &lt;- AB[ e1, elim_c ]
+% 
+%     E &lt;- diag( nrow( AB ) )  
+%     E[ e2, elim_c ] &lt;- -( coeff / pivot )
+%     return( E )
+% } #  End function elim_E
+%
+% row_exchg &lt;- function( AB, e1, elim_c ) {
+%     #  If pivot is zero, try to find another equation to swap
+%     #  with where pivot is not zero
+%     #
+%     #  AB {matrix}:   Ab, system of equations to diagonalize
+%     #  e1 {int}:      Row of equation to exchange
+%     #  elim_c {int}:  Column (x_c) with zero pivot
+% 
+%     row_n &lt;- nrow( AB )
+% 
+%     for( i in ( e1 + 1 ): row_n ) {
+%         if ( AB[ i, elim_c ] == 0 ) {
+%             next
+%         }
+% 
+%         P &lt;- diag( row_n )
+%         tmp &lt;- P[ e1, ]
+%         P[ e1, ] &lt;- P[ i, ]
+%         P[ i, ] &lt;- tmp
+% 
+%         return( P %*% AB )
+%     }
+% 
+%     return( NULL )
+% } #  End function row_exchg
+% 
+% triangulate &lt;- function( A, b ) {
+%     AB &lt;- cbind( A, b )
+%     row_n &lt;- nrow( AB )
+% 
+%     for( eq_1 in 1: ( row_n - 1 ) ) {
+%         for( eq_2 in ( eq_1 + 1 ): row_n ) {
+%             col &lt;- eq_1
+%             if ( AB[ eq_1, col ] == 0 ) {
+%                 AB = row_exchg( AB, eq_1, col )
+%             }
+%             if ( is.null( AB ) ) {
+%                 print( 'triangulate(), pivot=0 for elim column' )
+%                 return( NULL )
+%             }
+%             E_elim &lt;- elim_E( AB, eq_1, eq_2, col )
+%             AB &lt;- E_elim %*% AB
+%         }
+%     }
+% 
+%     return( AB )
+% } #  End function triangulate
+%
+% # Mainline
+% 
+% A &lt;- matrix( c( 0,4,-2, 4,9,-3, -2,-3,7 ), nrow=3, ncol=3 )
+% b &lt;- matrix( c(2, 8, 10) )
+% 
+% AB_tri &lt;- triangulate( A, b )
+% if ( !is.null( AB_tri ) ) {
+%     print( AB_tri )
+% } else {
+%     print( 'main(), A cannot be triangulated' )
+% }
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<h3>Inverse of Elimination Matrices</h3>
+
+<p>
+To complete our discussion of elimination matrices, we note how to
+directly compute their inverse. Consider elimination matrix \(E_{21}\)
+(Eqn \eqref{eq:e_21}) above. The \(-2\) in position \(e_{21}\)
+subtracts \(2 \, eq_1\) from \(eq_2.\) To reverse (or invert) this
+effect, we would <em>add back</em> \(2 \, eq_1\) to \(eq_2.\)  This
+is easily done by replacing \(-2\) with \(2\) in \(E_{21}.\)
+</p>
+
+\begin{equation*}
+E_{21}^{-1} = \begin{bmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+\end{equation*}
+
+<p>
+Any elimination matrix can be inverted by negating its off-diagonal
+value.  If we calculated \(E_{21}^{-1} E_{21}\) we obtain \(I_3,\)
+exactly as required.
+</p>
+
+
+<h2 id="vec-space">Vector Spaces</h3>
+
+<p>
+You may have wondered why we started our discussion of linear algebra
+by describing linear combinations (Eqn \eqref{eq:lin-comb}). Apart
+from an appropriate starting point, linear combinations are the
+requirement for a combination of column vectors forming a <em>vector
+space</em>.  You already know a number of common vector spaces. For
+example, \(\mathbb{R}^2\) and \(\mathbb{R}^3,\) the collection of real
+numbers in 2D and 3D, are both vector spaces. So is \(\mathbb{Z},\)
+the vector space containing only the zero vector \(\textbf{0}.\) This is
+all fine, but what <em>exactly</em> defines a vector space?
+</p>
+
+<p>
+Theoretically, given a vector space \(\mathbb{V}^{n},\) consider the
+linear combination \(\vec{w}\) of \(n\) vectors \(U = ( \vec{u_1},
+\ldots, \vec{u_n} )\)&nbsp;=&nbsp;\(( \, [ u_{11}, u_{12}, \ldots, u_{1n} ]^{T},
+\ldots, [ u_{n1}, u_{n2}, \ldots, u_{nn} ]^{T} \,), \; \vec{u_i} \in
+\mathbb{V}^{n}.\) The linear combination \(\vec{w} = c_1 \vec{u_1} +
+\cdots + c_n \vec{u_n}\) must also lie
+<em>inside</em> the same vector space, \(\vec{w} \in \mathbb{V}^{n}.\)
+</p>
+
+<div class="defn-div">
+<b>Vector Space:</b>&nbsp;&nbsp; Given column vectors \(\vec{u_1},
+\ldots, \vec{u_n} \in \mathbb{V}^{n},\) their linear combination
+\(\vec{w} = c_1 \vec{u_1} + \cdots + c_n \vec{u_n}\) must also lie in
+\(\mathbb{V}^{n}\)
+</div>
+
+<p>
+Gilbert Strang goes on to expand this into eight basic "requirements"
+a vector space must satisfy.
+</p>
+
+<ol>
+
+<li> \(\vec{x} + \vec{y} = \vec{y} + \vec{x}.\)
+<li> \(\vec{x} + ( \vec{y} + \vec{z} ) = ( \vec{x} + \vec{y} ) +
+\vec{z}.\)
+<li> \(\exists\) a unique zero vector \(\textbf{0}\) s.t. \(\vec{x} +
+\textbf{0} = \vec{x} \; \forall \, \vec{x}.\)
+<li> \(\exists\) a unique vector \(-\vec{x}\) s.t. \(\vec{x} +
+(-\vec{x}) = \textbf{0} \; \forall \, \vec{x}.\)
+<li> \(1 \, \vec{x} = \vec{x}.\)
+<li> \((c_1 c_2) \vec{x} = c_1 (c_2 \vec{x}).\)
+<li> \(c(\vec{x} + \vec{y}) = c \vec{x} + c \vec{y}.\)
+<li> \((c_1 + c_2) \vec{x} = c_1 \vec{x} + c_2 \vec{x}.\)
+
+</ol>
+
+
+<h3>Basis Vectors</h3>
+
+<p>
+If the vectors in \(U\) are <em>linearly independent</em> and
+<em>span</em> \(\mathbb{V}^{n},\) then \(U\) forms a <em>basis</em>
+of \(\mathbb{V}^{n}.\)
+</p>
+
+<div class="defn-div">
+<b>Linearly Independent:</b>&nbsp;&nbsp; Two vectors \(\vec{u}\) and
+\(\vec{v}\) are linearly independent if \(\vec{u} \neq c \vec{v} \; \forall
+c\)
+</div>
+
+<div class="defn-div">
+<b>Span:</b>&nbsp;&nbsp;Vectors \(U = (\vec{u_1}, \ldots, \vec{u_n})\)
+span \(\mathbb{V}^n\) if any \(\vec{w} \in \mathbb{V}^n\) is a linear
+combination of \(U,\) \(\vec{w} = c_1 \vec{u_1} + \cdots + c_n
+\vec{u_n}\)
+</div>
+
+<p>
+You have already seen basis vectors before. For example, the basis
+vectors for \(\mathbb{R}^2\) are normally the \(x\) and \(y\) axes
+\(\begin{bmatrix} 1 \\ 0 \end{bmatrix}\) and \(\begin{bmatrix} 0 \\ 1
+\end{bmatrix}.\) These axes are orthogonal to one another, so they are
+linearly independent.  And, any point \(p = \begin{bmatrix} p_1 \\ p_2
+\end{bmatrix} \in \mathbb{R}^2\) can be formed by the linear combination
+\(p_1 \begin{bmatrix} 1 \\ 0 \end{bmatrix} + p_2 \begin{bmatrix} 0 \\
+1 \end{bmatrix}.\)
+</p>
+
+<div class="defn-div">
+<b>Basis Vectors:</b>&nbsp; &nbsp; Vectors \((\vec{u_1}, \ldots,
+\vec{u_n})\) that are orthogonal and whose linear combinations define
+all \(\vec{w} \in \mathbb{V}^n\) form a basis of \(\mathbb{V}^n\)
+</div>
+
+
+
+<h3>Subspaces</h3>
+
+<p>
+Subspaces are subsets of a vector space that satisfy three specific
+requirements. For example, in \(\mathbb{R}^3\) any 2D plane is a
+subspace of \(\mathbb{R}^3.\) So is any line with 3D endpoints, or any
+3D point. Not surprisingly, a subspace has a specific theoretical
+definition. Given \(\vec{u}\) and \(\vec{v}\) in a subspace \(S_S,\)
+then for any scalar \(c\):
+
+<ul>
+
+<li> \(\textbf{0} \in S_S \)
+<li> \(\vec{u} + \vec{v} \in S_S\)
+<li> \(c\vec{u} \in S_S\)
+
+</ul>
+
+<div class="defn-div">
+<b>Subspace:</b>&nbsp;&nbsp; For subspace \(S_S,\) \(\vec{u}, \vec{v}
+\in S_S\) and scalar \(c,\) \(\vec{u} + \vec{v} \in S_S\) and \(c\vec{u}
+\in S_S\)
+</div>
+
+<p>
+We often say the set of vectors in \(S_S\) contains the zero vector
+and is "closed" under addition and multiplication, or in other words,
+linear combinations of vectors in \(S_S\) stay in \(S_S.\) This means
+a subspace is itself a vector space.
+</p>
+
+
+<h3>Column Space</h3>
+
+<p>
+Remember that our ultimate goal is to solve \(A\vec{x} = \vec{b}.\) If
+\(A\) is <b>NOT</b> invertable, then \(A\vec{x} = \vec{b}\) is
+solvable for some \(\vec{b},\) but not for others. If we choose a
+concrete \(\vec{x},\) say \(\vec{x_i},\) \(A \vec{x_i} =
+\vec{b_i}.\) If we take all possible \(\vec{x_i}\) we generate a
+collection of all possible \(\vec{b_i}\) called \(B.\) Now, for any
+\(\vec{b_j},\) if \(\vec{b_j} \in B,\) then \(\exists \, \vec{x_j}\)
+giving \(A \vec{x_j} = \vec{b_j}.\) If \(\vec{b_j} \notin B,\) then no
+such \(\vec{x_j}\) exists. We say that \(B\) forms the <em>column
+space</em> of \(A,\) the set of all possible \(\vec{b_i}\) that can be
+formed by \(A \vec{x}.\)
+</p>
+
+<p>
+The simplest way to generate \(B\) is to divide \(A\) into its
+individual columns, then generate all possible linear combinations of
+those columns. Note that this is equivalent to generating all possible
+\(\vec{x},\) since if we view \(A \vec{x}\) as a combination of
+columns (Eqn \eqref{eq:vec_mult}), we have exactly this linear
+combination.
+
+\begin{equation}
+A\vec{x} = x_1 A_{\ast 1} + \cdots + x_n A_{\ast n}
+\end{equation}
+</p>
+
+<div class="defn-div">
+<b>Column Space:</b>&nbsp;&nbsp; The column space \(C(A)\) of
+\(A\vec{x} = \vec{b}\) is the set of all linear combinations of the
+columns of \(A\)
+</div>
+
+<p>
+Consider a practical example, \(A = \begin{bmatrix}1 & 0\\4 & 3\\2 &
+3\end{bmatrix} \begin{bmatrix}x_1 \\ x_2\end{bmatrix}.\) Since \(A\)
+is not square, it has no inverse. This is the equation of a plane in
+\(\mathbb{R}^3,\) so all solutions \(\vec{b_i}\) lie in the column
+space \(C(A),\) or in other words, on the plane formed by \(A
+\vec{x}.\)
+</p>
+
+
+<h3>Nullspace</h3>
+
+<p>
+The nullspace \(N(A)\) is the set of all solutions to
+\(A\vec{x}=\textbf{0}.\)  That is, we replace the general \(\vec{b}\)
+with the zero vector, \(\vec{b} = \textbf{0}.\) We do this to describe
+methods to solve \(A\vec{x} = \textbf{0}\) that will later be very helpful in
+solving the full equation \(A\vec{x} = \vec{b}.\)
+</p>
+
+<div class="defn-div">
+<b>Null Space:</b>&nbsp;&nbsp; The null space \(N(A)\) of \(A\vec{x} =
+\textbf{0}\) is the set of all solution vectors \(\vec{x} \in
+\mathbb{R}^n\)
+</div>
+
+<p>
+Just like column space \(C(A),\) the nullspace \(N(A)\) is a subspace,
+specifically, a subspace of \(\mathbb{R}^n.\) As a practical example,
+consider \(A = \begin{bmatrix} 1 & 2\\3 & 6\end{bmatrix}.\) We apply
+Gaussian elimination to determine values for \(x_1\) and \(x_2.\)
+</p>
+
+\begin{equation*}
+\begin{aligned}
+x_1 + 2 x_2 &= 0\\
+3 x_1 + 6 x_2 &= 0\\
+\end{aligned}
+\qquad
+\Longrightarrow
+\qquad
+\begin{aligned}
+x_1 +2 x_2 &= 0\\
+0 &= 0\\
+\end{aligned}
+\end{equation*}
+
+<p>
+The second equation \(0 = 0\) tell us \(A\) is singular. We can see
+this by recognizing the second row \(A_{2 \ast}\) is three times the
+first row of \(A, A_{2 \ast} = 3 \, A_{1 \ast}.\) Since this gives us
+one equation and two unknowns, there is no single solution
+\((x_1,x_2)\) to \(A \vec{x} = \textbf{0}.\) The equation \(x_1 + 2
+x_2 = 0 \equiv x_2 = -\frac{1}{2}x_1\) is a line passing through the
+origin (note that every nullspace <b>MUST</b> include the origin,
+since the zero vector \(\textbf{0}\) is always a solution to \(A
+\vec{x} = \textbf{0}\)). Any point on this line is a solution to \(A
+\vec{x} = \textbf{0}.\) To describe these solutions in an efficient
+way, we take the <em>free component</em> \(x_2\) and set it to a
+constant value or "special solution" \(x_2 = 1.\) This defines \(x_1 =
+-2 x_2 = -2.\) Now, \(N(A) = c \begin{bmatrix} -2 & 1
+\end{bmatrix}^{T}\) for any scalar \(c.\)
+</p>
+
+<p>
+If there are no free components then the only solution to \(A \vec{x}
+= \textrm{0}\) is the zero vector \(\vec{0}\) and the nullspace is the
+zero vector only, \(N(A) = \mathbb{Z}.\) An obvious situation where
+this occurs is when \(A\) is square and invertable. Otherwise, we need
+to identify the free component(s), and assign special solution values
+(usually 0 and 1) to determine all possible solutions to our
+equation. As a practical example, consider \(Ax = \begin{bmatrix} 1 &
+2 & 2 & 4 \\ 3 & 8 & 6 & 16 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2
+\\ x3 \\ x4 \end{bmatrix} = 0 \equiv \; \begin{matrix} x_1 + 2 x_2 + 2
+x_3 + 4 x_4 \\ 3 x_1 + 8 x_2 + 6 x_3 + 16 x_4 \end{matrix} = 0.\)
+Here, we have two (non-trivial) equations and four variables, so we
+intuitively anticipate having free components. If we use Gaussian
+elimination to eliminate \(x_1\) from the second row, \(A_{2
+\ast}^{\prime} = A_{2 \ast} - 3 A_{1 \ast},\) we obtain an
+upper-triangular matrix \(U.\)
+
+\begin{equation}
+U = \begin{bmatrix}
+\textbf{1} & 2 & 2 & 4 \\ 0 & \textbf{2} & 0 & 4
+\end{bmatrix}
+\end{equation}
+</p>
+</p>
+
+<div class="defn-div">
+<b>Row Echelon Form:</b>&nbsp;&nbsp; All rows made completely of zeros
+lie at the bottom of the matrix. A row with non-zero entries contains a
+<b>pivot</b> where all entries below and to the left of the pivot are zero.
+</div>
+
+<p>
+We could extend \(U\) to row echelon form by recognizing that if we
+added two additional rows \(A_{3 \ast} = \begin{bmatrix} 0 & 0 & 0 & 0
+\end{bmatrix} \) and \(A_{4 \ast} = \begin{bmatrix} 0 & 0 & 0 & 0
+\end{bmatrix} \). This simply produces two additional equations \(0
+x_1 + 0 x_2 + 0 x_3 + 0 x_4 = 0\) which is equivalent to allowing any
+values of \((x_1, x_2, x_3, x_4)\). This also extends \(U\) to row
+echelon form \(U = \begin{bmatrix} 1 & 2 & 2 & 4 \\ 0 & 2 & 0 & 4 \\ 0
+& 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \end{bmatrix}\).
+</p>
+
+<div class="defn-div">
+<b>Pivot Column:</b>&nbsp;&nbsp; For a matrix in row echelon form, the
+first nonzero entry of each row is a <b>pivot</b> and the columns where
+pivots appear are <b>pivot columns</b> or <b>basic columns</b>.
+</div>
+
+<p>
+To solve for \((x_1, x_2, x_3, x_4)\) we use an approach very similar
+to Gaussian elimination. First, assume there are \(p\) pivots. This
+means there are \(n-p\) "free" components. In our example, \(p=2\) and
+\(n=4\) so there are \(4-2=2\) free components \(x_3\) and \(x_4\). We
+can choose any values we want for the free components. Normally, we we
+use a simple approach to define free component values. Each free
+component is given an opportunity to equal \(1\) while all other free
+components equal \(0\). Given \(n-p\) free components, we need an
+additional \(n-p\) equations to solve \(Ax=b\), and each additional
+equation needs unique free component values (otherwise the equations
+would not be independent and would not correspond to unique
+equations.) Applying our simple approach for free variable assigniment
+yields \(s_1 = (x_3=1,x_4=0)\) and \(s_2=(x_3=0,x_4=1)\). If we solve
+for \(x_1\) and \(x_2\) using the values defined by \(s_1\) we obtain
+\(\begin{bmatrix} -2 & 0 & 1 & 0 \end{bmatrix}^{T}.\) Similarly, using
+the values defined by \(s_2\) produces \(\begin{bmatrix} 0 & -2 & 0 &
+1 \end{bmatrix}^{T}\). As an aside, because \(s_1 \cdot s_2 = 0\) and
+\(s_1\) and \(s_2\) are orthogonal they define a plane in 3D space,
+since one way to define a 3D plane is by specifying two orthogonal 2D
+lines. This means all solutions to \(A \vec{x} = \textrm{0}\) lie on
+this plane: \(N(A)= c_1 \begin{bmatrix} -2 & 0 & 1 & 0
+\end{bmatrix}^{T} + c_2 \begin{bmatrix} 0 & -2 & 0 & 1
+\end{bmatrix}^{T}\) for scalar values \(c_1\) and \(c_2.\)
+</p>
+
+<p>
+<b>Reduced Row Echelon Form.</b>
+
+As a further simplifying step, we often continue to manipulate \(U\) to
+have the following two properties.
+</p>
+
+<ol>
+
+<li> \(U\) is in row echelon form.
+<li> All pivots are 1.
+<li> Pivots are the only non-zero values on a pivot column.
+
+</ol>
+
+<p>
+This provides two useful properties. First, it makes it very easy to
+determine the values for the special vectors \(s_i.\) Second, it
+allows us to immediately determine the <em>rank</em> of \(A.\) Consider
+\(U\) from our last example. We will convert it to a <em>reduced
+row echelon</em> matrix \(R.\)
+
+\begin{equation}
+\begin{array}{c c c}
+
+U =
+\begin{bmatrix}
+1 & 2 & 2 & 4 \\ 0 & 2 & 0 & 4 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0
+\end{bmatrix}
+
+& \quad \Longrightarrow \quad &
+
+R =
+\begin{bmatrix}
+\textrm{1} & \textrm{0} & 2 & 0 \\
+\textrm{0} & \textrm{1} & 0 & 2 \\
+0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0
+\end{bmatrix}
+
+\end{array}
+\end{equation}
+</p>
+
+<p>
+Simple Gaussian-like elimination was used to generate \(R.\) To
+produce a 0 in position \(u_{12}\) the second row of \(U\) was
+subtracted from the first, \(R_{1 \ast} = U_{1 \ast} - U_{2 \ast}.\)
+To produce a 1 at pivot position \(u_{22}\) the second row of \(U\)
+was divided by 2, \(R_{2 \ast} = \frac{1}{2} U_{2 \ast}.\)
+</p>
+
+<p>
+How is \(R\) useful? First, each non-pivot column represents a free
+variable. Since the third and fourth columns are non-pivot columns,
+they represent free solutions: \(x_1 = -2 x_3\) and \(x_2 = -2
+x_4\). If we chose the same two free solution pairs as before,
+\((x_3=1,x_4=0)\) and \((x_3=0,x_4=1)\) we would obtain the same
+solutions: \(\begin{bmatrix} -2 & 0 & 1 & 0 \end{bmatrix}^{T}\) and
+\(\begin{bmatrix} 0 & -2 & 0 & 1 \end{bmatrix}^{T}\). This simply
+shows that the reduced row echelon form is identical and produces
+identical solutions to the row echelon form.
+</p>
+
+<p>
+If this is true, why do we care about reduced row echelon form? There
+are a number of situations where it can be helpful. One that is most
+relevant here is to solve for the nullspace of \(A\) directly. It is
+described as a "trick" by Strang. If we use our strategy of choosing
+free variable values as \((1,0,\ldots,0), \ldots, (0,0,\ldots,1)\),
+then we can take the free variable values in the non-pivot columns and
+reverse their sign. These then represent the pivot variable values for
+the corresponding free variable vector.
+</p>
+
+<p>
+For example, our non-pivot columns are \(\begin{bmatrix} -2 & 0 & 1 &
+0 \end{bmatrix}^{T}\) and \(\begin{bmatrix} 0 & -2 & 0 & 1
+\end{bmatrix}^{T}\). For the first pair of free variables
+\((x_3=1,x_4=0)\) we take the first non-pivot column, reverse the sign
+of its values giving \(\begin{bmatrix} -2 & 0 & 0 & 0
+\end{bmatrix}^{T}\).  and insert \(x_3\) and \(x_4\), producing the
+solution \(\begin{bmatrix} -2 & 0 & 1 & 0\end{bmatrix}^{T}\). This is
+exactly the first solution we calculated above. Similarly, using the
+second pair of free variables \((x_3=0,x_4=1)\) gives solution
+\(\begin{bmatrix} 0& -2& 0& 1\end{bmatrix}^{T}\). So the reduced row
+echelon form coupled with our strategy of free variable selection
+provides a way to solve for \(x_1\) and \(x_2\) directly, without
+having to solve an equation.
+</p>
+
+<p>
+Both Python and R have built-in functions to return reduced row echelon
+matrices.
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-rref">
+<b>Python</b>
+
+% import sympy
+%
+% A = sympy.Matrix( [ [1,2,2,4], [3,8,6,16] ] )
+% print( A.rref() )
+
+(Matrix([
+[1, 0, 2, 0],
+[0, 1, 0, 2]]), (0,1))
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-rref">
+<b>R</b>
+
+%library(pracma)
+%
+%1,3, 2,8, 2,6, 4,16), nrow=2, ncol=4 )
+%rref(A)
+
+     [,1] [,2] [,3] [,4]
+[1,]    1    0    2    0
+[2,]    0    1    0    2
+  </div>
+</div>
+
+<h3>Rank</h3>
+
+<p>
+The second important property of \(R\) is it defines the <em>rank</em>
+of \(A.\) \(A\) is a \(2 \times 4\) matrix, but this is not the true
+size of the linear system it defines. If there were two identical rows
+in \(A,\) the second would disappear during elimination. If one row is
+a linear combination of another, that row would also disappear during
+elimination. When we talk about the true size of a matrix, we are
+talking about its rank. The rank \(r\) of a matrix is the number of
+(non-zero) pivots contained in the matrix.
+</p>
+
+<div class="defn-div">
+<b>Rank:</b>&nbsp;&nbsp; The rank \(r\) of \(A\) is the number of
+pivots for \(A\)
+</div>
+
+<p>
+The reduced echelon form of \(A\) eliminates all dependent rows,
+giving us an exact pivot count and corresponding rank \(r.\) The rank
+of \(A = \begin{bmatrix} 1 & 2 & 2 & 4 \\ 3 & 8 & 6 & 16
+\end{bmatrix}\) in our previous example is \(r=2.\)
+</p>
+
+<p>
+The final reduced echelon matrix \(R\) contains \(r\) non-zero rows.
+Consider a new \(A = \begin{bmatrix} 1 & 1 & 2 & 4 \\ 1 & 2 & 2 & 5 \\
+1 & 3 & 2 & 6 \end{bmatrix}.\) The reduced echelon form of \(A\) is
+\(R = \begin{bmatrix} 1 & 0 & 2 & 3 \\ 0 & 1 & 0 & 1 \\ 0 & 0 & 0 & 0
+\end{bmatrix}.\) Here, \(r=2\) and \(R\) has two non-zero rows.
+Intuitively, we can see that the first two columns of \(A\) are
+\(R_{\ast 1} = (1,1,1)\) and \(R_{\ast 2} = (1,2,3),\) which point in
+different directions.  These form the pivot columns in \(R.\) The
+third column \(R_{\ast 3} = (2,2,2)\) is a multiple of the first, so
+it will be eliminated. The fourth column \(R_{\ast 4} = (4,5,6)\) is
+the sum of the first three columns, so it will also be
+eliminated. Since there are two independent columns in \(A,\) it
+produces two pivots and a rank of \(r=2.\)
+</p>
+
+<p>
+One final use of rank is to determine whether a square matrix \(A\) of
+size \(n \times n\) contains a unique solution. If rank \(r = n\) then
+\(A\) is said to be <em>full rank</em> and there is only one solution
+to \(A\vec{x} = \vec{b},\) if a solution exists. When \(r = n\) all of
+the columns are independent of one another, so we have \(n\)
+equations and \(n\) unknowns, exactly what we need to find a single
+solution to \(A \vec{x} = \vec{b}.\)
+</p>
+
+
+<h3>Full Solution to \(A\vec{x} = \vec{b}\)</h3>
+
+<p>
+At this point, we finally have what we need to fully solve \(A\vec{x}
+= \vec{b}\) for any \(\vec{b}\) and not only \(\vec{b} = \textrm{0},\)
+which provided solution(s) to the nullspace \(N(A).\) Since
+\(\vec{b}\) is no longer \(\textrm{0},\) it must be considered when we
+manipulate \(A.\) As we did previously, we will <em>augment</em> \(A\)
+by appending \(\vec{b}\) as a new column, producing \(\begin{bmatrix}
+A & \vec{b} \end{bmatrix}.\) When we apply elimination operations to
+generate \(R,\) we will also be applying them to \(\vec{b}.\) Consider
+the following practical example, with the original \(A \vec{x} =
+\vec{b}\) on the left, and the augmented matrix \(\begin{bmatrix} A &
+\vec{b} \end{bmatrix}\) on the right.
+
+\begin{equation}
+\begin{array}{c c c}
+
+\begin{bmatrix}
+1 & 3 & 0 & 2 \\ 0 & 0 & 1 & 4 \\ 1 & 3 & 1 & 6
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\ x_2 \\ x_3 \\ x_4
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\ 6 \\ 7
+\end{bmatrix}
+
+& \quad \Longrightarrow \quad &
+
+\begin{bmatrix}
+1 & 3 & 0 & 2 & \textrm{1} \\
+0 & 0 & 1 & 4 & \textrm{6} \\
+1 & 3 & 1 & 6 & \textrm{7}
+\end{bmatrix}
+=
+\begin{bmatrix} A & \vec{b} \end{bmatrix}
+
+\end{array}
+\end{equation}
+</p>
+
+<p>
+If we subtract row 1 from row 3, then subtract row 2 from row 3, we
+produce \(R\) with pivot columns 1 and 3 and free columns 2 and 4.
+Column 5, which originally contained \(\vec{b},\) has changed to
+\(\vec{d} = \begin{bmatrix} 1 & 6 & 0 \end{bmatrix}^{T}.\)
+
+\begin{equation}
+\label{eq:full_soln}
+
+\begin{bmatrix}
+1 & 3 & 0 & 2 & \textrm{1} \\
+0 & 0 & 1 & 4 & \textrm{6} \\
+0 & 0 & 0 & 0 & \textrm{0}
+\end{bmatrix}
+=
+\begin{bmatrix} R & \vec{d} \end{bmatrix}
+
+\end{equation}
+</p>
+
+<p>
+Examining \(\begin{bmatrix} R & \vec{d} \end{bmatrix}\) shows rank
+\(r=2\) and two free variables \(x_2\) and \(x_4\) corresponding to
+columns without pivots. To find one particular solution \(x_p\) to the
+equation \(A \vec{x} = \vec{b},\) one method guaranteed to work is to
+set the free variables \(x_2\) and \(x_4\) to 0, then solve for the
+pivot variables \(x_1\) and \(x_3.\) This produces \(\vec{x} =
+\begin{bmatrix} 1 & 0 & 6 & 0 \end{bmatrix}^{T}.\) To simplify
+further, since the pivot columns form the identity matrix, we can
+simply set the free variables to 0 and the pivot variables to their
+corresponding values in \(\vec{d} = \begin{bmatrix} \textrm{1} & 0 &
+\textrm{6} & 0 \end{bmatrix}.\)
+</p>
+
+<p>
+Remember that \(R\) also allows us to determine the special solutions
+to the nullspace \(N(A).\) Based on \(R\) in Eqn \eqref{eq:full_soln},
+and choosing free variable values \((x_2=1,x_4=0)\) and \((x_2=0,x_4=1)\),
+we have \(c_1 R_{\ast 1} + c_2 R_{\ast 2} + c_3 R_{\ast 3} = \mathbf{\vec{0}}\)\(\; \Rightarrow \;\)
+\(R_{\ast 2} = -3\,R_{\ast 1} + 0\,R_{\ast 3}\) and \(c_1 R_{\ast 1} + c_3 R_{\ast 3} + c_4 R_{\ast 4} = \mathbf{\vec{0}}\)\(\; \Rightarrow \;\)\(R_{\ast 4} =
+-2\,R_{\ast 1} - 4\,R_{\ast 3}.\) This produces two special solutions
+\(x_n = (x_2 \begin{bmatrix} -3 & 1 & 0 & 0 \end{bmatrix}^{T},
+x_4 \begin{bmatrix} -2 & 0 & -4 & 1 \end{bmatrix}^{T}).\) The
+full set of all possible solutions to \(A \vec{x} = \vec{b}\) is
+defined as \(x = x_p + x_n = \begin{bmatrix} 1 \\ 0 \\ 6 \\ 0
+\end{bmatrix} + x_2 \begin{bmatrix} -3 \\ 1 \\ 0 \\ 0 \end{bmatrix} +
+x_4 \begin{bmatrix} -2 \\ 0 \\ -4 \\ 1 \end{bmatrix}.\)
+</p>
+
+<p>
+You might wonder, why are there more than one solution to \(A \vec{x}
+= \vec{b}\)? This is because \(A\) is not a square, invertable matrix.
+If that were the case, then the nullspace \(N(A)\) would only contain
+the \(\vec{0}\) vector, and there would be a single solution \(x_p\)
+since \(x_n = \emptyset.\) This is a special case of the example shown
+here, but it is the one that most often occurs.
+</p>
+
+
+<h2 id="factor">Factorization</h2>
+
+<p>
+Factorization is the process of converting a matrix \(A\) into
+multiple "special" matrices that, when multiplied, return \(A.\) We
+will demonstrate this approach using the elimination matrices
+discussed in the previous section. The goal of elimination is to
+convert \(A\) into an upper-triangular matrix \(U\) through a series
+of individual elimination steps \(E = \prod E_{ij}.\) If we take the
+equation \(EA = U\) and generate a <em>lower-triangular</em> matrix
+\(L = E^{-1},\) then \((LE)A = LU \Rightarrow A = LU.\) In other
+words, we have <em>factorized</em> \(A\) into the inverse of the
+product of the elimination matrices \(E^{-1}=L\) and the target
+upper-triangular matrix \(U.\)
+</p>
+
+<p>
+We already saw how to compute \(U\) in
+the <a href="#elimination">Elimination section</a>. Let's again start
+by assuming no row exchanges are needed, which means no permutation
+matrices are generated. How do we calculate \(L\)? Since this is a
+combination of elimination matrices, and elimination matrices are
+slight variations on identify matrices, this turns out to be very
+simple. Consider a simple \(A\) of shape \(2 \times 2.\) Here, we only
+need one elimination matrix \(E_{21}\) to eliminate \(x_1\) in
+\(eq_2.\) If we wanted to take \(U\) and convert it back to \(A,\) we
+would use the inverse operation \(E_{21}^{-1}.\)
+
+\begin{align}
+\label{eq:LU_A}
+
+\begin{split}
+\textrm{Forward from} \; A \; \textrm{to} \; U: \quad E_{21}A
+&=
+\begin{bmatrix} 1 & 0 \\ -3 & 1 \end{bmatrix}
+\begin{bmatrix} 2 & 1 \\ 6 & 8 \end{bmatrix}
+&=
+\begin{bmatrix} 2 & 1 \\ 0 & 5 \end{bmatrix}
+&= U\\
+
+\textrm{Backward from} \; U \; \textrm{to} \; A: \quad E_{21}^{-1}U
+&=
+\begin{bmatrix} 1 & 0 \\ 3 & 1 \end{bmatrix}
+\begin{bmatrix} 2 & 1 \\ 0 & 5 \end{bmatrix}
+&=
+\begin{bmatrix} 2 & 1 \\ 6 & 8 \end{bmatrix}
+&= A\\
+\end{split}
+\end{align}
+
+<p>
+The second line of Eqn \eqref{eq:LU_A} is the factorization \(LU =
+A.\) Here, \(L = E_{21}^{-1},\) since there is only one elimination
+matrix used to convert \(A\) to \(U.\) If \(A\) were a larger matrix,
+then \(L\) would include the reverse product of all the inverse
+elimination matrices. For example, if \((E_{32} E_{31} E_{21})A = U,\)
+then \(A = (E_{21}^{-1} E_{31}^{-1} E_{32}^{-1}) U,\) or \(L =
+E_{21}^{-1} E_{31}^{-1} E_{32}^{-1}.\)
+</p>
+
+<p>
+Because \(E_{ij}^{-1}\) is so similar to \(I\) and because it is
+always a lower-triangular matrix (the non-zero off-diagonal entry is
+below the diagonal), there is a very simple and convenient way to
+convert the product of the inverse elimination matrices into a single
+matrix \(L\) without complicated matrix multiplication.
+<p>
+
+<ol>
+
+<li> Initialize \(L\) to an appropriately sized \(n \times n\)
+identity matrix \(I_{n}.\)
+
+<li> Consider \(E_{ij}\) with entry \(-e_{ij}\) at position \((i,j),\)
+used to subtract \(e_{ij} \, eq_j\) from \(eq_i.\)
+
+<li> Set position \((i,j)\) in \(L\) to \(e_{ij},\) that is, the value
+needed to <em>undo</em> the modification of \(eq_i.\)
+
+<li> For every \(E_{ij}\) multiplied against \(A\) to convert it to
+\(U,\) update \(e_{ij} \in L\) in the same way.
+
+<li> Now, the resulting single matrix \(L\) is the reverse product of
+the inverses of the original elimination matrices.
+
+<li> \(L\) can now be used to factorize \(A\) into \(L\) and \(U,\)
+\(A = LU.\)
+
+</ol>
+
+<p>
+<b>Practical Example.</b>  Consider \(A = \begin{bmatrix} 2 & 1 & 0 \\
+1 & 2 & 1 \\ 0 & 1 & 2 \end{bmatrix}.\) The three elimination matrices
+\(E_{21},\) \(E_{31},\) and \(E_{32}\) are used to convert \(A\) to
+upper-triangular matrix \(U.\)
+
+\begin{align}
+\begin{split}
+
+E_{21} &=
+\begin{bmatrix} 1 & 0 & 0 \\ -\frac{1}{2} & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+
+\quad
+
+E_{31} &=
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+
+\quad
+
+E_{32} &=
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & -\frac{2}{3} & 1 \end{bmatrix}
+
+\quad
+
+(E_{32}\,E_{31}\,E_{21})A = U &=
+\begin{bmatrix}
+2 & 1 & 0 \\ 0 & \frac{3}{2} & 1 \\ 0 & 0 & \frac{4}{3}
+\end{bmatrix}
+
+\end{split}
+\end{align}
+</p>
+
+<p>
+We can use the steps enumerated above to directly compute \(L\) from
+the three elimination matrices.
+
+\begin{align}
+L &=
+\begin{bmatrix}
+1 & 0 & 0 \\ \frac{1}{2} & 1 & 0 \\ 0 & \frac{2}{3} & 1
+\end{bmatrix}
+\end{align}
+</p>
+
+<p>
+And, indeed, \(LU = A\) as expected.
+
+\begin{align}
+LU &=
+\begin{bmatrix}
+1 & 0 & 0 \\ \frac{1}{2} & 1 & 0 \\ 0 & \frac{2}{3} & 1
+\end{bmatrix}
+
+\begin{bmatrix}
+2 & 1 & 0 \\ 0 & \frac{3}{2} & 1 \\ 0 & 0 & \frac{4}{3}
+\end{bmatrix}
+
+=
+
+\begin{bmatrix}
+2 & 1 & 0 \\ 1 & 2 & 1 \\ 0 & 1 & 2
+\end{bmatrix}
+
+= A
+\end{align}
+</p>
+
+<p>
+<b>Balance.</b> \(LU\) is sometimes called unbalanced or
+"non-symmetric" because the diagonal entries on \(U\) are not 1s.
+Common terminology for the diagonal entries on \(U\) are the
+<em>pivots</em> of \(U.\) This corresponds to our previous notion of
+pivot: the first non-zero coefficient of an equation (a row in \(U\))
+in a system of equations. Since \(U\) is an upper-triangular matrix,
+the entries on the diagonals <em>are</em> the first non-zero entry on
+each row. This is why they are often called pivots.
+</p>
+
+<p>
+If we want to correct for balance, we can factorize \(U\) into two
+matrices \(D\)\(U^{\prime}\) = \(U\) by taking the pivots \(p_1, p_2,
+\ldots, p_n\) on the diagonal of \(U,\) placing them on the diagonal
+of \(D = \mathbf{0},\) then dividing each row in \(U\) by its
+corresponding pivot.
+
+\begin{equation}
+
+DU^{\prime} =
+
+\begin{bmatrix}
+p_1 & 0 & \cdots & 0 \\
+0 & p_2 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & p_n
+\end{bmatrix}
+
+\begin{bmatrix}
+1 & \frac{u_{12}}{p_1} & \frac{u_{13}}{p_1} & \cdots & \frac{u_{1n}}{p_1} \\
+0 & 1 & \frac{u_{23}}{p_2} & \cdots & \frac{u_{2n}}{p_2} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 1
+\end{bmatrix}
+
+= U
+
+\end{equation}
+</p>
+
+<p>
+Now, we rewrite \(A = LDU^{\prime}\) (or often simply \(A=LDU\) with
+the assumption that the original \(U\) is replaced with
+\(U^{\prime}.\)) It is assumed that \(U\) has 1s on its diagonal. As a
+practical example, consider the following \(2 \times 2\) matrices.
+
+\begin{equation*}
+\begin{array}{c c c}
+
+LU & & LDU^{\prime}\\
+
+\begin{bmatrix} 1 & 0 \\ 3 & 1 \end{bmatrix}
+\begin{bmatrix} 2 & 8 \\ 0 & 5 \end{bmatrix}
+
+&\qquad \Longrightarrow \qquad
+
+&
+\begin{bmatrix} 1 & 0 \\ 3 & 1 \\ \end{bmatrix}
+\begin{bmatrix} 2 & 0 \\ 0 & 5 \\ \end{bmatrix}
+\begin{bmatrix} 1 & 4 \\ 0 & 1 \\ \end{bmatrix}
+
+\end{array}
+\end{equation*}
+</p>
+
+
+<h3>Row Exchange</h3>
+
+<p>
+The only remaining issue in using factorization to perform elimination
+is row exchange. We saw above how row exchange can be performed with a
+permutation matrix \(P,\) where \(P\) begins as an identity matrix and
+rows of \(P\) are swapped to perform equation swapping.  Although
+there are a variety of ways to integrate the permutation matrix into
+our \(A = LU = LDU\) factorization, the preferred method is to place
+\(P\) to the left of \(A.\) This performs row swapping first,
+guaranteeing no pivots of \(p=0\) during the elimination process.
+
+\begin{equation}
+PA = LU = LDU^{\prime}
+\end{equation}
+</p>
+
+<p>
+With this final formula, solving systems of linear equations through
+elimination is presented as a factorization of \(PA\) into a
+lower-triangular matrix \(L\), a diagonal matrix \(D\), and an
+upper-triangular matrix \(U\).
+</p>
+
+<div class="defn-div">
+<b>Diagonal Matrix:</b>&nbsp;&nbsp; A square matrix \(A\) where
+entries off the diagonal are 0, \(a_{ij} = 0\) if \(i \neq j\)
+</div>
+
+<p>
+Both Python and R have built-in LU factorization functions.
+</p>
+
+<div class="code-flex-pair-div">
+<div class="code-flex-pair" id="code-flex-py-LU">
+<b>Python</b>
+
+% import numpy as np
+% import scipy.linalg
+% 
+% A = np.array( [[2,1,0], [1,2,1], [0,1,2]] )
+% P,L,U = scipy.linalg.lu( A )
+% print( L )
+
+[[1.       0.         0.        ],
+[[0.5      1.         0.        ],
+[[0.       0.66666667 1.        ]]
+
+% print( U )
+
+[[2.       1.         0.        ],
+[[0.       1.5        1.        ],
+[[0.       0.         1.33333333]]
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-LU">
+<b>R</b>
+
+% A &lt;- matrix( c( 2,1,0, 1,2,1, 0,1,2 ), nrow=3, ncol=3 )
+% fac &lt;- lu( A )
+% print( fac$L )
+
+      [,1]      [,2] [,3]
+[1,]  1.0 0.0000000    0
+[2,]  0.5 1.0000000    0
+[3,]  0.0 0.6666667    1
+
+% print( fac$U )
+
+      [,1] [,2]     [,3]
+[1,]    2  1.0 0.000000
+[2,]    0  1.5 1.000000
+[3,] &nbsp; &nbsp;0 &nbsp;0.0 1.333333
+</div>
+</div>
+
+
+<h3>QR Factorization</h3>
+
+<p>
+A second common factorization technique is QR factorization. Given an
+\(m \times n\) matrix \(A\) with linearly independent columns, QR
+factorization decomposes \(A=QR\) into an \(m \times n\) matrix \(Q\)
+with orthonormal columns (\(Q_{\ast i} \cdot Q_{\ast j}) = 0,\)
+\(||Q_{\ast i}|| = ||Q_{\ast j}|| = 1,\) and an upper-triangular \(n
+\times n\) matrix \(R.\)
+
+\begin{equation}
+\label{eq:QR}
+
+A =
+\begin{bmatrix} A_{\ast 1} & A_{\ast 2} & \cdots & A_{\ast n} \end{bmatrix}
+=
+\begin{bmatrix} Q_{\ast 1} & Q_{\ast 2} & \cdots & Q_{\ast n} \end{bmatrix}
+
+\begin{bmatrix}
+A_{\ast 1} \cdot Q_{\ast 1} & A_{\ast 2} \cdot Q_{\ast 1} & \cdots & A_{\ast n} \cdot Q_{\ast 1}\\
+0 & A_{\ast 2} \cdot Q_{\ast 2} & \cdots & A_{\ast n} \cdot Q_{\ast 2}\\
+\vdots & \vdots & \ddots & \vdots\\
+0 & 0 & \cdots & A_{\ast n} \cdot Q_{\ast n}
+\end{bmatrix}
+= QR
+
+\end{equation}
+</p>
+
+<p>
+Technically, QR factorization is an efficient matrix-based method for
+performing
+the <a href="https://math.libretexts.org/Bookshelves/Linear_Algebra/Book%3A_Linear_Algebra_(Schilling_Nachtergaele_and_Lankham)/09%3A_Inner_product_spaces/9.05%3A_The_Gram-Schmidt_Orthogonalization_procedure"
+target="_blank">Gram-Schmidt process</a>. Gram-Schmidt converts a
+basis into an orthonormal basis with orthogonal, unit-length basis
+axes. Clearly, if we are talking about the real vector space
+\(\mathbb{R}^{n},\) then the vectors \(\begin{bmatrix}1 & 0 & \cdots &
+0\end{bmatrix}^{T},\) \(\begin{bmatrix}0 & 1 & \cdots &
+0\end{bmatrix}^{T},\) \(\ldots,\) \(\begin{bmatrix}0 & 0 & \cdots &
+1\end{bmatrix}^{T}\) are the obvious choice. However, when the vector
+space is more complicated, it may not be as straight-forward to
+convert an arbitrary set of basis vectors into a much more useful set
+of orthonormal basis vectors. We will also see that QR factorization
+can be used to solve other important problems. In fact, we use QR
+factorization to solve the linear least squares problem later in these
+notes.
+</p>
+
+
+<div id="QR-accordion" class="detail">
+  <h3>QR Solution Details</h3>
+  <div>
+    <p>
+    Values for \(Q\) are solved using Gram-Schmidt. Once \(Q\) is
+    defined, its values are dotted with corresponding entries in \(A\)
+    to calculate entries in \(R\) (Eqn \eqref{eq:QR}).
+
+    \begin{alignat}{2}
+    \begin{split}
+
+    \vec{u_1} &= A_{\ast 1} & \qquad Q_{\ast 1} &=
+    \frac{\vec{u_1}}{||\vec{u_1}||}\\
+
+    \vec{u_2} &= A_{\ast 2} - ( A_{\ast 2} \cdot Q_{\ast 1} ) Q_{\ast
+    1} & \qquad Q_{\ast 2} &= \frac{\vec{u_2}}{||\vec{u_2}||}\\
+
+    \vec{u_{k+1}} &= A_{\ast (k+1)} - (A_{\ast (k+1)} \cdot Q_{\ast
+    1}) Q_{\ast 1} - \cdots - (A_{\ast (k+1)} \cdot Q_{\ast k})
+    Q_{\ast k} & \qquad Q_{\ast (k+1)} &=
+    \frac{\vec{u_{k+1}}}{||u_{\vec{k+1}}||}
+
+    \end{split}
+    \end{alignat}
+    </p>
+
+    <p>
+    <b>Practical Example</b>. Given \(A = \begin{bmatrix} 1 & 1 & 0 \\
+    1 & 0 & 1 \\ 0 & 1 & 1 \end{bmatrix},\) its QR factorization is
+    constructed as follows.
+
+    \begin{align}
+    \begin{split}
+
+    \vec{u_1} &= A_{\ast 1} = \begin{bmatrix} 1 & 1 & 0
+    \end{bmatrix}^{T}\\
+
+    Q_{\ast 1} &= \frac{\vec{u_1}}{||\vec{u_1}||} = \frac{1}{\sqrt{2}}
+    \vec{u_1} = \begin{bmatrix} \frac{1}{\sqrt{2}} &
+    \frac{1}{\sqrt{2}} & 0 \end{bmatrix}^{T}\\[8pt]
+
+    \vec{u_2} &= A_{\ast 2} - ( A_{\ast 2} \cdot Q_{\ast 1} ) Q_{\ast
+    1}\\
+
+    &= \begin{bmatrix} 1 & 0 & 1 \end{bmatrix}^{T} -
+    \frac{1}{\sqrt{2}} \begin{bmatrix} \frac{1}{\sqrt{2}} &
+    \frac{1}{\sqrt{2}} & 0 \end{bmatrix}^{T} = \begin{bmatrix}
+    \frac{1}{2} & -\frac{1}{2} & 1 \end{bmatrix}^{T}\\
+
+    Q_{\ast 2} &= \frac{\vec{u_2}}{||\vec{u_2}||} =
+    \frac{1}{\sqrt{\frac{3}{2}}} \begin{bmatrix} \frac{1}{2} &
+    -\frac{1}{2} & 1 \end{bmatrix}^{T} = \begin{bmatrix}
+    \frac{1}{\sqrt{6}} & \frac{1}{\sqrt{6}} & \frac{2}{\sqrt{6}}
+    \end{bmatrix}^{T}\\[8pt]
+
+    \vec{u_3} &= A_{\ast 3} - ( A_{\ast 3} \cdot Q_{\ast 1} ) Q_{\ast
+    1} - ( A_{\ast 3} \cdot Q_{\ast 2} ) Q_{\ast 2} \\
+
+    &= \begin{bmatrix} 0 & 1 & 1 \end{bmatrix}^{T} -
+    \frac{1}{\sqrt{2}} \begin{bmatrix} \frac{1}{\sqrt{2}} &
+    \frac{1}{\sqrt{2}} & 0 \end{bmatrix}^{T} - \frac{1}{\sqrt{6}}
+    \begin{bmatrix} \frac{1}{\sqrt{6}} & -\frac{1}{\sqrt{6}} &
+    \frac{2}{\sqrt{6}} \end{bmatrix}^{T} = \begin{bmatrix}
+    -\frac{1}{\sqrt{3}} & \frac{1}{\sqrt{3}} & \frac{1}{\sqrt{3}}
+    \end{bmatrix}^{T}\\
+
+    Q_{\ast 3} &= \frac{\vec{u_3}}{||\vec{u_3}||} = \begin{bmatrix}
+    -\frac{1}{\sqrt{3}} & \frac{1}{\sqrt{3}} & \frac{1}{\sqrt{3}}
+    \end{bmatrix}^{T}
+
+    \end{split}
+    \end{align}
+    </p>
+
+    <p>
+    These results define \(Q.\)
+
+    \begin{equation}
+    Q =
+    \begin{bmatrix}
+    \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{6}} & -\frac{1}{\sqrt{3}}\\
+    \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{6}} & \frac{1}{\sqrt{3}}\\
+    0 & \frac{2}{\sqrt{6}} & \frac{1}{\sqrt{3}}\\
+    \end{bmatrix}
+    \end{equation}
+    </p>
+
+    <p>
+    \(A\) and \(Q\) are then combined to define \(R.\)
+
+    \begin{equation}
+    R =
+    \begin{bmatrix}
+    \frac{2}{\sqrt{2}} & \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}\\
+    0 & \frac{3}{\sqrt{6}} & \frac{1}{\sqrt{6}}\\
+    0 & 0 & \frac{2}{\sqrt{3}}
+    \end{bmatrix}
+    \end{equation}
+    </p>
+    <p>
+    The results can be checked to validate that \(QR\) factors \(A\)
+    as expected.
+
+    \begin{equation}
+
+    A =
+    \begin{bmatrix}
+    1 & 1 & 0 \\ 1 & 0 & 1 \\ 0 & 1 & 1
+    \end{bmatrix}
+
+    =
+
+    \begin{bmatrix}
+    \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{6}} & -\frac{1}{\sqrt{3}}\\
+    \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{6}} & \frac{1}{\sqrt{3}}\\
+    0 & \frac{2}{\sqrt{6}} & \frac{1}{\sqrt{3}}\\
+    \end{bmatrix}
+
+    \begin{bmatrix}
+    \frac{2}{\sqrt{2}} & \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}\\
+    0 & \frac{3}{\sqrt{6}} & \frac{1}{\sqrt{6}}\\
+    0 & 0 & \frac{2}{\sqrt{3}}
+    \end{bmatrix}
+
+    =
+
+    \begin{bmatrix}
+    1 & 1 & 0 \\ 1 & 0 & 1 \\ 0 & 1 & 1
+    \end{bmatrix}
+
+    = QR
+    \end{equation}
+    </p>
+
+    <p>
+    Although we will not go through all the steps to derive \(Q\) and
+    \(R,\) here is an example where \(A\) is "tall", \(m > n.\)
+
+    \begin{align}
+    \begin{split}
+    A =
+    \begin{bmatrix}
+    -1 & -1 & 1 \\ 1 & 3 & 3 \\ -1 & -1 & 5 \\ 1 & 3 & 7
+    \end{bmatrix}
+    &= \begin{bmatrix} \vec{q_1} & \vec{q_2} & \vec{q_3} \end{bmatrix}
+    \begin{bmatrix}
+    r_{11} & r_{12} & r_{13} \\
+    0 & r_{22} & r_{23} \\
+    0 & 0 & r_{33} \\
+    \end{bmatrix} \\
+
+    &=
+    \begin{bmatrix}
+    -\frac{1}{2} & \frac{1}{2} & -\frac{1}{2} \\
+    \frac{1}{2} & \frac{1}{2} & -\frac{1}{2} \\
+    -\frac{1}{2} & \frac{1}{2} & \frac{1}{2} \\
+    \frac{1}{2} & \frac{1}{2} & \frac{1}{2}
+    \end{bmatrix}
+    \begin{bmatrix}
+    2 & 4 & 2 \\ 0 & 2 & 8 \\ 0 & 0 & 4
+    \end{bmatrix}\\
+
+    &= QR\\
+    \end{split}
+    \end{align}
+    </p>
+  </div>
+</div>
+
+<p>
+Both Python and R have built-in QR factorization functions.
+</p>
+
+<div class="code-flex-pair-div">
+<div class="code-flex-pair" id="code-flex-py-QR">
+<b>Python</b>
+
+% import numpy as np
+% import scipy.linalg
+% 
+% A = np.array( [[1,1,0], [1,0,1], [0,1,1]] )
+% Q,R = scipy.linalg.qr( A )
+% print( Q )
+
+[[-0.70710678  0.40824829 -0.57735027]
+ [-0.70710678 -0.40824829  0.57735027]
+ [-0.          0.81649658  0.57735027]]
+
+% print( R )
+
+[[-1.41421356 -0.70710678 -0.70710678]
+ [ 0.          1.22474487  0.40824829]
+ [ 0.          0           1.15470054]]
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-QR">
+<b>R</b>
+
+% A &lt;- matrix( c( 1,1,0, 1,0,1, 0,1,1 ), nrow=3, ncol=3 )
+% fac &lt;- qr( A )
+% Q &lt;- qr.Q( fac )
+% R &lt;- qr.R( fac )
+% print( Q )
+
+            [,1]       [,2]       [,3]
+[1,] -0.7071068  0.4082483 -0.5773503
+[2,] -0.7071068 -0.4082483  0.5773503
+[3,]  0.0000000  0.8164966  0.5773503
+
+% print( R )
+
+            [,1]       [,2]       [,3]
+[1,] -1.4142148 -0.7071068 -0.7071068
+[2,]  0.0000000  1.2247449  0.4082483
+[3,]  0.0000000  0.0000000  1.1547005
+  </div>
+</div>
+
+
+<h3>Pseudo-Inverse</h3>
+
+<p>
+An interesting property of any \(A\) with linearly independent columns
+is a <em>pseudo-inverse</em> \(A^{\dagger}\) of \(A\) exists, even if
+\(A\) is "tall" and not square.
+
+\begin{equation}
+A^{\dagger} = (A^{T}A)^{-1} A^{T}
+\end{equation}
+</p>
+
+<p>
+The pseudo-inverse is sometimes called the <em>Moore-Penrose inverse</em>,
+after the mathematicians Eliakim Moore and Roger Penrose who proposed it.
+If \(A\) is square, \(A^{\dagger}\) reduces to the normal inverse
+\(A^{-1}.\)
+
+\begin{equation}
+A^{\dagger} = (A^{T} A)^{-1} A^{T} = A^{-1} A^{-T} A^{T} = A^{-1} I = A^{-1}
+\end{equation}
+<p>
+
+<p>
+If \(A\) is "tall" and \(m > n,\) then \(A^{\dagger}\) is an \(n
+\times m\) matrix.
+</p>
+
+<p>
+<b>Practical Example</b>. Consider
+\(A =
+    \begin{bmatrix}
+    -1 & -1 & 1 \\ 1 & 3 & 3 \\ -1 & -1 & 5 \\ 1 & 3 & 7
+    \end{bmatrix}
+.\) The pseudoinverse \(A^{\dagger}\) is calculated as follows.
+
+\begin{align}
+\begin{split}
+
+A^{\dagger} &= (A^{T} A)^{-1} A^{T}\\
+ &=
+\left(
+\begin{bmatrix}
+-1 & 1 & -1 & 1\\
+-1 & 3 & -1 & 3\\
+1 & 3 & 5 & 7
+\end{bmatrix}
+
+\begin{bmatrix}
+-1 & -1 & 1 \\ 1 & 3 & 3 \\ -1 & -1 & 5 \\ 1 & 3 & 7
+\end{bmatrix}
+\right)^{-1}
+
+\begin{bmatrix}
+-1 & 1 & -1 & 1\\
+-1 & 3 & -1 & 3\\
+1 & 3 & 5 & 7
+\end{bmatrix}\\
+
+&=
+\begin{bmatrix}
+4 & 8 & 4 \\ 8 & 20 & 24 \\ 4 & 24 & 84 \\
+\end{bmatrix}^{-1}
+
+\begin{bmatrix}
+-1 & 1 & -1 & 1\\
+-1 & 3 & -1 & 3\\
+1 & 3 & 5 & 7
+\end{bmatrix}\\
+
+A^{\dagger} &=
+\begin{bmatrix}
+-1.625 & -1.125 & 0.125 & 0.625\\
+0.75 & 0.75 & -0.25 & -0.25\\
+-0.125 & -0.125 & 0.125 & 0.125
+\end{bmatrix}
+
+\end{split}
+\end{align}
+
+<p>
+Both Python and R have built-in pseudo-inverse functions.
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-pinv">
+<b>Python</b>
+
+% import numpy as np
+%
+% a = np.array( [[-1,-1,1], [1,3,3], [-1,-1,5], [1,3,7]] )
+% print( np.linalg.pinv( a ) )
+
+[[-1.625 -1.125  0.125  0.625]
+ [ 0.75   0.75  -0.25  -0.25 ]
+ [-0.125 -0.125  0.125  0.125]]
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-pinv">
+<b>R</b>
+
+% library(pracma)
+%
+% A &lt;- matrix( c( -1,1,-1,1, -1,3,-1,3, 1,3,5,7 ), nrow=4, ncol=3 )
+% pinv( A )
+
+        [,1]   [,2]   [,3]   [,4]
+[1,] -1.625 -1.125  0.125  0.625
+[2,]  0.750  0.750 -0.250 -0.250
+[3,] -0.125 -0.125  0.125  0.125
+  </div>
+</div>
+
+<p>
+R also has a <code>ginv()</code> function to implement the generalized
+inverse as part of its <code>MASS</code> library.
+</p>
+
+<div id="gen-inv-accordion" class="detail">
+  <h3>Generalized Inverse</h3>
+  <div>
+    <p>
+    Like the pseudo-inverse, the <em>generalized inverse</em> (or
+    g-inverse) of a matrix \(A\) is a matrix \(A^{g}\) that has some
+    but not necessarily all properties of an inverse. A matrix \(A^{g}
+    \in \mathbb{R}^{n \times m}\) is a generalized inverse of \(A \in
+    \mathbb{R}^{m \times n}\) if \(A A^{g} A = A.\)
+    </p>
+
+    <p>
+    To motivate this concept, consider our standard system of linear
+    equations \(A \vec{x} = \vec{b}\) with \(A \in \mathbb{R}^{m
+    \times n}\) containing \(m\) rows and \(n\) columns. If \(A\) is
+    nonsingular, then \(\vec{x} = A^{-1} \vec{b}\) is the unique
+    solution to the equation.
+    </p>
+
+    <p>
+    If, however, \(A\) is rectangular or singular, then no \(A^{-1}\)
+    exists. We need a candidate \(A^{g}\) with \(n\) rows and \(m\)
+    columns that satisfies the following equation.
+
+    \begin{equation}
+    A A^{g} \vec{b} = \vec{b}
+    \end{equation}
+    </p>
+
+    <p>
+    In other words, \(\vec{x} = A^{g} \vec{b}\) is a solution to the
+    linear system of equations \(A \vec{x} = \vec{b}.\) This is another
+    way of saying we need a matrix \(A^{g}\) of order \(m \times n\)
+    s.t.
+
+    \begin{equation}
+    A A^{g} A = A
+    \end{equation}
+    </p>
+
+    <p>
+    As with the pseudo-inverse, the generalized inverse is equal to the
+    regular inverse \(A^{-1}\) when it exists.
+    </p>
+
+    <p>
+    A collection of <em>Penrose</em> conditions have been defined for
+    generalized inverse matrices \(A^{g}.\)
+    </p>
+
+    <ol>
+
+    <li>\(A A^{g} A = A\)
+    <li>\(A^{g} A A^{g} = A^{g}\)
+    <li>\((A A^{g})^{*} = A A^{g}\)
+    <li>\((A^{g} A)^{*} = A^{g} A\)
+
+    </ol>
+
+    <p>
+    Here, \(^{*}\) represents
+    the <a href="https://mathworld.wolfram.com/ComplexConjugate.html"
+    target="_blank">conjugate transpose</a>. <b>Note.</b> The complex
+    conjugate of a real number with no imaginary part is just the
+    number itself, \(\overline{x} = x\), so the complex conjugate of a
+    real-valued matrix \(A\) is simply \(A^{T}\), since the complex
+    conjugate of each \(a_{ij} \in A^{T}\) is \(a_{ij}.\)
+    </p>
+
+    <p>
+    If \(A\) satisfies condition 1, it is a generalized inverse. If it
+    satisfies all four conditions, it is a pseudo-inverse.
+    </p>
+  </div>
+</div>
+
+
+<h2 id="determinant">Determinants</h2>
+
+<p>
+Recall we have already discussed the determinant to a \(2 \times 2\)
+square matrix \(A = \begin{bmatrix} a & b \\ c & d \end{bmatrix}\) in
+Eqn \eqref{eq:det_2x2}. The determinant of \(A\) cross-multiplies and
+subtracts such that \(\textrm{det}(A) = |A| = \begin{vmatrix} a & b \\
+c & d \end{vmatrix} = ad - bc.\) The reciprocal of determinant \(|A|\)
+acts as a scalar to a reordered version of \(A\) to calculate its
+inverse \(\displaystyle A^{-1} = \frac{1}{|A|} \begin{bmatrix} d & -b
+\\ -c & a \end{bmatrix}.\) If \(|A|=0\) then \(A\) is singular and
+cannot be inverted.
+</p>
+
+<p>
+What if square matrix \(A\) has \(n > 2?\) To solve for \(|A|\) we
+must define <em>minors</em> and <em>cofactors</em>. Take any entry
+\(a_{ij} \in A\) and delete row \(i\) and column \(j.\) The
+determinant of the resulting \((n-1) \times (n-1)\) submatrix is
+called the minor \(M_{ij}\) of \(a_{ij}.\) As a practical example,
+consider a \(3 \times 3\) matrix with the center entry \(a_{22}\)
+removed.
+
+\begin{equation}
+\begin{array}{c c c}
+A = \begin{bmatrix}
+a_{11} & \columncolor{lightblue} a_{12} & a_{13} \\
+\rowcolor{lightblue} a_{21} & \mathbf{a_{22}} & a_{32} \\
+a_{31} & a_{32} & a_{33}
+\end{bmatrix}
+
+& \quad \Longrightarrow \quad &
+
+M_{22} = \begin{vmatrix}
+a_{11} & a_{13} \\ a_{31} & a_{33}
+\end{vmatrix}
+
+\end{array}
+\end{equation}
+</p>
+
+<p>
+The cofactor \(C_{ij}\) of \(a_{ij}\) is the minor \(M_{ij}\) with its
+sign set to positive or negative: positive if \(i + j\) is even, and
+negative if \(i + j\) is odd.
+
+\begin{equation}
+C_{ij} = (-1)^{i+j} M_{ij}
+\end{equation}
+</p>
+
+<p>
+Cofactors are used to calculate the determinant of \(A.\) Take any
+row \(i\) of \(A.\) The determinant \(|A|\) is the sum of the
+entries along row \(i\) times their cofactors.
+
+\begin{equation}
+|A| = \sum_{j=1}^{n} a_{ij} C_{ij} \;\; \textrm{for any} \; 1 \leq i \leq n
+\end{equation}
+</p>
+
+<p>
+The sum of a column's entries times its cofactors can also be used to
+calculate the determinant of \(A.\)
+
+\begin{equation}
+|A| = \sum_{i=1}^{n} a_{ij} C_{ij} \;\; \textrm{for any} \; 1 \leq j \leq n
+\end{equation}
+</p>
+
+<p>
+<b>Practical Example.</b> For \(A=\begin{bmatrix}-1 & 5 & -2\\-6 & 6 &
+0\\3 & -7 & 1\end{bmatrix},\) we will use row 1 to calculate \(|A|.\)
+</p>
+
+<p>
+\begin{align}
+\begin{split}
+|A| &= a_{11} C_{11} + a_{12} C_{12} + a_{13} C_{13} \\
+&= a_{11} M_{11} + a_{12}\,\textrm{-}M_{12} + a_{13} M_{13} \\
+&= -1
+\begin{vmatrix} 6 & 0 \\ -7 & 1 \end{vmatrix}
+-5\
+\begin{vmatrix} -6 & 0 \\ 3 & 1 \end{vmatrix}
+-2
+\begin{vmatrix} -6 & 6 \\ 3 & -7 \end{vmatrix}\\
+
+&= -6 + 30 -48\\
+&= -24
+\end{split}
+\end{align}
+</p>
+
+<p>
+The same result would result from using columns, for example, the
+second column.
+</p>
+
+<p>
+\begin{align}
+\begin{split}
+|A| &= a_{12} C_{12} + a_{22} C_{22} + a_{23} C_{23} \\
+&= a_{12}\,\textrm{-}M_{12} + a_{22} M_{22} + a_{23}\,\textrm{-}M_{23} \\
+&= -5
+\begin{vmatrix} -6 & 0 \\ 3 & 1 \end{vmatrix}
++ 6
+\begin{vmatrix} -1 & -2 \\ 3 & 1 \end{vmatrix}
++ 7
+\begin{vmatrix} -1 & -2 \\ -6 & 0 \end{vmatrix}\\
+
+&= 30 + 30 - 84\\
+&= -24
+\end{split}
+\end{align}
+</p>
+
+<p>
+What happens is \(n\) were larger, for example, \(n=4.\) Now, the
+minors \(M_{ij}\) are no longer \(2 \times 2\) determinants, so they
+cannot be calculated directly. Instead, they must undergo another
+round of cofactor calculation to obtain their determinant. This can
+then be inserted into a four-value cofactor sum to generate the
+overall determinant of \(A.\) As \(n\) grows, the number of iterations
+of cofactor calculation grows with it. As with inverses, once \(n > 2\)
+(or even for \(n = 2\)) we normally use a Python or R library to
+calculate the determinant. Consider \(A\) from the previous example.
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-det">
+<b>Python</b>
+
+% import numpy as np
+%
+% a = np.array( [[-1, 5, -2], [-6, 6, 0], [3, -7, 1]] )
+% print( np.linalg.det( a ) )
+
+-23.999999999999993
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-det">
+<b>R</b>
+
+% a = matrix( c( -1,-6,3, 5,6,-7, -2,0,1 ), nrow=3, ncol=3 )
+% det( a )
+
+[1] -24
+  </div>
+</div>
+
+
+<h3>Inverse</h3>
+
+<p>
+As in the \(2 \times 2\) case, the determinant of \(A\) together with
+the cofactors of \(A\) are used to calculate the inverse \(A^{-1},\)
+if it exists. We begin by defining the cofactor matrix \(\mathbf{C}.\)
+
+\begin{equation}
+\mathbf{C} =
+\begin{bmatrix}
+C_{11} & C_{12} & \cdots & C_{1n} \\
+\vdots & \vdots & \ddots & \vdots \\
+C_{n1} & C_{n2} & \cdots & C_{nn}
+\end{bmatrix}
+\end{equation}
+</p>
+
+<p>
+We then use \(\mathbf{C}\) to define the <em>adjoint</em> of \(A,\)
+\(\textrm{adj}(A) = A^{\ast} = \mathbf{C}^{T}.\) The following
+relationship between \(A,\) \(A^{\ast},\) and \(|A|\) exists.
+
+\begin{equation}
+\label{eq:adjoint}
+A \, A^{\ast} = |A| \, I
+\end{equation}
+</p>
+
+<p>
+Eqn \eqref{eq:adjoint} can easily be rewritten to define \(A^{-1}.\)
+
+\begin{equation}
+A^{\ast} = A^{-1} \, |A| \, I \quad \Rightarrow \quad A^{-1} =
+\frac{1}{|A|} \, A^{\ast}
+\end{equation}
+</p>
+
+<p>
+As before, as long as determinant \(|A| \neq 0,\) \(A\) is invertable.
+</p>
+
+
+<h2 id="eigen">Eigenvectors and Eigenvalues</h3>
+
+<p>
+Eigenvectors and their corresponding eigenvalues are special vectors
+and scalars related to a square matrix \(A.\) Eigen decomposition can
+be viewed as a form of factorization, although it is slightly different
+than the \(A = LU\) that we saw previously. Here, for an eigenvector
+\(\vec{u}\) and a corresponding scalar eigenvalue \(\lambda,\)
+\(\vec{u}\) and \(\lambda\) satisfy the eigen equation.
+
+\begin{equation}
+\label{eq:basic_eigen}
+
+A\,\vec{u} = \lambda\,\vec{u}\
+\end{equation}
+</p>
+
+<p>
+If \(A\) performs an operation on \(\vec{u}\) identical to a scalar
+\(\lambda,\) then \(A\) is changing the length of \(\vec{u},\) but it
+is not changing the direction of \(\vec{u}.\) We often rewrite Eqn
+\ref{eq:basic_eigen} to make it easier to solve.
+
+\begin{align}
+\label{eq:standard_eigen}
+\begin{split}
+A \vec{u} &= \lambda I \vec{u}\\
+(A - \lambda I) \vec{u} &= 0
+\end{split}
+\end{align}
+</p>
+
+
+<p>
+<b>Practical Example.</b> Consider \(A = \begin{bmatrix} 0.8 & 0.3 \\
+0.2 & 0.7 \end{bmatrix}.\) To solve for \(\lambda\) in
+\eqref{eq:standard_eigen}, we first calculate the determinant \(|A -
+\lambda I| = \begin{vmatrix} (0.8 - \lambda) & 0.3 \\ 0.2 & ( 0.7 -
+\lambda) \end{vmatrix} = \lambda^{2} - \frac{3}{2}\lambda +
+\frac{1}{2} = (\lambda - 1) (\lambda - \frac{1}{2}).\) Equating \(|A -
+\lambda I| = 0\) gives us the two eigenvalues \(\lambda_1 = 1\) and
+\(\lambda_2 = \frac{1}{2}.\) We can now use \(\lambda_1\) and
+\(\lambda_2\) to solve for our two eigenvectors \(\vec{u}\) and
+\(\vec{v}.\)
+
+\begin{align}
+\begin{split}
+
+(A - \lambda_1 I) \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} &= \mathbf{0}\\
+
+\left( \begin{bmatrix} 0.8 & 0.3 \\ 0.2 & 0.7 \end{bmatrix} -
+\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} \right) \begin{bmatrix}
+x_1 \\ x_2 \end{bmatrix} &= \mathbf{0}\\
+
+\begin{bmatrix} -0.2 & 0.3 \\ 0.2 & -0.3 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \mathbf{0}
+
+\end{split}
+\end{align}
+</p>
+
+<div id="quad-eqn-accordion" class="detail">
+  <h3>Solving Quadratic Equations</h3>
+  <div>
+    <p>
+    Solving the quadratic equation \(a x^{2} + b x + c\) (\(a \neq 0\)
+    otherwise this is not a valid quadratic equation) for two
+    real-valued roots \(r_1\) and \(r_2\) uses a standard formula that
+    leverages the following rules about the solutions.
+    </p>
+
+    <ol>
+
+    <li> If \(b * b < 4 * a * c\) then the roots are complex numbers.
+    <li> If \( b * b = 4 * a * c\) then the roots are identical.
+    <li> If \( b * b > 4 * a * c\) then the roots are real numbers.
+
+    </ol>
+    </p>
+
+
+    <div class="code-flex-pair-div">
+    <div class="code-flex-pair-accordion" id="code-flex-py-qr-eqn">
+<b>Python</b>
+        
+% import math
+%        
+% def eqn_roots( a, b, c ):
+%     #  Calculate discriminant
+%     dis = b * b - 4 * a * c
+%
+%     if dis > 0:
+%         sqrt_v = math.sqrt( abs( dis ) )
+%         r1 = ( ( -b + sqrt_v ) / ( 2 * a ) )
+%         r2 = ( ( -b - sqrt_v ) / ( 2 * a ) )
+%     elif dis == 0:
+%         r1 = ( -b / ( 2 * a ) )
+%         r2 = r1
+%     else:
+%         print( 'Roots are complex' )
+%         r1 = 0
+%         r2 = 0
+%
+%     return (r1,r2)
+      </div>
+
+      <div class="code-flex-pair-accordion" id="code-flex-R-qr-eqn">
+<b>R</b>
+        
+% eqn_roots &lt;- function( a, b, c ) {
+%     #  Calculate discriminant
+%     dis &lt;- b * b - 4 * a * c
+%
+%     if ( dis > 0 ) {
+%         sqrt_v &lt;- sqrt( abs( dis ) )
+%         r1 &lt;- ( ( -b + sqrt_v ) / ( 2 * a ) )
+%         r2 &lt;- ( ( -b - sqrt_v ) / ( 2 * a ) )
+%     } else if ( dis == 0 ) {
+%         r1 &lt;- ( -b / ( 2 * a ) )
+%         r2 &lt;- r1
+%     } else {
+%         print( 'Roots are complex' )
+%         r1 &lt;- 0
+%         r2 &lt;- 0
+%     }
+%
+%     return( c(r1,r2) )
+% }
+      </div>
+    </div>
+
+  <p>
+  If we input our \(a=1, b=-1.5, c=0.5\) from Eqn
+  \eqref{eq:standard_eigen} the <code>eqn_roots()</code> function
+  returns <code>r1=1</code>, <code>r2=0.5</code>, exactly as expected.
+  </p>
+  </div>
+</div>
+
+<p>
+At this point you should recognize that the rows in the matrix are
+dependent, since row two is \(-1\) times row one. Solving one equation
+and two unknowns will give an infinite number of solutions.
+
+\begin{align}
+
+\begin{array}{r c r c c}
+\begin{matrix}
+-0.2 x_1 + 0.3 x_2 = 0 \\
+\hfill 0.2 x_1 - 0.3 x_2 = 0
+\end{matrix} &
+\quad \Longrightarrow \quad &
+\begin{matrix}
+-0.2 x_1 + 0.3 x_2 = 0 \\
+\hfill 0 = 0 &
+\end{matrix}
+\quad \Longrightarrow \quad &
+x_1 = \frac{3}{2} x_2
+\end{array}
+
+\end{align}
+</p>
+
+<p>
+Any \(x_1, x_2\) that satisfy \(x_1 = \frac{3}{2} x_2\) can act as
+eigenvector \(\vec{u}.\) Notice this is true because any \([x_1,
+x_2]^{T}\) points in an identical direction. Only the length of the
+vector changes.  For simplicity, we will choose \(\vec{u} = [1.5,
+1]^{T},\) but any \(c \, [1.5, 1]^{T}\) would work. For \(\lambda_2\)
+we follow an identical strategy.
+
+\begin{align}
+
+\begin{array}{r c r c c}
+\begin{matrix}
+0.3 x_1 + 0.3 x_2 = 0 \\
+\hfill 0.2 x_1 + 0.2 x_2 = 0
+\end{matrix} &
+\quad \Longrightarrow \quad &
+\begin{matrix}
+0.3 x_1 + 0.3 x_2 = 0 \\
+\hfill 0 = 0 &
+\end{matrix}
+\quad \Longrightarrow \quad &
+x_1 = -x_2
+\end{array}
+
+\end{align}
+</p>
+
+<p>
+Again, any \(x_1, x_2\) that satisfies \(x_1 = -x_2\) can act as an
+eigenvector to \(\vec{v}.\) We select a simple choice of \(\vec{v} =
+[1, -1]^{T}.\) In conclusion, two eigenvectors and two corresponding
+eigenvalues are defined for \(A:\) \(\vec{u} = \begin{bmatrix} 1.5\\1
+\end{bmatrix}, \lambda_1 = 1,\) and \(\vec{v} = \begin{bmatrix} 1\\-1
+\end{bmatrix}, \lambda_2 = \frac{1}{2}.\) We can confirm the
+eigenvector and eigenvalues are correct by confirming \(A \vec{u} =
+\lambda_1 \vec{u}.\)
+
+\begin{align}
+\begin{split}
+
+A\vec{u} &= \lambda_1 \vec{u}\\
+
+\begin{bmatrix} 0.8 & 0.3 \\ 0.2 & 0.7 \end{bmatrix} \begin{bmatrix} 1.5\\1 \end{bmatrix} &= 1 \begin{bmatrix} 1.5\\1 \end{bmatrix}\\
+
+\begin{bmatrix} (0.8)(1.5) + (0.3)(1)\\(0.2)(1.5) + (0.7)(1) \end{bmatrix} &= \begin{bmatrix} 1.5\\1 \end{bmatrix}\\
+
+\begin{bmatrix} 1.5\\1 \end{bmatrix} &= \begin{bmatrix} 1.5\\1 \end{bmatrix}
+
+\end{split}
+\end{align}
+
+A similar check will show the same holds true for \(\vec{v}\) and
+\(\lambda_2.\)
+</p>
+
+<p>
+As before, we rarely calculate eigenvectors and eigenvalues by hand.
+In Python, the <code>eig</code> function return the eigenvalues and
+eigenvectors for a square matrix \(A.\) In R, the <code>eigen</code>
+function performs the same operation.
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-eig">
+<b>Python</b>
+
+% import numpy as np
+%
+% a = np.array( [[0.8, 0.3], [0.2, 0.7]] )
+% print( np.linalg.eig( a ) )
+
+EigResult(eigenvalues=array([1. , 0.5]), eigenvectors=array([[ 0.83205029, -0.70710678],
+       [ 0.5547002 ,  0.70710678]]))
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-eig">
+<b>R</b>
+
+% a = matrix( c( 0.8,0.2, 0.3,0.7 ), nrow=2, ncol=2 )
+% eigen( a )
+
+  eigen() decomposition
+  $values
+  [1] 1.0 0.5
+
+  $vectors
+          [,1]       [,2]
+[1,] 0.8320503 -0.7071068
+[2,] 0.5547002  0.7071068
+  </div>
+</div>
+
+<p>
+Take special notice, even though Python generally uses row-major
+representations, the results of <code>eig</code> specify the
+eigenvectors as \(n\)-valued lists, one for each eigenvector.  The
+first eigenvector returned by Python is therefore \(\vec{u_1} =
+\begin{bmatrix} 0.83205029 & 0.5547002 \end{bmatrix}^{T}.\) This can
+be easily confirmed by looking at the eigenvectors returned by R.
+</p>
+
+
+<h2 id="svd">Singular Value Decomposition</h2>
+
+<p>
+Singular value decomposition (SVD) <em>factorizes</em> or decomposes a
+matrix \(A\) into a set of orthogonal basis axes for both the row
+space and the column space of \(A.\) The row space of \(A\) is the
+span (the set of all possible linear combinations) of the rows of
+\(A.\)  Similarly, the column space is the span of the columns of
+\(A.\)
+</p>
+
+<div class="defn-div" style="font-family: 'Noto Serif', Times, serif;">
+<b>Row Space:</b>&nbsp;&nbsp; The row space \(A\) is the span of the
+rows of \(A,\) \(A_{i \ast}\)
+</div>
+
+<div class="defn-div" style="font-family: 'Noto Serif', Times, serif;">
+<b>Column Space:</b>&nbsp;&nbsp; The column space of \(A\) is the span
+of the columns of \(A,\) \(A_{\ast j}\)
+</div>
+
+<p>
+To understand SVD, we need to discuss <em>orthogonal matrices</em>,
+<em>symmetric matrices</em>, and <em>orthogonal diagonalization</em>.
+</p>
+
+<h3>Orthogonal Matrices</h3>
+
+<p>
+\(A\) is an orthogonal matrix if: (1) it is square or \(n \times n\);
+(2) its row vectors are <em>orthonormal</em>, and (3) its column
+vectors columns are <em>orthonormal</em>. Recall that a set of vectors
+is orthonormal if all pairs are orthogonal (they are perpendicular so
+their dot product is 0) and normalized (every vector is unit length).
+Given this, for orthogonal matrix \(A\) we have the following
+properties.
+</p>
+
+<ol>
+
+<li> \(A_{i \ast} \cdot A_{i \ast} = 1 \;\; \forall \; 1 \leq i \leq
+n.\)
+
+<li> \(A_{\ast j} \cdot A_{\ast j} = 1 \;\; \forall \; 1 \leq j \leq
+n.\)
+
+<li> \(A_{i \ast} \cdot A_{j \ast} = 0 \;\; \forall \; 1 \leq i,j \leq
+n, i \neq j.\)
+
+<li> \(A_{\ast i} \cdot A_{\ast j} = 0 \;\; \forall \; 1 \leq i,j \leq
+n, i \neq j.\)
+
+<li> \(A^{T} A = A A^{T} = I.\)
+
+<li> \(A^{T} = A^{-1}.\)
+
+</ol>
+
+<p>
+The first four properties follow directly from the fact that \(A\)
+rows and columns are orthonormal. The fifth property can be seen by
+recognizing that \(A^{T}\) swaps rows and columns, so \(A^{T} A\)
+takes the dot product of two rows \(A_{i \ast}\) and \(A_{j \ast}.\)
+This will be zero unless \(i = j,\) producing a matrix with zeros
+everyone except the diagonal. This is the definition of \(I.\) Finally,
+it follows that if \(A^{T} A = I\) then \(A^{T}\) must be \(A^{-1}.\)
+</p>
+
+
+<h3>Symmetric Matrices</h3>
+
+<p>
+\(A\) is <em>symmetric</em> if it is square and \(A=A^{T},\) that is,
+\(a_{ij} = a_{ji} \; \forall \; 1 \leq i,j \leq n.\)
+</p>
+
+
+<h3>Orthogonal Diagonalization</h3>
+
+<p>
+\(A\) can be orthogonally diagonalized if there is an orthogonal
+matrix \(P\) s.t. \(P^{-1} A P = P^{T} A P = D\) where \(D\) is a
+diagonal matrix. The most common \(P\) and \(D\) come from the
+eigenvectors and eigenvalues of symmetric matrix \(A.\) \(P\) is a
+matrix whose columns are the eigenvectors of \(A.\) \(D\) is a
+diagonal matrix whose diagonal entries are the eigenvalues that
+correspond, in order, to the columns (eigenvectors) in \(P.\)
+</p>
+
+<p>
+<b>Practical Example.</b> Consider eigenvectors and eigenvalues
+\(\vec{u} = \begin{bmatrix} 0.7630 \\ 0.6464 \end{bmatrix},\) \(\vec{v}
+= \begin{bmatrix} -0.6464 \\ 0.7630 \end{bmatrix},\) \(\lambda_1 =
+1.0541,\) and \(\lambda_2 = 0.4459\) for matrix \(A = \begin{bmatrix}
+0.8 & 0.3 \\ 0.3 & 0.7 \end{bmatrix}.\)
+
+\begin{align}
+\begin{split}
+
+P = \begin{bmatrix} 0.7630 & -0.6464 \\ 0.6464 & 0.7630 \end{bmatrix};
+\;\;\; P^{-1} &= P^{T} = \begin{bmatrix} 0.7630 & 0.6464 \\ -0.6464 & 0.7630
+\end{bmatrix}; \;\;\; D = \begin{bmatrix} 1.0541 & 0 \\ 0 & 0.4459
+\end{bmatrix}\\[8pt]
+
+P^{-1} A P &=
+\begin{bmatrix} 0.7630 & 0.6464 \\ -0.6464 & 0.7630 \end{bmatrix}
+\begin{bmatrix} 0.8 & 0.3 \\ 0.3 & 0.7 \end{bmatrix}
+\begin{bmatrix} 0.7630 & -0.6464 \\ 0.6464 & 0.7630 \end{bmatrix}\\
+
+&= \begin{bmatrix} 0.8043 & 0.6814 \\ -0.2882 & 0.3402 \end{bmatrix}
+\begin{bmatrix} 0.7630 & -0.6464 \\ 0.6464 & 0.7630 \end{bmatrix}\\
+
+&= \begin{bmatrix} 1.0541 & 0 \\ 0 & 0.4459 \end{bmatrix} = D\\
+
+\end{split}
+\end{align}
+</p>
+
+
+<h3>SVD</h3>
+
+<p>
+Let \(A\) be an \(n \times m\) matrix. SVD uses eigenvectors and
+eigenvalues of \(A^{T} A,\) since this is by definition symmetric. A
+symmetric matrix is guaranteed to be orthogonally
+diagonalizable. Given eigenvalues \(\lambda_1, \lambda_2, \ldots,
+\lambda_n\) for \(A^{T} A\) the <em>singular values</em> \(\sigma\)
+are defined as \(\sigma_1 = \sqrt{\lambda_1}, \sigma_2 =
+\sqrt{\lambda_2}, \ldots \sigma_n = \sqrt{\lambda_n}.\) Next, we
+substitute the singular values into the equation \(A \vec{v_i} =
+\sigma_i \vec{u_i}\) where \(\vec{v_i}\) is the \(i^{\textrm{th}}\)
+eigenvector of \(A^{T} A.\) Values of \(A, \vec{v_i},\) and
+\(\sigma_i\) are known. We use these to solve for \(\vec{u_i}.\)
+</p>
+
+<p>
+<b>Practical Example.</b> Working again with \(A = \begin{bmatrix} 0.8
+& 0.3 \\ 0.2 & 0.7 \end{bmatrix},\) we must find the eigenvectors and
+eigenvalues of \(A^{T} A\ = \begin{bmatrix} 0.68 & 0.38 \\ 0.38 & 0.58
+\end{bmatrix}.\) Python is used to calculate \(\vec{v_1} =
+\begin{bmatrix} 0.7518 \\ 0.6594 \end{bmatrix}, \vec{v_2} =
+\begin{bmatrix} -0.6594 \\ 0.7518 \end{bmatrix},
+\sigma_1=\sqrt{1.0133}=1.0067,\) and
+\(\sigma_2=\sqrt{0.2467}=0.4967.\) These values allow us to derive
+\(\vec{u_1}\) and \(\vec{u_2}.\)
+
+\begin{align}
+\begin{split}
+
+1.0067\,\vec{u_1} &= A \vec{v_1}\\
+&= \begin{bmatrix} 0.8 & 0.3 \\ 0.2 & 0.7 \end{bmatrix}
+\begin{bmatrix} 0.7518 \\ 0.6594 \end{bmatrix}\\
+&= \begin{bmatrix} 0.7993 \\ 0.6119 \end{bmatrix}\\
+\vec{u_1} &= \begin{bmatrix} 0.7939 \\ 0.6079 \end{bmatrix}\\[8pt]
+
+0.4967\,\vec{u_2} &= A \vec{v_2}\\
+&= \begin{bmatrix} 0.8 & 0.3 \\ 0.2 & 0.7 \end{bmatrix}
+\begin{bmatrix} -0.6594 \\ 0.7518 \end{bmatrix}\\
+&= \begin{bmatrix} -0.3020 \\ 0.3944 \end{bmatrix}\\
+\vec{u_2} &= \begin{bmatrix} -0.6080 \\ 0.7940 \end{bmatrix}
+
+\end{split}
+\end{align}
+</p>
+
+<p>
+How can we interpret these initial SVD steps? Since \(\vec{v_1}\) and
+\(\vec{v_2}\) in our practical example are orthogonal, they form a
+basis that spans \(\mathbb{R}^{2}.\) In the general case,
+\((\vec{v_1}, \ldots, \vec{v_n})\) span \(\mathbb{R}^{n}.\)
+\(\vec{u_1}\) and \(\vec{u_2}\) are also normal and orthogonal, so
+they also form a basis that spans \(\mathbb{R}^{2}.\) This means that
+the steps we performed <em>transform</em> points between two different
+bases in \(\mathbb{R}^{2}.\) The points may spin about the origin,
+and they may move closer or farther apart from one another, but their
+<em>relative</em> distances and directions do not change. Intuitively,
+we are <em>projecting</em> points from one plane defined by
+\((v_1,v_2)\) to a second plane defined by \((u_1,u_2).\)
+</p>
+
+<p>
+To complete the SVD, we define \(U=\begin{bmatrix} u_{1,x} & u_{2,x}
+\\ u_{1,y} & u_{2,y} \end{bmatrix},\) \(V^{T}=\begin{bmatrix}
+\vec{v_{1,x}} & \vec{v_{1,y}} \\ v_{2,x} & v_{2,y} \end{bmatrix},\)
+and \(D=\begin{bmatrix} \sigma_1 & 0 \\ 0 & \sigma_2 \end{bmatrix}.\)
+We use \(U, D,\) and \(V^{T}\) to combine our original \(A \vec{v_i} =
+\sigma_i \vec{u_i}\) equations.
+
+\begin{align}
+\begin{split}
+AV &= UD\\
+(AV)V^{T} &= UDV^{T}\\
+A(VV^{T}) &= UDV^{T}\\
+AI &= UDV^{T}\\
+A &= UDV^{T}
+\end{split}
+\end{align}
+</p>
+
+<p>
+We have factored \(A\) into \(UDV^{T}.\) \(A\) is subdivided into
+a triple matrix multiplication consisting of a diagonal matrix \(D\)
+and two orthogonal matrices \(U\) and \(V^{T}.\)
+</p>
+
+<p>
+Not surprisingly, both Python and R have built-in SVD functions.
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-SVD">
+<b>Python</b>
+
+% import numpy as np
+%
+% a = np.array( [[0.8,0.3], [0.2,0.7]] )
+% U,D,VT = np.linalg.svd( a )
+% print( U )
+[[-0.79401166 -0.60790253]
+ [-0.60790253  0.79401166]]
+
+% print( D )
+[1.00661579 0.49671384]
+
+% print( VT )
+[[-0.75181597 -0.65937299]
+ [-0.65937299  0.75181597]]
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-SVD">
+<b>R</b>
+
+% a &lt;- matrix( c( 0.8,0.2, 0.3,0.7 ), nrow=2, ncol=2 )
+% print( svd( a ) )
+
+$d
+[1] 1.0066158 0.4967138
+<br>
+$u$
+
+            [,1]       [,2]
+[1,] -0.7940117 -0.6079025
+[2,] -0.6079025  0.7940117
+<br>
+$v$
+
+            [,1]     [,2]
+[1,] -0.751816 -0.659373
+[2,] -0.659373 &nbsp;0.751816
+  </div>
+</div>
+
+<p>
+Notice that Python returns \(-u_1\) versus our calculation of \(u_1\)
+(remember, the \(u_i\) are returned as the <em>columns</em> of \(U\)
+in Python), but this is still identical in that Python's \(u_1\) has
+the same length and is flipped about the \(xy\) axes, so there are
+equivalent eigenvectors. The same is true for Python's \(v_{11}\) and
+\(v_{12},\) the \(x\)-components of \(v_1\) and \(v_2.\) Here,
+negating the values flips the eigenvectors about the \(y\)-axis, but
+does not change the length, so the eigenvectors are again identical.
+R returns exactly the same \(U\) and \(V\) as Python, so clearly they
+are using an identical approach to eigen decompose \(A.\)
+</p>
+
+
+<div id="img-compress-accordion" class="detail">
+  <h3>SVD Image Compression</h3>
+  <div>
+    <p>
+    One interesting property of SVD is that each eigenvector
+    represents a line that passes through values (samples) in \(A\)
+    such that it minimizes error (or in SVD terminology, captures
+    variance). If we order the eigenvectors by their largest to
+    smallest eigenvalues, we obtain 1D, 2D, 3D, \(\ldots\) bases that
+    maximize the amount of variance captured for the given \(n\) basis
+    vectors. Eigenvalues are often very small, so we can keep only a
+    few high-value eigenvalues and their corresponding eigenvectors
+    and build a new matrix \(A^{\prime}\) from this reduced
+    eigenset. Now \(A^{\prime}\) <em>estimates</em> \(A\) with
+    factorized matrices \(U^{\prime}, D^{\prime}, V^{T\,\prime} \ll U,
+    D, V^{T},\) but that still captures most of the variation in the
+    original \(A\) (<em>i.e.,</em> \(A^{\prime}\) is an accurate
+    estimate of \(A\)).
+    </p>
+
+    <p>
+    The following Python program uses OpenCV (an open source computer
+    vision library) to read a JPEG image and convert it to
+    greyscale. A greyscale image is equivalent to a rectangular \(A\)
+    where each entry is the greyscale brightness of a pixel in the
+    image, usually on the range \(0 \ldots 255.\)
+
+    <p>
+    The original image is \(638 \times 960\) pixels. Normally, we view
+    the rows of a matrix \(A\) of data as samples, and the columns as
+    attribute values for each sample. In this context, we have 638
+    samples, or components, as they're sometimes called in computer
+    vision. Each component is made up of 960 attribute values, or
+    pixel brightness values on the range \(0, \ldots, 255\). SVD
+    decomposes the image represented by \(A\) into \(U\), a \(638
+    \times 638\) matrix whose columns are orthonormal, \(D\), a
+    diagonal matrix of the singular values of \(A\) in decreasing
+    size, and \(V^{T}\), a second matrix of size \(960 \times 960\)
+    whose columns are again orthonormal.
+    </p>
+
+    <p>
+    Given this, how are we "compressing" the image? Think of the process
+    as follows.
+    </p>
+
+    <ol>
+    <li> Compute the SVD \(A = U D V^{T}.\)
+
+    <li> Retain only \(n^{\prime}\) columns of \(U,\) \(n^{\prime}\)
+    rows of \(V^{T}\), and the first \(n^{\prime}\) diagonal entries
+    of \(D\) with \(n^{\prime} \ll n.\)
+
+    <li> Now \(U^{\prime}\) is \(m \times n^{\prime},\) \(D^{\prime}\)
+    is \(n^{\prime} \times n^{\prime},\) and \(V^{T^{\prime}}\) is
+    \(n^{\prime} \times n\) where \(m\) is the original 680 rows and
+    \(n\) is the original 960 columns. \(U^{\prime}, D^{\prime},\) and
+    \(V^{T^{\prime}}\) should be much smaller than the original \(U,
+    D,\) and \(V^{T}\) if \(n^{\prime} \ll n.\)
+
+    <li> If we multiply \(A^{\prime} = U^{\prime} D^{\prime}
+    V^{T^{\prime}}\) what is the size of \(A^{\prime}?\) Multiplying
+    \(m \times n^{\prime}\) matrix \(U^{\prime}\) times \(n^{\prime}
+    \times n^{\prime}\) matrix \(D^{\prime}\) returns an \(m \times
+    n^{\prime}\) result. Multiplying this against the \(n^{\prime}
+    \times n\) matrix \(V^{T^{\prime}}\) produces an \(m \times n\)
+    result. In other words, multiplying the reduced-size matrices
+    returns an image of exactly the same size as the original image.
+    </ol>
+
+    <p>
+    Suppose we reduce \(A\) by maintaining the top 500, 400, 300, 200,
+    or 100 eigenvectors, then display the compressed image. I think
+    you will agree it is very difficult to see differences between the
+    original image and the image reduced to 100 components. The best
+    description might be that the reduced image looks "softer" than
+    the original.  This makes sense, since edges in an image are areas
+    that violate the intuition that neighbouring pixels are similar,
+    and therefore are the ones most likely to be less accurate when we
+    compress the image.
+    </p>
+
+
+    <div class="code-img" style="background-color: #ffffff; max-width: 1248px;">
+      <div style="height: 1em;"></div>
+      <img style="max-width: 1248px;" src="../figs/lin-alg/compress.png" alt="compress"></img>
+      <div style="height: 1em;"></div>
+    </div>
+
+    <p>
+    How much space do we save by reducing the number of eigenvectors?
+    The original \(A\) used \(U=n \times n=368^{2}=407,044\) values,
+    \(D=n \times n=407,044\) values, and \(V^{T}=m \times
+    m=960^{2}=921,600\) values, or \(A=1,735,688\) values. The
+    \(n^{\prime}=100\) component image uses only \((638 \times 100) +
+    (100 \times 100) + (100 \times 960)=169,000\) values, a \(90.3\%\)
+    reduction.
+    </p>
+
+    <p>You should download
+    the <u><a href="fig/beach.jpg">beach.jpg</a></u> image used in the
+    code, then update the line that starts
+    <code>img = cv.imgread</code> to point to the location where you
+    saved your version of the beach image.
+    </p>
+
+    <div class="code-flex-div">
+    <div class="code-flex-pair-accordion" id="code-flex-py-qr-img">
+% import numpy as np
+% import matplotlib.pyplot as plt
+% import cv2
+% 
+% #  Read greyscale image of beach
+% 
+% img = cv2.imread( 'C:/Users/healey.WOLFTECH/Pictures/beach.jpg', 0 )
+% 
+% #  Obtain SVD of image pixels
+% 
+% U,D,VT = np.linalg.svd( img )
+% 
+% #  Report the shapes of the matrices
+% 
+% print( ' U row,col:', U.shape )
+% print( ' D row,col:', D.shape )
+% print( 'VT row,col:', VT.shape )
+% 
+% # Plot images with different numbers of SVD components maintained
+% 
+% cmp = [ 638, 500, 400, 300, 200, 100 ]
+% 
+% plt.figure( figsize=(16,8) )
+% for i in range( 0, 6 ):
+%     low_rank =\
+%       U[ :, :cmp[ i ] ] @ np.diag( D[ :cmp[ i ] ] ) @ VT[ :cmp[ i ], : ]
+%     if ( i == 0 ):
+%         plt.subplot( 2, 3, i+1 ),
+%         plt.imshow( low_rank, cmap='gray' ),
+%         plt.axis( 'off' ),
+%         plt.title( 'Original Image w/components = ' + str( cmp[ i ] ) ),
+%     
+%     else:
+%         plt.subplot( 2, 3, i+1 ),
+%         plt.imshow( low_rank, cmap='gray' ),
+%         plt.axis( 'off' ),
+%         plt.title( 'Components = ' + str( cmp[ i ] ) )
+% plt.show()
+    </div>
+    </div>
+
+  <p>
+  As a quick clarification on this code, the <code>@</code>-sign is
+  shorthand in Python for matrix multiplication.
+  </p>
+  </div>
+</div>
+
+
+<h2 id="pca">Principal Component Analysis</h2>
+
+<p>
+Principal component analysis (PCA) is another way of reducing a matrix
+\(A\) into a smaller estimation via projection. PCA identifies
+"principal" orthogonal directions through a set of data. These are the
+directions (or basis vectors) that that capture the maximum amount of
+variance in the data in descending order. PCA axes also transform
+samples of potentially correlated variables into a set of linearly
+uncorrelated variables. Although the initial method of obtaining the
+principal components is different from SVD, the techniques are closely
+related. To explore PCA, we will use the context of a real-world
+dataset. Matrix \(A\) with size \(m \times n\) is made up of \(m\)
+rows representing \(m\) samples and \(n\) columns representing \(n\)
+variables measured for each sample.  For example, a dataset of
+peoples' ages, weights, and heights would have \(m\) rows for for the
+\(m\) people sampled, and \(n=3\) columns for the variables age,
+weight, and height. Every row represents one sample, the age, weight,
+and height for one person.
+</p>
+
+
+<h3>Sample Covariance Matrix</h3>
+
+<p>
+Given a matrix \(A,\) we use it compute a <em>sample covariance
+matrix</em> \(\mathrm{S}.\) Covariance measures the relationship
+between two variables. A positive covariance indicates the variables
+tend to move in the same direction. A negative covariance suggests the
+variables tend to move in opposite directions.
+</p>
+
+<p>
+We normally assume the columns of \(A\) are <em>centered</em> about
+the origin, which is equivalent to saying each column's mean
+\(\overline{A_{\ast j}} = 0.\) If this is not true, we can easily
+adjust \(A\) to produce it.
+
+\begin{align}
+\begin{split}
+
+\overline{A_{\ast j}} &= \frac{1}{m}\sum_{i=1}^{m} a_{ij}, 1 \leq j \leq n\\
+
+A &=
+\begin{bmatrix}
+(a_{11} - \overline{A_{\ast 1}}) & (a_{12} - \overline{A_{\ast 2}}) & \cdots & (a_{1n} - \overline{A_{\ast n}})\\
+(a_{21} - \overline{A_{\ast 1}}) & (a_{22} - \overline{A_{\ast 2}}) & \cdots & (a_{2n} - \overline{A_{\ast n}})\\
+\vdots & \vdots & \ddots & \vdots \\
+(a_{m1} - \overline{A_{\ast 1}}) & (a_{m2} - \overline{A_{\ast 2}}) & \cdots & (a_{mn} - \overline{A_{\ast n}})\\
+\end{bmatrix}
+
+\end{split}
+\end{align}
+</p>
+
+<p>
+The formula for the sample covariance between two variables \(X = [
+x_1, x_2, \ldots, x_n ]\) and \(Y = [ y_1, y_2, \ldots, y_n ]\)
+computes the average product of deviation from each variable's mean
+\(\overline{x}\) and \(\overline{y}.\)
+
+\begin{equation}
+\label{eq:covar_XY}
+
+s_{ij} = \frac{\sum_{i=1}^{n} (x_i - \overline{x} ) ( y_i -
+\overline{y} )}{n}
+
+\end{equation}
+</p>
+
+<p>
+Using Eqn \eqref{eq:covar_XY} we can compute the covariance between
+any row and column in \(A.\) We do this to generate the covariance
+matrix \(S.\)
+
+\begin{equation}
+
+S =
+\begin{bmatrix}
+s_{11} & s_{12} & \cdots & s_{1n} \\
+s_{21} & s_{22} & \cdots & s_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+s_{m1} & s_{m2} & \cdots & s_{mn} 
+\end{bmatrix}
+\end{equation}
+</p>
+
+
+<h3>Sample Correlation Matrix</h3>
+
+<p>
+One problem with the sample covariance matrix is that different
+variables use different units of measurement. This "weights" the
+variables against one another in ways that may not be ideal.  A
+related concept to covariance is <em>correlation</em>
+\(\rho.\) Covariance measures total variation between two variables
+from their means. We can gauge the direction of the relationship, but
+not its strength, nor the dependency between the
+variables. Correlation measures the strength of the relationship
+between the variables. It uses a scaled measure of covariance to
+produce a "pure" value independent of any units associated with \(X\)
+and \(Y.\) To generate a sample correlation matrix, we first
+<em>standardize</em> the columns in \(A,\) producing a matrix
+\(Z\) such that the mean \(\overline{Z_{\ast j}} = 0\) and the
+standard deviation \(\sigma({Z_{\ast j}}) = 1.\) The \(z\)-score is
+used to do this.
+
+\begin{align}
+\begin{split}
+
+z &= \frac{X - \mu}{\sigma}\\
+z_{ij} &=
+\frac{a_{ij} - \overline{A_{\ast j}}}{\sigma({A_{\ast j})}}, j \leq 1 \leq n
+
+\end{split}
+\end{align}
+</p>
+
+<p>
+Given the \(n \times m\) matrix \(Z\,\) we use the entries \(z_{ij}\) to
+build an \(n \times n\) correlation matrix \(\mathrm{P}.\)
+
+\begin{equation}
+
+\mathrm{P} =
+\frac{Z^T Z}{n}
+
+\end{equation}
+</p>
+
+<p>
+The correlation of a variable \(X\) with itself is 1, so the diagonals
+on the correlation matrix are also 1.
+</p>
+
+<p>
+The link between PCA and linear algebra is in the singular values and
+singular vectors of \(A,\) which come from the eigenvalues \(\sigma_i
+= \sqrt{\lambda_i}\) and the eigenvectors \(u_i\) of the sample
+correlation matrix \(\textrm{P}.\) Given the total variance \(T =
+\sum_{i=1}^{n} \sigma_i^{2},\) and assuming the \(\sigma_i\) are
+sorted in descending order, then the first eigenvector \(u_1\) of
+\(\textrm{P}\) points in the most significant direction of the data,
+and captures (or explains) \(\frac{\sigma_1^{2}}{T}\) of the total
+variance. The second eigenvector \(u_2\) explains
+\(\frac{\sigma_2^{2}}{T}\) of the total variance, and so on. We
+normally stop when the fractions fall below a predefined threshold. If
+\(r\) eigenvectors are retained, we say the <em>effective rank</em> of
+\(A\) is \(r.\) Once we have selected \(r,\) we create a PCA matrix
+whose columns are the eigenvectors \(u_1 \ldots u_{r},\) then multiple
+it against \(S\) (the standardized version of \(A\)) to produce a
+reduced-size \(n \times r\) projection of \(A^{\prime}.\)
+
+\begin{equation}
+
+A^{\prime} = S
+\begin{bmatrix} u_1^{T} & \cdots & u_r^{T} \end{bmatrix}
+
+\end{equation}
+</p>
+
+
+<div id="PCA-var-importance-accordion" class="detail">
+  <h3>PCA Feature Importance</h3>
+  <div>
+    <p>
+    As a practical example of PCA, we will apply it to
+    the <u><a href="https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic)"
+    target="_blank">University of Wisconsin Breast Cancer
+    dataset</a></u>. This dataset contains 569 samples of image
+    analysis results, as well as whether breast cancer was found or
+    not. Ten image properties of the cell nuclei under examination
+    are included: radius, texture, perimeter, area, smoothness,
+    compactness, concavity, number of concave points, symmetry, and
+    fractal dimension. Both the mean and standard error are provided
+    for each of the ten image properties, producing a total of 20
+    predictor variables and one target variable (tumor presence or
+    absence).
+    </p>
+
+    <p>
+    Since we are working with PCA, our goal here is to take the
+    predictor variables and <em>project</em> them in a way that
+    identifies important variables. This allows us to reduce the size
+    of the dataset either by: (1) removing irrelevant variables; or
+    (2) using PCA axes with large eigenvalues (maximizing variance
+    capture) to replace the original variables. Using PCA will also
+    identify and remove colinearity: variables that are highly
+    correlated to one another.
+    </p>
+
+    <p>
+    As a starting point, we will load the dataset in CSV format in
+    Python, and perform a series of preprocessing steps to produce a
+    correlation matrix. You can download a copy of the dataset
+    <u><a href="./wdbc.csv">here</a></u>.
+
+    <div class="code-flex-div">
+    <div class="code-flex-pair-accordion" id="code-flex-py-qr-img">
+% import numpy as np
+% import numpy as np
+% import pandas as pd
+% import seaborn as sns
+% import matplotlib.pyplot as plt
+
+% from statsmodels.multivariate.pca import PCA
+
+% dataset = pd.read_csv( 'wdbc.csv' )
+
+% #  Convert Status columns M and B to 0 and 1, PCA requires numeric
+% #  columns only
+
+% dataset[ 'Status' ] = pd.factorize( dataset[ 'Status' ] )[ 0 ]
+
+% pca = PCA( dataset, standardize=True, method='eig' )
+% normalized_dataset = pca.transformed_data
+    </div>
+    </div>
+
+    <p>
+    Note that <code>statsmodel</code> allows us to request that PCA
+    standardize the input data during processing. This
+    produces variables with a mean \(\mu=0\) and a variance
+    \(\sigma^{2}=0.\) This is equivalent to centering and converting a
+    covariance matrix into a correlation matrix.
+    </p>
+
+    <div class="code-flex-div">
+    <div class="code-flex-pair-accordion" id="code-flex-py-qr-img">
+% correlation_df = pd.DataFrame(
+%     data=np.cov(
+%         normalized_dataset, bias=True, rowvar=False
+%     ), columns=dataset.columns
+% )
+
+% plt.subplots( figsize=(20,20) )
+% sns.heatmap( correlation_df, cmap='Blues', linewidths=0.7,
+%     annot=True, fmt='.2f', yticklabels=dataset.columns )
+% plt.show()
+    </div>
+    </div>
+
+    <p>
+    We can examine the correlation matrix for dark blue cells.  A dark
+    blue cell means the corresponding variables have a strong linear
+    relationship (a strong correlation with one another).
+    </p>
+
+    <div class="code-img" style="background-color: #ffffff; max-width: 80%;">
+      <img style="width: 100%; max-width: 1530px;" src="../figs/lin-alg/correlation-matrix.png" alt="correlation-matrix">
+    </div>
+
+    <p>
+    Cells along the diagonals are dark blue, but this makes sense
+    since a variable correlated with itself produces a perfect
+    correlation of \(1.0.\) More interesting are cells
+    like <code>Perimeter Mean</code>&ndash;</code>Radius Mean
+    or <code>Concave N Mean</code>&ndash;Perimeter Mean. The first
+    correlation makes sense: the nulcli's perimeter mean is correlated
+    to its radius mean. The second is more interesting: the number of
+    concave "depressions" in the nucli is correlated with its
+    perimeter.
+    </p>
+
+    <p>
+    Another interesting exploration is the correlation between the
+    variables and the PCA axes.
+    </p>
+
+    <div class="code-flex-div">
+    <div class="code-flex-pair-accordion" id="code-flex-py-qr-img">
+% # The feature-PCA correlation matrix contains correlations between
+% # features and principal components
+
+% components_df = pca.factors
+% combined_df = pd.concat( [ dataset, components_df ], axis=1 )
+% feat_PCA_corr = combined_df.corr()
+
+% # Remove PCA rows
+
+% for nm in feat_PCA_corr.index:
+%     if nm.find( 'comp' ) != -1:
+%     feat_PCA_corr = feat_PCA_corr.drop( nm, axis=0 )
+
+      #  Remove non-PCA columns
+
+%; for nm in feat_PCA_corr.columns:
+%     if nm.find( 'comp' ) == -1:
+%     feat_PCA_corr = feat_PCA_corr.drop( nm, axis=0 )
+
+% plt.subplots( figure=(20,7) )
+% sns.heatmap( feat_PCA_corr, cmap='YlGnBu',
+%     linewidths=0.7, annot=True, fmt='.2f' )
+% plt.show()
+    </div>
+    </div>
+
+    <div class="code-img" style="background-color: #ffffff; max-width: 80%;">
+      <img style="width: 100%; max-width: 1530px;" src="../figs/lin-alg/feat-PCA-matrix.png" alt="feature-PCA matrix">
+    </div>
+
+    <p>
+    Here, we see visual confirmation of the fact that the PCA axes
+    capture the maximum (remaining) variance in order from first to
+    last. The first PCA axis is highly correlated with at least ten
+    variables. The second PCA axis is highly correlated with only two
+    variables. PCA axes after the second do not show the same level
+    of correlation for any of the variables.
+    </p>
+
+    <p>
+    You should also recognize that PCA <em>trades off</em> data
+    reduction for interpretability. We can replace twenty variables
+    with only two or three PCA axes that are linear combinations of
+    the variables' values. However, <em>what</em> those axes actually
+    mean, in terms of the original variables, is often difficult or
+    impossible to describe.
+    </p>
+
+    <p>
+    One way to try to understand how variables are being combined to
+    generate PCA axes is to examine the <em>loadings</em> or weight
+    coefficients used to combine variable values into an axis value.
+    </p>
+
+    <div class="code-div-accordion">
+    <div class="code-flex-pair-accordion">
+% print( pca.loadings[ pca.loadings.columns[ 1: 3 ] ] )
+    </div>
+    </div>
+
+    <div class="code-flex-div">
+    <div class="eq-flex-pair-accordion" style="white-space: pre;">
+                   comp_01   comp_02
+Status            0.152184 -0.112297
+Radius Mean      -0.292696  0.037361
+Texture Mean     -0.074887 -0.274337
+Perimeter Mean   -0.273543  0.049665
+Area Mean        -0.283509 -0.007963
+Smoothness Mean   0.163883  0.279298
+Compactness Mean  0.119503  0.262128
+Concavity Mean    0.028303  0.154081
+Concave N Mean   -0.082553  0.156420
+Symmetry Mean     0.184447  0.164606
+Fractal Mean      0.394685  0.213924
+Radius SE        -0.104699 -0.265071
+Texture SE        0.167856 -0.535408
+Perimeter SE     -0.088304 -0.253911
+Area SE          -0.166632 -0.224397
+Smoothness SE     0.283667 -0.284225
+Compactness SE    0.267272  0.016363
+Concavity SE      0.236676  0.009445
+Concave N SE      0.166627 -0.037533
+Symmetry SE       0.252456 -0.292507
+Fractal SE        0.343060 -0.023636
+    </div>
+    </div>
+
+    <p>
+    The loadings for the first two principal components show
+    that <code>Status</code> captures more information in the first
+    principal component than the second. A number of the standard
+    error values like <code>Texture SE</code>,
+    <code>Smoothness SE</code>, <code>Compactness SE</code>,
+    and <code>Symmetry SE</code> do the same. What does this mean?  It
+    tells us something about which variables are participating in
+    capturing the maximum amount of variance in the dataset.
+    Consultation with domain experts may provide more insight into
+    whether this combination of variables means something insightful.
+    </p>
+
+    <p>
+    A final use for the PCA results is dimensional reduction, that is,
+    a re-representation of the dataset using (a few) PCA axes rather
+    than then original twenty variables. Explained variance is the most
+    common way to achieve this. A threshold variance cut-off (often 80%
+    to 90%) is selected, and PCA axes are retained only until their
+    cumulative variance capture meets or exceeds the threshold.
+    </p>
+
+    <div class="code-div-accordion">
+    <div class="code-flex-pair-accordion">
+% sum_var = pd.DataFrame( data=pca.rsquare.values, columns=[ 'cumulative_var' ] )
+% print( sum_var )
+    </div>
+    </div>
+
+    <div class="code-flex-div">
+    <div class="eq-flex-pair-accordion" style="white-space: pre;">
+    cumulative_var
+0         0.000000
+1         0.440234
+2         0.643105
+3         0.725675
+4         0.787981
+5         0.839860
+6         0.875535
+7         0.901619
+8         0.921286
+9         0.938937
+10        0.952821
+11        0.965987
+12        0.976651
+13        0.985464
+14        0.991677
+15        0.994981
+16        0.996893
+17        0.998257
+18        0.999204
+19        0.999742
+20        0.999992
+21        1.000000
+    </div>
+    </div>
+
+    <p>
+    We achieve a cumulative variance of greater than 80% with only five
+    principal component. Seven principal components returns a cumulative
+    variance of greater than 90%.
+    </p>
+
+    <p>
+    Cumulative variance is not the only way to choose the number of
+    PCA axes to retain. Another is the Kaiser criterion, where we include
+    principal components only if their eigenvalues are greater than 1.
+    Remember that each eigenvalue is associated with an eigenvector,
+    which is one of the principal components.
+    </p>
+
+    <div class="code-div-accordion">
+    <div class="code-flex-pair-accordion">
+% eigen_values = pd.DataFrame(
+%     data=pca.eigenvals.values, columns=[ 'eigenvalue' ] )
+% print( eigen_values )
+    </div>
+    </div>
+
+    <div class="code-flex-div">
+    <div class="eq-flex-pair-accordion" style="white-space: pre;">
+     eigenvalue
+0   5260.353939
+1   2424.106301
+2    986.634428
+3    744.489892
+4    619.899289
+5    426.286115
+6    311.671566
+7    235.000678
+8    210.913415
+9    165.907464
+10   157.313732
+11   127.428545
+12   105.303519
+13    74.239591
+14    39.476727
+15    22.853580
+16    16.297562
+17    11.309865
+18     6.428243
+19     2.984377
+20     0.101171
+    </div>
+    </div>
+
+    <p>
+    Using the Kaiser criterion, we would actually keep nineteen of the twenty
+    PCA axes, which provides only a minimum reduction in data.
+    </p>
+
+    <p>
+    A final, more visual approach is to generate a scree plot of the
+    eigenvalues, and search for an "elbow" in the plot. We only include
+    PCA axes that occur up to the elbow.
+    </p>
+
+    <div class="code-div-accordion">
+    <div class="code-flex-pair-accordion">
+      &gt;&gt;&gt; pca.plot_scree()<br>
+      &gt;&gt;&gt; plt.show
+    </div>
+    </div>
+
+    <div class="code-img" style="background-color: #ffffff; max-width: 624px;">
+      <img style="width: auto; max-width: 624px;" src="../figs/lin-alg/scree-plot.png" alt="screen plot">
+    </div>
+   
+    <p>
+    The scree plot suggests only the first three PCA axes need to be
+    retained.
+    </p>
+  </div>
+</div>
+
+
+<h3>PCA versus SVD</h3>
+
+<p>
+I initially mentioned that PCA and SVD are closely
+related. Intuitively, you can see that both are methods to project
+data onto a set of orthogonal basis vectors. The difference is that
+PCA is normally described through the use of covariance and
+correlation matrices, where SVD is described using eigenvectors and
+eigenvalues. For a matrix \(A,\) SVD factorizes \(A\) into \(A =
+UDV^{T}.\) Although we will
+not <a href="https://intoli.com/blog/pca-and-svd/" target="_blank">go
+through the proof here</a>, it can be shown that, for a given matrix
+\(A,\) its standardized form \(S\) is equivalent to its factorization.
+
+\begin{equation}
+S = UDV^{T}
+\end{equation}
+</p>
+
+<p>
+One immediate consequence of this is that you can compute the SVD of
+\(A\) to get its principal components, rather than using covariance.
+In fact, most PCA libraries use SVD rather than covariance, since it
+is normally faster. This is also why Python's
+<code>statsmodel</code> library offers an argument in
+its <code>PCA</code> function to allow you to choose <code>eig</code>
+or <code>svd</code> to solve for the principal components.
+</p>
+
+
+<div id="PCA-cluster-accordion" class="detail">
+  <h3>PCA Clustering</h3>
+  <div>
+    <p>
+    One use of PCA is to support efficient and accurate
+    clustering. Clustering a dataset with a large number of variables
+    is problematic. For a high-dimensional dataset two samples \(x_1\)
+    and \(x_2\) have large differences in most dimensions. This means
+    only a small number of dimensions will be used to define
+    similarity, and those values are often overwhelmed by the large
+    number of highly dissimilar dimensions. To overcome this, we
+    project into a much lower-dimensional space (<em>e.g.</em>,
+    \(\mathbb{R}^{2}\) or \(\mathbb{R}^{3}\)) prior to building
+    similarities between samples. PCA offers an effective way to
+    perform the projection, since it maximizes the capture of variance
+    per additional axis, and therefore should ensure the estimate
+    similarity between \(x_1\) and \(x_2\) is close to the actual
+    similarity in the original \(\mathbb{R}^{n}\) space.
+    </p>
+
+    <p>
+    As an initial example of this approach, we will use the famous
+    <a href="https://en.wikipedia.org/wiki/Iris_flower_data_set"
+    target="_blank">Iris dataset</a> collected by Ronald Fisher.
+    Fisher measured the petal widths and lengths, and the sepal widths
+    and lengths of fifty examples of three types of irises: <em>Iris
+    setosa, Iris virginica, and Iris versicolor</em>. To test PCA
+    cluster, we will perform the following steps.
+    </p>
+
+    <ol>
+    <li>Load the Iris dataset as a \(150 \times 4\) matrix \(A\).
+    <li>Subdivide the dataset into 70% training and 30% test sets.
+    <li>Perform <em>k</em>-nearest neighbor (KNN) clustering on the
+    test samples in 4D space, placing them in three clusters.
+    <li>Since the Iris dataset contains a target variable identifying
+    each iris's type, we can determine if an iris is in its correct
+    cluster. Measure accuracy as the number of irises placed in an
+    incorrect cluster.
+    <li>Perform PCA on the test set and retain the first two axes.
+    <li>Project each 4D iris sample into 2D by calculating a position
+    on the two PCA axes using the iris's four attribute values.
+    <li>Perform KNN clustering on the projected test samples, placing
+    them in three clusters.
+    <li>Measure projected accuracy as the number of projected irises
+    placed in an incorrect cluster.
+    <li>Compare the accuracy of the original KNN in 4D space to the
+    accuracy of KNN in 2D projected PCA space.
+    </ol>
+
+    <p>
+    In reality, we would never do this, since we know that petal
+    length and petal width already do an excellent job of separating
+    the irises in 2D spatial clusters. Consider the scatterplot below,
+    showing the three types of irises identified by color, with the
+    \(x\)-axis representing petal length and the \(y\)-axis
+    representing petal width.
+    </p>
+
+    <div style="margin-top: 20px; margin-bottom: 20px;">
+    <canvas id="iris_plane" class="center-canvas" style="padding: 10px; background-color: #ffffff;"></canvas>
+    <script>
+      setTimeout(() => {
+        draw_point(
+          "iris_plane", [ -1, 5 ], [ 10, -1 ], [  1.4,  0.2 ], 75, "red" );
+        add_point( "iris_plane", [  1.4 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.3 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.7 , 0.4 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.3 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.1 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.6 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.1 ], "red" );
+        add_point( "iris_plane", [  1.1 , 0.1 ], "red" );
+        add_point( "iris_plane", [  1.2 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.4 ], "red" );
+        add_point( "iris_plane", [  1.3 , 0.4 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.3 ], "red" );
+        add_point( "iris_plane", [  1.7 , 0.3 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.3 ], "red" );
+        add_point( "iris_plane", [  1.7 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.4 ], "red" );
+        add_point( "iris_plane", [  1.0 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.7 , 0.5 ], "red" );
+        add_point( "iris_plane", [  1.9 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.6 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.6 , 0.4 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.6 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.6 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.4 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.1 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.2 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.3 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.1 ], "red" );
+        add_point( "iris_plane", [  1.3 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.3 , 0.3 ], "red" );
+        add_point( "iris_plane", [  1.3 , 0.3 ], "red" );
+        add_point( "iris_plane", [  1.3 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.6 , 0.6 ], "red" );
+        add_point( "iris_plane", [  1.9 , 0.4 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.3 ], "red" );
+        add_point( "iris_plane", [  1.6 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.5 , 0.2 ], "red" );
+        add_point( "iris_plane", [  1.4 , 0.2 ], "red" );
+        add_point( "iris_plane", [  4.7 , 1.4 ] );
+        add_point( "iris_plane", [  4.5 , 1.5 ] );
+        add_point( "iris_plane", [  4.9 , 1.5 ] );
+        add_point( "iris_plane", [  4.0 , 1.3 ] );
+        add_point( "iris_plane", [  4.6 , 1.5 ] );
+        add_point( "iris_plane", [  4.5 , 1.3 ] );
+        add_point( "iris_plane", [  4.7 , 1.6 ] );
+        add_point( "iris_plane", [  3.3 , 1.0 ] );
+        add_point( "iris_plane", [  4.6 , 1.3 ] );
+        add_point( "iris_plane", [  3.9 , 1.4 ] );
+        add_point( "iris_plane", [  3.5 , 1.0 ] );
+        add_point( "iris_plane", [  4.2 , 1.5 ] );
+        add_point( "iris_plane", [  4.0 , 1.0 ] );
+        add_point( "iris_plane", [  4.7 , 1.4 ] );
+        add_point( "iris_plane", [  3.6 , 1.3 ] );
+        add_point( "iris_plane", [  4.4 , 1.4 ] );
+        add_point( "iris_plane", [  4.5 , 1.5 ] );
+        add_point( "iris_plane", [  4.1 , 1.0 ] );
+        add_point( "iris_plane", [  4.5 , 1.5 ] );
+        add_point( "iris_plane", [  3.9 , 1.1 ] );
+        add_point( "iris_plane", [  4.8 , 1.8 ] );
+        add_point( "iris_plane", [  4.0 , 1.3 ] );
+        add_point( "iris_plane", [  4.9 , 1.5 ] );
+        add_point( "iris_plane", [  4.7 , 1.2 ] );
+        add_point( "iris_plane", [  4.3 , 1.3 ] );
+        add_point( "iris_plane", [  4.4 , 1.4 ] );
+        add_point( "iris_plane", [  4.8 , 1.4 ] );
+        add_point( "iris_plane", [  5.0 , 1.7 ] );
+        add_point( "iris_plane", [  4.5 , 1.5 ] );
+        add_point( "iris_plane", [  3.5 , 1.0 ] );
+        add_point( "iris_plane", [  3.8 , 1.1 ] );
+        add_point( "iris_plane", [  3.7 , 1.0 ] );
+        add_point( "iris_plane", [  3.9 , 1.2 ] );
+        add_point( "iris_plane", [  5.1 , 1.6 ] );
+        add_point( "iris_plane", [  4.5 , 1.5 ] );
+        add_point( "iris_plane", [  4.5 , 1.6 ] );
+        add_point( "iris_plane", [  4.7 , 1.5 ] );
+        add_point( "iris_plane", [  4.4 , 1.3 ] );
+        add_point( "iris_plane", [  4.1 , 1.3 ] );
+        add_point( "iris_plane", [  4.0 , 1.3 ] );
+        add_point( "iris_plane", [  4.4 , 1.2 ] );
+        add_point( "iris_plane", [  4.6 , 1.4 ] );
+        add_point( "iris_plane", [  4.0 , 1.2 ] );
+        add_point( "iris_plane", [  3.3 , 1.0 ] );
+        add_point( "iris_plane", [  4.2 , 1.3 ] );
+        add_point( "iris_plane", [  4.2 , 1.2 ] );
+        add_point( "iris_plane", [  4.2 , 1.3 ] );
+        add_point( "iris_plane", [  4.3 , 1.3 ] );
+        add_point( "iris_plane", [  3.0 , 1.1 ] );
+        add_point( "iris_plane", [  4.1 , 1.3 ] );
+        add_point( "iris_plane", [  6.0 , 2.5 ], "orchid" );
+        add_point( "iris_plane", [  5.1 , 1.9 ], "orchid" );
+        add_point( "iris_plane", [  5.9 , 2.1 ], "orchid" );
+        add_point( "iris_plane", [  5.6 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  5.8 , 2.2 ], "orchid" );
+        add_point( "iris_plane", [  6.6 , 2.1 ], "orchid" );
+        add_point( "iris_plane", [  4.5 , 1.7 ], "orchid" );
+        add_point( "iris_plane", [  6.3 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  5.8 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  6.1 , 2.5 ], "orchid" );
+        add_point( "iris_plane", [  5.1 , 2.0 ], "orchid" );
+        add_point( "iris_plane", [  5.3 , 1.9 ], "orchid" );
+        add_point( "iris_plane", [  5.5 , 2.1 ], "orchid" );
+        add_point( "iris_plane", [  5.0 , 2.0 ], "orchid" );
+        add_point( "iris_plane", [  5.1 , 2.4 ], "orchid" );
+        add_point( "iris_plane", [  5.3 , 2.3 ], "orchid" );
+        add_point( "iris_plane", [  5.5 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  6.7 , 2.2 ], "orchid" );
+        add_point( "iris_plane", [  6.9 , 2.3 ], "orchid" );
+        add_point( "iris_plane", [  5.0 , 1.5 ], "orchid" );
+        add_point( "iris_plane", [  5.7 , 2.3 ], "orchid" );
+        add_point( "iris_plane", [  4.9 , 2.0 ], "orchid" );
+        add_point( "iris_plane", [  6.7 , 2.0 ], "orchid" );
+        add_point( "iris_plane", [  4.9 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  5.7 , 2.1 ], "orchid" );
+        add_point( "iris_plane", [  6.0 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  4.8 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  4.9 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  5.6 , 2.1 ], "orchid" );
+        add_point( "iris_plane", [  5.8 , 1.6 ], "orchid" );
+        add_point( "iris_plane", [  6.1 , 1.9 ], "orchid" );
+        add_point( "iris_plane", [  6.4 , 2.0 ], "orchid" );
+        add_point( "iris_plane", [  5.6 , 2.2 ], "orchid" );
+        add_point( "iris_plane", [  5.1 , 1.5 ], "orchid" );
+        add_point( "iris_plane", [  5.6 , 1.4 ], "orchid" );
+        add_point( "iris_plane", [  6.1 , 2.3 ], "orchid" );
+        add_point( "iris_plane", [  5.6 , 2.4 ], "orchid" );
+        add_point( "iris_plane", [  5.5 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  4.8 , 1.8 ], "orchid" );
+        add_point( "iris_plane", [  5.4 , 2.1 ], "orchid" );
+        add_point( "iris_plane", [  5.6 , 2.4 ], "orchid" );
+        add_point( "iris_plane", [  5.1 , 2.3 ], "orchid" );
+        add_point( "iris_plane", [  5.1 , 1.9 ], "orchid" );
+        add_point( "iris_plane", [  5.9 , 2.3 ], "orchid" );
+        add_point( "iris_plane", [  5.7 , 2.5 ], "orchid" );
+        add_point( "iris_plane", [  5.2 , 2.3 ], "orchid" );
+        add_point( "iris_plane", [  5.0 , 1.9 ], "orchid" );
+        add_point( "iris_plane", [  5.2 , 2.0 ], "orchid" );
+        add_point( "iris_plane", [  5.4 , 2.3 ], "orchid" );
+        add_point( "iris_plane", [  5.1 , 1.8 ], "orchid" );
+      }, 5000 );
+    </script>
+    </div>
+
+    <p>
+    Our hope for converting from the original variables to PCA axes is
+    that we can obtain a significant data reduction with an acceptable
+    loss in accuracy. Since we are potentially "throwing information
+    away" when we project with PCA, intuitively we would not expect to
+    maintain the original level of accuracy.
+    </p>
+
+    <p>
+    The following R and Python code loads the iris dataset and divides
+    it into stratified training and test sets (the same relative
+    percentage of classes exist in both training and test).
+    <em>k</em> nearest neighbours (KNN) clustering is applied to the
+    training data. We then compute the first two PCA axes on the
+    training data, and use them to project the test data into a
+    PCA-projected test set. KNN is then applied to the PCA-projected
+    test set. Finally, since we know the correct iris type for each
+    test sample, we can compute the accuracy of both the original and
+    PCA-projected test results. Results showed one misclassification
+    (of 50 samples) using the four original axes, and one
+    misclassification for the two PCA axes. We can discard 50% of the
+    data while still maintaining an identical accuracy rate.
+    </p>
+
+    <div class="code-flex-pair-div">
+    <div class="code-flex-pair-accordion" id="code-flex-py-knn">
+<b>Python</b>
+
+% from sklearn import datasets
+% from sklearn.neighbors import KNeighborsClassifier
+% from sklearn.model_selection import train_test_split
+% from sklearn.preprocessing import StandardScaler
+% from statsmodels.multivariate.pca import PCA
+% import pandas as pd
+%
+% iris = datasets.load_iris()
+% y = iris.target
+% data = iris.data
+%
+% # Standardize data, mean=0, stdev=1
+%
+% X = StandardScaler().fit_transform( data )
+% X = pd.DataFrame( X, index=data.index, columns=data.columns )
+%
+% # Split data into 70% training, 30% test
+%
+% X_train,X_test,y_train,y_test = train_test_split(
+% &nbsp; X, y, test_size=0.3, stratify=y, random_state=93 )
+%
+% neigh = KNeighborsClassifier( n_neighbors=3 )
+% neigh.fit( X_train, y_train )
+% pred = neigh.predict( X_test )
+%
+% miss = [ 0, 0, 0 ]
+% for i in range( 0, len( y_test ) ):
+%     if y_pred[ i ] != y_test[ i ]:
+%         miss[ y_test[ i ] ] += 1
+% print( 'Original:', sum( miss ), 'misclassified samples' )
+% print( miss[ 0 ], miss[ 1 ], miss[ 2 ]
+%
+Original: 5 misclassified samples
+0 1 4
+%
+% pca = PCA( X_train, standardize=True )
+% e_vec = pca.eigenvecs
+%
+% X_train_proj = [ ]
+% for i in range( 0, len( X_train ) ):
+%     x = e_vec[ 'eigenvec_0' ] @ X_train.iloc[ i ]
+%     y = e_vec[ 'eigenvec_1' ] @ X_train.iloc[ i ]
+%     X_train_proj = X_train_proj + [ [x,y] ]
+%
+% X_test_proj = [ ]
+% for i in range( 0, len( X_test ) ):
+%     x = e_vec[ 'eigenvec_0' ] @ X_test.iloc[ i ]
+%     y = e_vec[ 'eigenvec_1' ] @ X_test.iloc[ i ]
+%     X_test_proj = X_test_proj + [ [x,y] ]
+%
+% neigh.fit( X_test_proj, y_train )
+% pred_proj = neigh.predict( X_test_proj )
+%
+% miss = [ 0, 0, 0 ]
+% for i in range( 0, len( y_test ) ):
+%     pred_proj[ i ] != y_test[ i ]:
+%         miss[ y_test[ i ] ] += 1
+% print( 'PCA:', sum( miss ), 'misclassified samples' )
+% print( miss[ 0 ], miss[ 1 ], miss[ 2 ]
+%
+PCA: 6 misclassified samples
+0 1 5
+    </div>
+
+    <div class="code-flex-pair-accordion" id="code-flex-R-knn">
+<b>R</b>
+
+% library(class)
+% library(datasets)
+%
+% seed( 99 )
+% data( iris )
+% iris &lt;- iris[ sample( nrow( iris ) ), ]
+%
+% # Standardize first four predictor columns
+%
+% norm_f &lt;- function( x ) { ( x - min(x) ) / ( max(x) - min(x) ) }
+% iris_norm &lt;- as.data.frame( lapply( iris[, c(1,2,3,4) ], norm_f )
+%
+% # Split data into 70% train, 30% test
+%
+% bound &lt;- floor( nrow( dset ) * 0.7 )
+% X_train &lt;- iris_nrom[ 0:bound, ]
+% X_test &lt;- iris_nrom[ ( bound+1 ):nrow( iris_norm ), ]
+% y_train &lt;- iris_nrom[ 0:bound, 5 ]
+% y_test &lt;- iris_nrom[ ( bound+1 ):nrow( iris ), 5 ]
+%
+% pr &lt;- knn( X_train, X_test, cl=y_train, k=3 )
+%
+% miss &lt;- c( 0,0,0 )
+% for( i in 1: length( pr ) ) {
+%     if ( pr[ i ] != y_test[ i ] ) {
+%         j = as.numeric( pr[ i ] )
+%         miss[ j ] = miss[ j ] + 1
+%     }
+% }
+% sprintf( "Original: %d misclassified samples", sum( miss ) )
+[1] "Original: 1 misclassified samples"
+% print( miss )
+[1] 0 0 1
+%
+% # Project 4 predictor columns into 2 PCA columns
+%
+% pca &lt;- prcomp( X_train, scale=TRUE )
+% e_vec = as.list( pca[ "rotation" ]$rotation )
+% pc1 = matrix( as.numeric( e_vec[ 1: 4 ] ), ncol=4 )
+% pc2 = matrix( as.numeric( e_vec[ 6: 9 ] ), ncol=4 )
+%
+% X_train_proj &lt;- data.frame( matrix( nrow=0, ncol=2 ) )
+% for( i in 1: nrow( X_train ) ) {
+%     v = as.numeric( X_train[ i, ]
+%     x = pc1 %*% v
+%     y = pc2 %*% v
+%     X_train_proj[ nrow( X_train_proj ) + 1, ] = list( x, y )
+% }
+%
+% X_test_proj &lt;- data.frame( matrix( nrow=0, ncol=2 ) )
+% for( i in 1: nrow( X_test ) ) {
+%     v = as.numeric( X_test[ i, ]
+%     x = pc1 %*% v
+%     y = pc2 %*% v
+%     X_test_proj[ nrow( X_test_proj ) + 1, ] = list( x, y )
+% }
+%
+% pr &lt;- knn( X_train_proj, X_test_proj, cl=y_train, k=3 )
+%
+% miss &lt;- c( 0,0,0 )
+% for( i in 1: length( pr ) ) {
+%     if ( pr[ i ] != y_test[ i ] ) {
+%         j = as.numeric( pr[ i ] )
+%         miss[ j ] = miss[ j ] + 1
+%     }
+% }
+% sprintf( "PCA: %d misclassified samples", sum( miss ) )
+[1] "PCA: 1 misclassified samples"
+% print( miss )
+[1] 0 0 1
+    </div>
+    </div>
+
+    <p>
+    As an example of a more "difficult" dataset, we will use the load
+    dataset from a previous year's summer practicum representing loan
+    grades A through F and good&ndash;bad categories depending on loan
+    grade. From the original
+    variables we remove any non-categorical variable and variables
+    with more than 50% missing values, convert any remaining missing
+    values to 0, then use loan grade as the target, leaving 42
+    predictors. We also modify the predictor loan grade in two ways:
+    first, in its original A&ndash;F format (samples with loan grades
+    of <code>G</code> were removed from the data) and in a binary
+    format where grades <code>A, B,</code> and
+    <code>C</code> were "good" and grades <code>D, E,</code>
+    and </code>F</code> were "bad." Using all 42 axes in their
+    original format together with <em>k</em> nearest neighbours (KNN)
+    clustering produced accuracies of 66.3% and 92.2%, respectively. We
+    then ran incremental PCA (required due to memory constraints). The
+    table below shows variance captured and accuracy for \(1, 2,
+    \ldots 15\) PCA axes.
+    </p>
+
+    <table class="center">
+    <tr>
+      <th></th>
+      <th colspan="2">A,B,C,D,E,F</th>
+      <th colspan="2">Good,Bad</th>
+    </tr>
+    <tr>
+      <th>Axes</th>
+      <th>Variance</th>
+      <th>Accuracy</th>
+      <th>Variance</th>
+      <th>Accuracy</th>
+    </tr>
+    <tr class="even">
+    <td>1</td> <td>4.5%</td> <td>24.8%</td> <td>4.5%</td> <td>70.2%</td>
+    </tr>
+    <tr class="odd">
+    <td>2</td> <td>7.0%</td> <td>25.0%</td> <td>7.0%</td> <td>70.1%</td>
+    </tr>
+    <tr class="even">
+    <td>3</td> <td>13.9%</td> <td>25.1%</td> <td>13.9%</td> <td>70.5%</td>
+    </tr>
+    <tr class="odd">
+    <td>4</td> <td>22.5%</td> <td>27.2%</td> <td>22.5%</td> <td>72.3%</td>
+    </tr>
+    <tr class="even">
+    <td>5</td> <td>31.4%</td> <td>28.4%</td> <td>31.4%</td> <td>72.9%</td>
+    </tr>
+    <tr class="odd">
+    <td>6</td> <td>35.4%</td> <td>31.9%</td> <td>35.4%</td> <td>73.7%</td>
+    </tr>
+    <tr class="even">
+    <td>7</td> <td>43.2%</td> <td>30.6%</td> <td>43.2%</td> <td>73.4%</td>
+    </tr>
+    <tr class="odd">
+    <td>8</td> <td>47.1%</td> <td>29.7%</td> <td>47.1%</td> <td>73.4%</td>
+    </tr>
+    <tr class="even">
+    <td>9</td> <td>49.9%</td> <td>30.2%</td> <td>49.9%</td> <td>74.5%</td>
+    </tr>
+    <tr class="odd">
+    <td>10</td> <td>54.1%</td> <td>65.5%</td> <td>54.1%</td> <td>94.3%</td>
+    </tr>
+    <tr class="even">
+    <td>11</td> <td>57.4%</td> <td>62.6%</td> <td>57.4%</td> <td>94.0%</td>
+    </tr>
+    <tr class="odd">
+    <td>12</td> <td>60.1%</td> <td>60.6%</td> <td>60.1%</td> <td>93.5%</td>
+    </tr>
+    <tr class="even">
+    <td>13</td> <td>63.0%</td> <td>59.4%</td> <td>63.0%</td> <td>93.3%</td>
+    </tr>
+    <tr class="odd">
+    <td>14</td> <td>65.4%</td> <td>57.9%</td> <td>65.4%</td> <td>92.8%</td>
+    </tr>
+    <tr class="even">
+    <td>15</td> <td>68.3%</td> <td>56.8%</td> <td>68.3%</td> <td>92.5%</td>
+    </tr>
+
+    <caption style="text-align:center; font-size: 0.9em; color: white;">
+    Variance capture and accuracy for predicting loan grades by clustering,
+    both for the six original loan grades A&ndash;F, and for
+    good&ndash;bad categories where (A,B,C) \(\rightarrow\) good and
+    (D,E,F) \(\rightarrow\) bad
+    </caption>
+
+    </table>
+
+    <p>
+    For the binary good&ndash;bad categorization, good performance is
+    obtained even with one PCA axis. At approximately 50% variance
+    captured, the accuracy jumps significantly from around 75% to
+    around 95%, then stays steady as more axes are added. At least for
+    this dataset, ten PCA axes produces excellent accuracy. This
+    represents a reduction of \(887,380\) samples with \(72\)
+    variables per sample \((63,891,360\) data points), to \(42\)
+    variables per sample after preprocessing \((37,269,960\) data
+    points), a 41.67% reduction, to \(10\) variables per sample
+    \((8,887,380\) data points), an 86.1% reduction. Reducing data
+    size by over 85% produces an <em>increase</em> in accuracy of
+    approximately 2%.
+    </p>
+
+    <p>
+    When we move to the more complicated problem of predicting the
+    actual loan grade from A through F, the original 42 axes produce an
+    accuracy of 66.3%, which is actually very good. The table shows
+    accuracies for PCA axes ranging from 1 to 15. As before, at ten
+    PCA axes we begin to approach accuracy percentages rivaling the
+    full 42-axis model.
+    </p>
+  </div>
+</div>
+
+
+<h2 id="least-square">Linear Least Squares</h2>
+
+<p>
+We have spent extensive time discussing how to solve \(A\vec{x} =
+\vec{b}.\) Deriving \(A^{-1}\) and using Gaussian elimination or
+elimination matrices are some of the approaches we have
+presented. However, what happens when there is <em>no</em> solution to
+\(A\vec{x} = \vec{b}.\) This is not uncommon, for example, when
+\(A^{-1}\) is singular or the rows of \(A\) are not independent. In
+this case, we might choose to instead find the solution
+\(\vec{\hat{x}}\) that is the <em>closest</em> solution to \(A\vec{x}
+= \vec{b}.\) Since \(\vec{\hat{x}}\) is not the <em>exact</em>
+solution to the equation, it will produce an error
+or <em>residual</em> \(\vec{r} = A\vec{\hat{x}} - \vec{b}.\) Minimizing the
+residual \(\vec{r}\) will generate the best possible solution, since
+it minimizes the error in the \(\vec{\hat{x}}\) we select.
+
+\begin{align}
+\begin{split}
+
+\underset{\vec{\hat{x}} \in R^{m}}{\textrm{minimize}} ||A\vec{\hat{x}} -
+\vec{b}|| &= \textrm{min}\, ||A\vec{\hat{x}} - \vec{b}||^{2}\\
+
+&= \textrm{min}\, ||\vec{r}||^{2}\\
+&= \textrm{min}\, (r_1^{2} + r_2^{2} + \cdots + r_m^{2})
+\end{split}
+\end{align}
+</p>
+
+<p>
+This is known as the <em>linear least squares problem</em>, where
+\(A\) and \(\vec{b}\) are given as data, \(\vec{x}\) is the quantity
+to minimize, and \(||A\vec{x} - \vec{b}||\) is the objective
+function. Vector \(\vec{\hat{x}}\) satisfies the objective function if
+\(||A\vec{\hat{x}} - \vec{b}|| \leq ||A\vec{x} - \vec{b}||\) for all
+possible \(\vec{x}.\) Another name for this problem, which you are
+very familiar with, is <em>regression</em>. \(\vec{\hat{x}}\) is the
+result of </em>regressing</em> \(\vec{b}\) onto the columns of \(A.\)
+
+\begin{equation}
+
+||A\vec{x} - \vec{b}||^{2} = ||(x_1 A_{1 \ast} + \cdots + x_n A_{\ast
+n} ) - b||^{2}
+
+\end{equation}
+</p>
+
+
+<p>
+<b>Practical Example.</b> Given \(A = \begin{bmatrix} 2 & 0 \\ -1 & 1
+\\ 0 & 2 \end{bmatrix}\) and \(\vec{b} = \begin{bmatrix} 1 \\ 0 \\ -1
+\end{bmatrix},\) an over-determined set of three equations and two
+unknowns is formed.
+
+\begin{equation}
+2 x_1 = 1 \qquad -x_1 + x_2 = 0 \qquad 2 x_2 = -1
+\end{equation}
+</p>
+
+<p>
+Simple examination shows \(x_1 = \frac{1}{2}\) from the first equation
+and \(x_2 = -\frac{1}{2}\) from the third equation does not satisfy
+the second equation \(-\frac{1}{2} + (-\frac{1}{2}) \neq 0.\) The
+least squares problem asks us to minimize \((2 x_1 - 1)^{2} + (-x_1 +
+x_2)^{2} + (2 x_2 + 1)^{2}.\) Since we have not discussed how to find
+the optimal solution, we provide it directly, \(\vec{\hat{x}} = [
+\frac{1}{3}, -\frac{1}{3} ].\) This produces a residual \(\vec{r} = A
+\vec{\hat{x}} - \vec{b} = \begin{bmatrix} -\frac{1}{3} & -\frac{2}{3}
+& \frac{1}{3} \end{bmatrix},\) \(||r||^{2} = \frac{2}{3}.\)
+</p>
+
+
+<h3>Partial Derivative Solution for \(\vec{\hat{x}}\)</h3>
+
+<p>
+Various methods exist for solving for \(\vec{\hat{x}}.\) We will start
+with a solution using partial derivatives. Given a function
+\(f(x) = ||A\vec{x} - \vec{b}||^{2},\) minimizing \(f\) requires the
+partial derivatives to be zero.
+
+\begin{equation}
+
+\frac{\partial f}{\partial x_i}(\vec{\hat{x}}) = 0 \; \forall \; 1
+\leq i \leq n
+
+\end{equation}
+</p>
+
+<p>
+This can be expressed in terms of the gradient \(\nabla f(x) = 0.\)
+The gradient can be expressed as a matrix.
+
+\begin{align}
+\begin{split}
+\nabla f(x) &= 2 A^{T}(A\vec{x} - \vec{b}) = 0\\
+A^{T} A \vec{\hat{x}} &= A^{T} b\\
+\vec{\hat{x}} &= (A^{T} A)^{-1} A^{T} b
+\end{split}
+\end{align}
+</p>
+
+<p>
+If we assume the columns of \(A\) are linearly independent, then
+\(A^{T} A\) is invertable, so a unique solution exists for the least
+squares problem.
+</p>
+
+<div class="code-flex-pair-div">
+  <div class="code-flex-pair" id="code-flex-py-lstsq">
+<b>Python</b>
+
+% import numpy as np
+%
+% a = np.array( [[2,0], [-1,1], [0,2]] )
+% b = np.array( [[1], [0], [-1]] )
+% x_hat, r, rank, singular_val = np.linalg.lstsq( a, b )
+% print( x_hat )
+
+[[ 0.33333333]
+ [-0.33333333]]
+
+% print( r )
+
+[0.66666667]
+  </div>
+
+  <div class="code-flex-pair" id="code-flex-R-lstsq">
+<b>R</b>
+
+% a &lt;- matrix( c( 2,-1,0, 0,1,2 ), nrow=3, ncol=2 )
+% b &lt;- c( 1, 0, -1 )
+% x &lt;- solve( t( a ) %*% a ) %*% t( a ) %*% b
+% r &lt;- ( a %*% x ) - b
+% print( x )
+
+           [,1]
+[1,]  0.3333333
+[2,] -0.3333333
+
+% print( r )
+
+           [,1]
+[1,] -0.3333333
+[2,] -0.6666667
+[3,]  0.333333
+
+% print( sum( r ^ 2 ) )
+
+[1] 0.6666667
+  </div>
+</div>
+
+
+<h3>QR Solution for \(\vec{\hat{x}}\)</h3>
+
+<p>
+Alternatively, we can use a QR factorization to compute \(\hat{x}.\)
+Given \(A=QR\) for \(A\) with linearly independent columns, we
+can express the pseudo-inverse \(A^{\dagger}\) of \(A\) in terms
+of \(Q\) and \(R.\)
+
+\begin{align}
+\begin{split}
+
+A^{T} A &= (QR)^{T} (QR) = R^{T} Q^{T} Q R = R^{T} R\\
+
+A^{\dagger} & = (A^{T} A)^{-1} A^{T} = (R^{T} R)^{-1} (QR)^T
+= R^{-1} R^{-T} R^{T} Q^{T} = R^{-1} Q^{T}
+
+\end{split}
+\end{align}
+</p>
+
+<p>
+This allows us to define \(\hat{x} = A^{\dagger}b = R^{-1} Q^{T} b.\)
+To compute \(\hat{x},\) we multiply \(b\) by \(Q^{T},\) then compute
+\(R^{-1} (Q^{T} b)\) using back-substitution.
+</p>
+
+
+<div id="lstsqr-qr-accordion" class="detail">
+  <h3>Least Squares QR Example</h3>
+  <!--
+  <div style="background: none; background-color: #ffe8e8;">
+    -->
+  <div>
+    <p>For matrix \(A = \begin{bmatrix} 3 & -2 \\ 0 & 3 \\ 4 & 4
+    \end{bmatrix}\) and \(b= \begin{bmatrix} 3 & 5 & 4
+    \end{bmatrix}^{T},\) solve for the solution \(\hat{\vec{x}}\) with
+    the minimum residual \(r.\)
+
+    <ol>
+
+    <li>Use QR decomposition to solve for \(Q\) and \(R.\) Because
+    \(A\) is not square we will use the <em>complete</em> versions of
+    \(Q\) and \(R,\) where \(Q\) is an \(m \times m\) matrix and \(R\)
+    is an \(m \times n\) upper-triangular matrix with \(m-n\) lower
+    rows of 0s.
+    
+
+    \begin{align}
+    \begin{split}
+    Q &=
+    \begin{bmatrix} -0.6 & 0.64 & -0.48\\
+    0 & -0.6 & -0.8\\
+    -0.8 & -0.48 & 0.36 \end{bmatrix}\\
+
+    R &= 
+    \begin{bmatrix} -5 & -2\\
+    0 & -5\\
+    0 & 0 \end{bmatrix}\\
+    \end{split}
+    \end{align}
+
+    <li> Compute pseudo-inverse \(R^{\dagger}\) and \(Q^{T}.\)
+
+    \begin{align}
+    \begin{split}
+    R^{\dagger} &=
+    \begin{bmatrix} -0.2 & 0.08 & 0\\
+    0 & -0.2 & 0 \end{bmatrix}\\
+
+    Q^{T} &=
+    \begin{bmatrix} -0.6 & 0 & -0.8\\
+    0.64 & -0.6 & -0.48\\
+    -0.48 & -0.8 & 0.36 \end{bmatrix}\\
+    \end{split}
+    \end{align}
+
+    <li> Calculate \(\hat{\vec{x}} = R^{\dagger} (Q^{T} b).\)
+
+    \begin{align}
+    \begin{split}
+    \hat{\vec{x}} &= R^{\dagger} (Q^{T} b)\\
+    &=
+
+    \begin{bmatrix} -0.2 & 0.08 & 0\\ 0 & -0.2 & 0 \end{bmatrix}
+     
+    \left( \begin{bmatrix} -0.6 & 0 & -0.8\\
+    0.64 & -0.6 & -0.48\\
+    -0.48 & -0.8 & 0.36 \end{bmatrix}
+
+    \begin{bmatrix} 3 \\ 5 \\ 4 \end{bmatrix} \right)\\
+
+    & = \begin{bmatrix} 0.76 \\ 0.6 \end{bmatrix}
+    \end{split}
+    \end{align}
+
+    <li> Calculate \(\hat{\vec{b}} = A \hat{\vec{x}}.\)
+
+    \begin{align}
+    \begin{split}
+
+    \hat{\vec{b}} &= A \hat{\vec{x}}\\
+
+    &=
+    \begin{bmatrix} 3 & -2 \\ 0 & 3 \\ 4 & 4 \end{bmatrix}
+    \begin{bmatrix} 0.76 \\ 0.6 \end{bmatrix}\\
+
+    &= \begin{bmatrix} 1.08 \\ 1.8 \\ 5.44 \end{bmatrix}
+
+    \end{split}
+    \end{align}
+
+    <li> Calculate the residual \(r = \sum (\vec{b} -
+    \hat{\vec{b}})^{2}.\)
+
+    \begin{align}
+    \begin{split}
+    r &= \sum (\vec{b} - \hat{\vec{b}})^{2}\\
+    &= \sum  \left(
+    \begin{bmatrix} 3 \\ 5 \\ 4 \end{bmatrix} -
+    \begin{bmatrix} 1.08 \\ 1.8 \\ 5.44 \end{bmatrix} \right)^{2}
+    &= \sum \begin{bmatrix} 1.92 \\ 3.2 \\ -1.44 \end{bmatrix}^{2}\\
+    &= 16
+
+    \end{split}
+    \end{align}
+
+    </ol>
+
+    <p>
+    Solution \(\hat{\vec{x}} = \begin{bmatrix} 1.08 & 1.8 & 5.44
+    \end{bmatrix}^{T}\) is the "best" solution to the equation
+    \(\begin{bmatrix} 3 & -2 \\ 0 & 3 \\ 4 & 4 \end{bmatrix} x =
+    \begin{bmatrix} 3 \\ 5 \\ 4 \end{bmatrix}\) in that it minimizes
+    the residual error \(r = 16.\)
+    </p>
+
+  </div>
+</div>
+
+
+<!-- The mod-date span will be updated by code in mod-date.js -->
+
+<hr class="fig_top">
+<div class="footer">
+  Updated <span id="mod-date">01-Jan-01</span>
+</div>
+
+</body>
+</html>
+
+<!--  LocalWords:  ui px Analytics Healey mx leq vec orthonormal cdot
+ -->
+<!--  LocalWords:  orthonormality subterms ldots bmatrix sqrt lVert '
+ -->
+<!--  LocalWords:  rVert frac displaystyle arccos circ textrm Schwarz
+ -->
+<!--  LocalWords:  lvert rvert eq mult Eqns eqref Eqn neq det Adjoint
+ -->
+<!--  LocalWords:  eigenvectors numpy np rbind eqn rewritings cdots
+ -->
+<!--  LocalWords:  hyperplanes nn qquad Longrightarrow iteratively ij
+ -->
+<!--  LocalWords:  rightarrow mn ast vdots pmatrix forall elim ddots
+ -->
+<!--  LocalWords:  subscripted submatrix programatically LDU lin soln
+ -->
+<!--  LocalWords:  mathbb Strang Subspaces invertable notin Eigen bc
+ -->
+<!--  LocalWords:  textbf Nullspace nullspace emptyset nrow ncol SVD
+ -->
+<!--  LocalWords:  vmatrix cofactors columncolor lightblue rowcolor
+ -->
+<!--  LocalWords:  mathbf cofactor adjoint matmul eigenvector eigen
+ -->
+<!--  LocalWords:  hfill PCA ji cA diag diagonalization orthogonally
+ -->
+<!--  LocalWords:  diagonalized diagonalizable th UD UDV VV xy svd cv
+ -->
+<!--  LocalWords:  eigenset OpenCV greyscale neighbouring jpg pyplot
+ -->
+<!--  LocalWords:  matplotlib plt img imread cmp figsize imshow cmap
+ -->
+<!--  LocalWords:  str dataset Covariance covariance mathrm overline
+ -->
+<!--  LocalWords:  covar colinearity CSV preprocessing seaborn sns df
+ -->
+<!--  LocalWords:  csv wdbc pca eig DataFrame cov rowvar heatmap fmt
+ -->
+<!--  LocalWords:  linewidths annot yticklabels nulcli's nucli concat
+ -->
+<!--  LocalWords:  nm YlGnBu interpretability loadings underset nabla
+ -->
+<!--  LocalWords:  alignat Penrose Eliakim setosa virginica KNN stdev
+ -->
+<!--  LocalWords:  versicolor scatterplot neighbours sklearn datasets
+ -->
+<!--  LocalWords:  misclassification misclassifications pred len proj
+ -->
+<!--  LocalWords:  KNeighborsClassifier StandardScaler misclassified
+ -->
+<!--  LocalWords:  eigenvecs eigenvec iloc tg dset sprintf pc sys tmp
+ -->
+<!--  LocalWords:  accuracies diagonalize coeff exchg tri 'Droid 12px
+ -->
+<!--  LocalWords:  Sans' 2D 3x 3t 's versa 8pt 1n 2n m1 m2 24pt i1 i2
+ -->
+<!--  LocalWords:  i5 1j 2j 5j 1s 0s 2x2 n1 n2 n3 e1 e2 'triangulate
+ -->
+<!--  LocalWords:  column' 'main triangulated' 3D scipy linalg fac 1D
+ -->
+<!--  LocalWords:  pseudoinverse pracma pinv nonsingular JPEG cv2 'VT
+ -->
+<!--  LocalWords:  'gray' 'off' 'Original 'Components peoples' 'wdbc
+ -->
+<!--  LocalWords:  csv' 'Status' 'eig' 'Blues' 2f' 'comp' 'YlGnBu' 4D
+ -->
+<!--  LocalWords:  variables' 'cumulative var' 'eigenvalue' samples'
+ -->
+<!--  LocalWords:  'misclassified 'eigenvec 0' 1' 'PCA pc1 pc2
+ -->
