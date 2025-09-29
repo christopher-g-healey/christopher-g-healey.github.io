@@ -811,7 +811,7 @@ Python file.
 % &nbsp; &nbsp; dcc.Graph( id='ex_graph', figure=fig )
 % ])
 % 
-% app.run_server(debug=True)
+% app.run(debug=True)
   </div>
 </div>
 
@@ -858,13 +858,13 @@ and subtitle of the dashboard,
 <li><code>dcc.Graph&hellip;&thinsp;</code> displays the plotly bar
 graph, and assigns it an ID of <code>ex_graph</code>, and
 
-<li><code>app.run_server(debug=True)</code> interprets the code to
+<li><code>app.run(debug=True)</code> interprets the code to
 create the dashboard at URL http://127.0.0.1:8050/
 
 </ul>
 
 <p>One clarifying note about setting <code>debug=True</code> in the
-<code>run_server</code> function: when debug is False, changes to the
+<code>run</code> function: when debug is False, changes to the
 Python code will not update the dashboard. When debug is True, changes
 to the Python code will automatically be detected and used to update
 the dashboard in real-time. If you are using <code>debug=True</code>
@@ -929,7 +929,7 @@ a modification of the original example.
 %   ]
 % )
 % 
-% app.run_server(debug=True)
+% app.run(debug=True)
   </div>
 </div>
 
@@ -1025,7 +1025,7 @@ sliders.</p>
 % )
 % ]) 
 % 
-% app.run_server(debug=True)
+% app.run(debug=True)
   </div>
 </div>
 
@@ -1086,7 +1086,7 @@ that displays the current value of the text field.</p>
 %     s = 'Output: {}'.format( input_value )
 %     return [ s ]
 % 
-% app.run_server(debug=True)
+% app.run(debug=True)
   </div>
 </div>
 
@@ -1195,7 +1195,7 @@ life expectancy, subdivided by continent.</p>
 %     fig.update_layout( transition_duration=500 )
 %     return [ fig ]
 % 
-% app.run_server(debug=True)
+% app.run(debug=True)
   </div>
 </div>
 
@@ -1303,7 +1303,7 @@ included in your callback function.</p>
 %     fig.update_yaxes(title=yaxis_col_nm, type='linear' if yaxis_type=='Linear' else 'log')
 %     return [ fig ]
 % 
-% app.run_server(debug=True)
+% app.run(debug=True)
   </div>
 </div>
 
@@ -1383,7 +1383,7 @@ callback function.</p>
 %     
 %     return [ bar, map ]
 % 
-% app.run_server(debug=True)
+% app.run(debug=True)
   </div>
 </div>
 
