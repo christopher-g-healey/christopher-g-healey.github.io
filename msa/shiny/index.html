@@ -540,7 +540,7 @@ the <code>geom_smooth</code> command.
 </p>
 
 <div class="code-flex-div">
-  <div class="code-flex" id="code-pie">
+  <div class="code-flex" id="code-scatterplot-smooth">
 % df &lt;- trees
 % ggplot( data=df, aes( x=Height, y=Volume ) ) + geom_point( shape=20, size=3.0 ) + geom_smooth( method=lm ) + ggtitle( "Tree Height vs Volume" )
   </div>
@@ -555,6 +555,7 @@ than 0.05, the normal cutoff for rejecting the null hypothesis.
 
 <div class="code-flex-div">
   <div class="code-flex" id="code-scatterplot-reg-line">
+% reg <- lm( trees$Height ~ trees$Volume )
 % summary( reg )
 
 Call:
