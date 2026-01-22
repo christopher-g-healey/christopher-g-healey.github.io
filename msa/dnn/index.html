@@ -125,10 +125,23 @@ conda install pytorch torchvision -c pytorch
 </div>
 
 <p>
+  Before you can use LangChain, you must download and install its
+  relevant modules in Anaconea, including an LLM to sequence its 
+  operations. To do this, open an Anaconda command prompt and issue
+  the following command
+</p>
+
+<div class="ex-div">
+conda install pytorch torchvision -c pytorch
+</div>
+conda config --add conda-forge
+conda config --set channel_priority strict
+conda install langchain langchain-openai
+</div>
+
+<p>
 You can review the
- <a href="https://pytorch.org/get-started/locally/#anaconda-1">instructions
-on the PyTorch web site</a> for more information, as well as commands
-you can issue to verify the install has been performed correctly.
+ <a href="https://pytorch.org/get-started/locally/#anaconda-1">instructions on the PyTorch web site</a> or <a href="https://www.langchain/com">LangChain website</a>for more information, as well as commands you can issue to verify the install has been performed correctly.
 </p>
 
 <h2 id="dnn">Deep Neural Networks</h2>
