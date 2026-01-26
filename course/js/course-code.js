@@ -870,9 +870,9 @@ function switch_theme()
     return;
   }
 
-  if ( URL_tok[ 0 ] === "file" ) {
+  if ( URL_tok[ 0 ] === "file:" ) {
     http_root = "file:///"
-  } else if ( URL_tok[ 0 ] === "https" ) {
+  } else if ( URL_tok[ 0 ] === "https:" ) {
     http_root = "https://"
   } else {
     console.log( "switch_theme(), unknown URL header: " + URL_tok[ 0 ] );
