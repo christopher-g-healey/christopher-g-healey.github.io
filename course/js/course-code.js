@@ -887,14 +887,14 @@ function switch_theme()
     http_root + "course/figs/sun-icon-gradient.png"
   ]
     
-  pos = window.location.href.indexOf( http_root );
-  if ( pos == -1 ) {
-    console.log( "switch_theme(), invalid URL root: " + window.location.href );
-    return;
-  }
+  //pos = window.location.href.indexOf( http_root );
+  //if ( pos == -1 ) {
+  //  console.log( "switch_theme(), invalid URL root: " + window.location.href );
+  //  return;
+  //}
     
-  URL_tok = window.location.href.substring( pos + http_root.length );
-  URL_tok = URL_tok.split( "/" );
+  //URL_tok = window.location.href.substring( pos + http_root.length );
+  //URL_tok = URL_tok.split( "/" );
     
   // Remove spurious empty strings split likes to insert at end of array, or
   // any *.html appended to URL path
