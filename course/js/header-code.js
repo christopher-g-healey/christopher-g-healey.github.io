@@ -100,9 +100,34 @@ function eval_cmd( cmd )
 }                                     // End function eval_command
 
 
-// Fetch current header HTML
+/// Fetch current header HTML
 
-fetch( "https://christopher-g-healey.github.io/course/html/header-code.html" )
+var  http_root;												// HTTP root for JS course code
+var  pos;															// Index into string
+var  URL;															// Course header code HTML URL
+
+
+//  Get HTTP root to directory containing course files
+
+//  This code builds the location of header-code.html in a local filesystem, but
+//  you cannot fetch() from file:///, only from https:// so we comment this out
+//  and refer directly to the version of the file on github.io; this means we must
+//  keep both the local and remote files sync'd properly...
+
+//pos = document.currentScript.src.indexOf( "course/" );
+//if ( pos == -1 ) {
+//	console.log( 'header-code.js mainline(), cannot find "course/" in script name' );
+//	throw new Error( 'header-code.js mainline(), cannot find "course/" in script name' );
+//} else {
+//	pos = pos + "course/".length;
+//}
+
+//http_root = document.currentScript.src.substring( 0, pos );
+//URL = http_root + "html/header-code.html";
+
+URL = "https://christopher-g-healey.github.io/course/html/header-code.html";
+
+fetch( URL )
   .then( r => r.text() )
 
   // Process each command in header text
