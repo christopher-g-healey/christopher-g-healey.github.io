@@ -878,7 +878,14 @@ function switch_theme()
     console.log( "switch_theme(), unknown URL header: " + URL_tok[ 0 ] );
     return;
   }
-  http_root += URL_tok.split( 1, -3 ) + "/";
+  http_root += URL_tok.slice( 1, -3 ) + "/";
+
+  //  Reference icons at proper http_root location
+
+  icon_src = [
+    http_root + "course/figs/moon-icon-gradient.png",
+    http_root + "course/figs/sun-icon-gradient.png"
+  ]
     
   pos = window.location.href.indexOf( http_root );
   if ( pos == -1 ) {
