@@ -864,7 +864,7 @@ function switch_theme()
 
   // Setup proper logo and inverted logo URLs based on current doc URL
 
-  URL_tok = window.location.href.split( /["/"]+/ );
+  URL_tok = window.location.href.split( /[\/]+/ );
   if ( URL_tok.length < 1 ) {
     console.log( "switch_theme(), invalid URL root: " + window.location.href );
     return;
@@ -878,7 +878,7 @@ function switch_theme()
     console.log( "switch_theme(), unknown URL header: " + URL_tok[ 0 ] );
     return;
   }
-  http_root += URL_tok.slice( 1, -3 ) + "/";
+  http_root += URL_tok.slice( 1, -3 ).join( "/" ) + "/";
 
   //  Reference icons at proper http_root location
 
