@@ -863,6 +863,22 @@ function switch_theme()
 
 
   // Setup proper logo and inverted logo URLs based on current doc URL
+
+  URL_tok = window.location.href.split( /["/"]+/ );
+  if ( URL_tok.length < 1 ) {
+    console.log( "switch_theme(), invalid URL root: " + window.location.href );
+    return;
+  }
+
+  if ( URL_tok[ 0 ] === "file" ) {
+    http_root = "file:///"
+  } else if ( URL_tok[ 0 ] === "https" ) {
+    http_root = "https://"
+  } else {
+    console.log( "switch_theme(), unknown URL header: " + URL_tok[ 0 ] );
+    return;
+  }
+  http_root += URL_tok.split( 1, -3 ) + "/";
     
   pos = window.location.href.indexOf( http_root );
   if ( pos == -1 ) {
