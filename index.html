@@ -1,9 +1,2885 @@
-<!doctype html>
-<html>
-  <head>
-    <title>This is the title of the webpage!</title>
-  </head>
-  <body>
-    <p>This is an example paragraph. Anything in the <strong>body</strong> tag will appear on the page, just like this <strong>p</strong> tag and its contents.</p>
-  </body>
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta charset="UTF-8" />
+
+
+<title>Deep Learning: Institute for Advanced Analytics</title>
+</head>
+
+<script type="text/javascript" src="../../course/js/header-code.js"></script>
+
+<body class="light">
+
+<div style="text-align: center;">
+  <span id="banner-img" style="
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 642px;
+    height: 390px;
+    background-image: url( '../../course/figs/dnn/banner.png' );
+    background-repeat: no-repeat;
+  ">
+
+<!-- NC State logo, upper-left corner -->
+
+  <div style="
+    position: absolute;
+    align: left;
+    top: 0px;
+    left: 10px;
+  ">
+
+    <a target="_blank" href="https://www.ncsu.edu">
+    <img alt="NC State Logo" src="../../course/figs/nc-state-logo-blue.png"
+    style="
+      border-style: none;
+      -moz-box-shadow: 1px 1px 8px #646464;
+      -webkit-box-shadow: 1px 1px 8px #646464;
+      box-shadow: 1px 1px 8px #646464;
+    ">
+    </a>
+  </div>
+
+<!-- DNN text, lower-left corner -->
+
+  <div style="
+    position: absolute;
+    bottom: 0px;
+    left: 10px;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    font-size: 16pt;
+    font-weight: normal;
+    color: #646464;
+  ">
+    <div style="line-height: 90%;">Deep Learning</div>
+    <div style="font-size: 10pt;">
+      <a target="_blank" href="http://healey.csc.ncsu.edu">
+        <i>Christopher G. Healey</i>
+      </a>
+    </div>
+  </div>
+  </span>
+</div>
+
+<!-- Spacer after image of one "line" -->
+
+<div style="height: 1em;"></div>
+
+<!-- Navigation toolbar -->
+
+<div id="navWrap">
+  <div id="nav">
+    <ul id="nav-list">
+      <li id="nav-intro:intro">Introduction</li>
+      <li id="nav-setup:setup">Setup</li>
+      <li id="nav-dnn:dnn">DNNs</li>
+      <li id="nav-backprop:backprop">Backpropegation</li>
+      <li id="nav-pytorch:pytorch">PyTorch</li>
+      <li id="nav-wheat:wheat">Wheat Ex</li>
+      <li id="nav-fcn-num:fcn-num">Images Ex</li>
+      <li id="nav-fcn-img:fcn-img">CIFAR FCN Ex</li>
+      <li id="nav-cnn:cnn">CIFAR CNN Ex</li>
+<!--
+      <li id="nav-rnn:rnn">RNNs/LSTMs</li>
+			<li id="nav-gan:gan">GANs</li>
+			<li id="nav-gpt:gpt">ChatGPT</li>
+-->
+    </ul>
+  </div>
+
+  <div id="nav-footer">
+  </div>
+</div>
+
+<!-- Initially assume light theme (day), draw moon icon to switch to dark -->
+<!-- Javascript will automatically check this and switch if it's night -->
+
+<img id="light-dark" style="width: 24px; height: 24px; position: fixed; top: 2px; right: 20px; margin: 0; padding: 0; z-index: 200;" src="../figs/moon-icon-gradient.png" />
+
+
+<h2 id="intro">Introduction</h2>
+
+<p>
+This module will introduce you to deep learning and deep neural
+networks using <a href="https://pytorch.org" target="_blank">PyTorch</a>, a
+Python-based open source deep learning package created by Facebook.
+We will use PyTorch to introduce both fully connected deep neural
+networks (FCNs) and convolutional deep neural networks (CNNs) for
+image classification tasks.
+</p>
+
+<h2 id="setup">Setup</h2>
+
+<p>
+Before you can use PyTorch, you must download and install its
+relevant modules in Anaconda. To do this, open an Anaconda command
+prompt and issue the command
+</p>
+
+<div class="ex-div">
+conda install pytorch torchvision -c pytorch
+</div>
+
+<p>
+  Before you can use LangChain, you must download and install its
+  relevant modules in Anaconda, including an LLM to sequence its 
+  operations. To do this, open an Anaconda command prompt and issue
+  the following command
+</p>
+
+<div class="ex-div">
+conda install langchain langchain-openai -c conda-forge
+</div>
+
+<p>
+You can review the
+ <a href="https://leapcell.io/blog/how-to-install-pytorch-using-conda" target="_blank">instructions on installing PyTorch with <tt>conda</tt></tt></a> or
+ <a href="https://www.langchain.com" target="_blank"> LangChain website</a> for more information, as well as commands you can issue to verify the install has been performed correctly.
+</p>
+
+<h2 id="dnn">Deep Neural Networks</h2>
+
+<p>
+Deep neural networks (DNNs) are a relatively new area of focused
+research, based off the foundations of artificial neural networks
+(ANNs). ANNs and DNNs fall within the broad area of supervised machine
+learning algorithms. The original idea for a <i>neural network</i> was
+<a href="https://link.springer.com/article/10.1007/BF02478259" target="_blank">proposed
+by McCulloch and Pitts in 1943</a>, based off a biological estimate of
+how neurons in the brain were hypothesized to function. The problem
+with the McCulloch-Pitts model was its inability to easily learn. To
+address
+this, <a href="https://www.google.com/books/edition/_/ig8mHog30X0C?hl=en&gbpv=1&pg=PA398&dq=rosenblatt+perceptron" target="_blank">Rosenblatt
+proposed the Perceptron</a>, adding weights that allowed the ANN to
+&quot;learn&quot; by increasing and decreasing weights based on how
+well the current network categorized relative to a known, correct
+label (<i>i.e.</i>, supervised learning).
+</p>
+
+<p>
+In 1959, Widrow and Hoff developed MADALINE at Stanford University to
+remove echoes on phone lines. Interestingly, MADALINE is still in
+use. Careful analysis of MADALINE showed that it found a set of
+weights for a number of inputs, which is analogous to linear
+regression. In other words, ANNs at this point could not solve more
+complex, non-linear problems.
+<a href="https://direct.mit.edu/books/monograph/3132/PerceptronsAn-Introduction-to-Computational" target="_blank">Marvin
+Minsky and Seymour Papert at MIT</a> proved this theoretically,
+effectively silencing research on neural networks for many years.
+</p>
+
+<p>
+Moving into the 1980s, multilayer neural networks with <i>hidden
+layers</i> were developed. This was critical, since it provides one of
+the key advantages of a DNN: the ability to automatically create
+relevant features from the initial inputs. This is also where the
+terminology &quot;deep&quot; comes from. The intuition is that each
+hidden layer in a DNN uses results from the previous layer, allowing
+it to start with highly detailed features, then use those to proceed
+to identify more abstract elements. This led to another problem,
+however. Although it was understood how to train single-layer ANNs, it
+was not known how to adjust weights, biases, and activations on a
+multi-layer DNN.
+</p>
+
+<p>
+To address this, the idea of backpropagation, which distributes error
+throughout the network,
+was <a href="https://www.nature.com/articles/323533a0" target="_blank">proposed
+by Rumelhart, Hinton, and Williams</a> in 1986. In simple terms, we
+are using calculus to assign some of the blame for error in the output
+layer to each neuron in the previous hidden layer, further propagating
+error at that hidden layer to its parent and so on. Initially,
+stochastic gradient descent was used to find an optimal set of weights
+to minimize error, although other approaches have now been
+proposed. Backpropagation is performed at the possible cost of
+significantly increased training times. Because of this, we now use
+clusters of graphics processing units (GPUs) which support 1000s of
+parallel operations to train a DNN.
+</p>
+
+<p>DNNs have been used to solve previously intractable problems in a
+wide range of areas, including:</p>
+
+<ul>
+<li>image recognition,</li>
+<li>speech recognition,</li>
+<li>game playing,</li>
+<li>control systems,</li>
+<li>driver-less cars, and</li>
+<li>unmanned aerial systems</li>
+</ul>
+
+<p>The basic structure of a DNN is made up of: an input layer; two or
+more hidden layers of neurons of some size; an output layer; edges
+connecting neurons between adjacent layers; activation values and
+biases at each neuron; weights on each edge.</p>
+
+<div class="img-div" style="max-width: 735px;">
+	<img style="width: 100%; max-width: 735px;" src="../figs/dnn/FCN.png">
+</div>
+
+<p>
+This example shows a FCN with two hidden layers. More complicated DNNs
+like convolutional neural networks precede the FCN with a set of
+convolution operations to extract <i>features</i> which are selected,
+filtered, and then used as an input layer into a final FCN for
+classification. We will begin our exploration of DNNs with a
+PyTorch example that classifies images of handwritten numbers from 0
+to 9 using a simple FCN.
+</p>
+
+
+<h3>Neurons</h2>
+
+<p>Neural networks, including deep neural networks, are made up of
+  specialized perceptrons called neurons. A perceptron is an element
+  that receives binary input(s) \(\{ x_1, \ldots, x_n \}\) and generates
+  a binary output.</p>
+
+<div class="img-div" style="max-width: 206px;">
+	<img style="width: 100%; max-width: 206px;" src="../figs/dnn//perceptron.png">
+</div>
+
+<p>Weights \(\{ w_1, \ldots, w_n \}\) are normally applied to the
+  inputs to define their <i>importance</i>. If the sum of the inputs
+  multiplied by their weights exceeds a threshold or <i>bias</i>
+  \(b_i\), the perceptron fires 1, otherwise it fires 0.</p>
+
+\[
+\text{output} = \begin{cases}
+0 \; \text{if} \; \sum_i{w_i\,x_i} \leq b_i \\
+1 \; \text{if} \; \sum_i{w_i\,x_i} &gt; b_i
+\end{cases}
+\]
+
+<p>We will normally simplify this notation by moving the bias inside
+  the equation and using a dot product for the sum.</p>
+
+\[
+\text{output} = \begin{cases}
+0 \; \text{if} \; w \cdot x - b \leq 0 \\
+1 \; \text{otherwise}
+\end{cases}
+\]
+
+<p>Bias \(b_i\) is a measure of how easy or difficult it is to make a
+  perceptron fire. The larger \(b_i\), the more input
+  or <i>activation</i> perceptron <i>i</i> needs to fire.</p>
+
+<p>Although useful, perceptrons are inconvenient since both their
+  inputs and outputs are binary. To address this, we normally convert
+  perceptrons to neurons. Neurons accept continuous inputs and
+  generate continuous outputs. To do this, neurons apply a function
+  like sigmoid to produce smooth output over a fixed range. For
+  example, "sigmoid" neurons accept continuous input and apply
+  \(\sigma\) to the weighted sum of activation plus bias to produce
+  continuous output on the range \(0, \ldots, 1\).</p>
+
+\[
+\begin{align}
+z & = w \cdot x + b \\
+\text{output} & = \sigma(z) = \frac{1}{1 + e^{-z}} = \frac{1}{1 +
+\text{exp}(-(w \cdot x + b))}
+\end{align}
+\]
+
+<p>Intuitively, if \(z=w \cdot x + b\) is large, \(e^{-z} \approx 0\)
+  so \(\sigma(z) \approx 1\) and if \(z\) is small \(\sigma(z)
+  \approx 0\), just like a perceptron. The difference is that
+  \(\sigma\) is smooth over the range \(0, \ldots, 1\) so a small
+  change in weights or biases \(\Delta w_i\) or \(\Delta b_i\) will
+  produce a small change in output, versus a perceptron's potential to
+  flip its output from 0 to 1 or vice versa.
+</p>
+
+\[
+  \Delta \text{output} \approx \sum_i\frac{ \partial \,
+  \text{output}}{\partial w_i} \Delta w_i + \frac{\partial \,
+  \text{output}}{\partial b_i} \Delta b_i
+\]
+
+<p>That is, \(\Delta\)output is linear in \(\Delta w\) and \(\Delta
+  b\).
+</p>
+
+
+<h3>Handwritten Number Recognition</h3>
+
+<p>
+PyTorch's dataset repository includes
+the MNIST database of handwritten images, which includes
+<a href="https://python-course.eu/data/mnist/mnist_train.csv">60,000
+training examples</a> and
+<a href="https://python-course.eu/data/mnist/mnist_test.csv">10,000 test examples</a>.
+It is a very common dataset to use to test
+learning or pattern recognition algorithms on real-world data,
+without the need to hand-label a large training dataset.
+</p>
+
+<p>
+Normally, images are processed with CNNs. However, we will use a
+simple FCN to recognize the handwritten images. This is done by
+converting each handwritten digit image into a set of pixel values,
+then converting that into a one-dimensional vector. This 1D vector
+acts as input to one or more hidden layers, filters like ReLU
+(rectified linear unit), and finally to an output layer with ten
+possible classifications representing the ten digits 0&ndash;9. Here
+are two simple examples of the digits in the MNIST dataset.
+</p>
+
+<div class="img-div" style="max-width: 411px;">
+	<img style="width: 100%; max-width: 411px;" src="../figs/dnn//MNIST.png">
+</div>
+
+<p>
+  In our example neural network to "learn" MNIST images we have a \(28
+  \times 28 = 784\)-element input vector of greyscale intensities, an
+  \(n=15\) neuron hidden layer, and 10 output values representing a
+  decision on which digit the input image represents. To train and
+  validate the DNN model, MNIST provides 60,000 labeled training
+  images and 10,000 labeled test images, denoted as \(x\) and \(y\),
+  respectively. Any individual \(x_i\) is a 784-length vector and the
+  corresponding \(y_i\) is a 10-length output vector with all 0s except
+  for the target digit position, which is 1.
+  </p>
+
+<p>
+  Our goal is to train a neural network so output approximates
+  \(y_i = y(x_i) \, \forall x_i\) in the training set. To do this, we define
+  a cost function to measure accuracy or error for any given
+  prediction.
+</p>
+
+\[
+C(w,b) = \frac{1}{2n} \sum_x || y(x) - a ||^{2}
+\]
+
+<p>
+  where \(w\), \(b\), \(y\), and \(a\) are weights, biases, known output
+  vectors (labels), and predicted output vectors (activation) for all
+  training input samples \(x\). You should recognize this as the simple
+  quadratic function mean squared error (MSE), where \(C(w,b)
+  \rightarrow 0\) as we improve our ability to predict correct output.
+  </p>
+
+<p>
+  Obviously, when we start we expect \(C(w,b)\) to be large. To reduce
+  it, we <i>optimize</i> \(w\) and \(b\) throughout the network using
+  gradient descent. Ignoring for now the specifics of our neural net,
+  how can we minimize \(C(v)\) where \(v\) are tunable parameters? For
+  simplicity, assume \(v=(v_1,v_2)\) is a two-dimensional parameter
+  vector. Plotting \(C(v)\) produces a valley-like image. 
+</p>
+
+<div class="img-div" style="max-width: 672px;">
+	<img style="width: 100%; max-width: 672px;" src="../figs/dnn//2d-fn-viz.png">
+</div>
+
+<p>
+  From any point on the valley, we want to move in a direction with
+  the steepest slope towards the valley bottom (minimum \(C\)
+  value). What happens when we move a small amount \(\Delta v_1\) in the
+  \(v_1\) direction? Or a small amount \(\Delta v_2\) in the \(v_2\)
+  direction?
+</p>
+
+\[
+  \Delta C \approx \frac{\partial C}{\partial v_1} \Delta v_1 +
+  \frac{\partial C}{\partial v_2} \Delta v_2
+\]
+
+<p>
+  We want \(C\) to be negative. Defining \(\Delta v = (\Delta v_1, \Delta
+  v_2)^{T}\) and gradient of descent \(\nabla C =\,\)<span class="frac">\((
+  \frac{\partial C}{\partial v_1}, \frac{\partial C}{\partial v_2}
+  )\)</span>, we have
+</p>
+
+\[
+\Delta C = \nabla C \cdot \Delta v
+\]
+
+<p>
+  Now, if we pick \(\epsilon\) s.t.
+</p>
+
+\[
+\Delta v = -\epsilon \nabla C
+\]
+
+<p>
+  where \(\epsilon\) is the <i>learning rate</i> and therefore \(\Delta
+  v\) is a small movement in the direction of steepest gradient, then
+</p>
+
+\[
+\Delta C = \nabla C \cdot -\epsilon \nabla C = -\epsilon || \nabla C ||^{2}
+\]
+
+<p>
+  Since \(||\nabla C\,||^{2}\) is always positive, \(\Delta C\) is always
+  negative. Setting \(v \rightarrow v^{\prime} = v - \epsilon \nabla C\)
+  over and over, we will converge on a minimum \(C\), as long as
+  \(\epsilon\) is not too big, causing us to "jump" back and forth over
+  the minimum, or too small, causing convergence to be too
+  expensive. Moreover, if we expand \(v\) into a vector of \(m &gt; 2\)
+  variables \(v=(v_1, \ldots, v_m)\), this approach continuous to work.
+  </p>
+
+\[
+\begin{align}
+\Delta C & = \nabla C \cdot \Delta v \\
+\nabla C & = (\frac{\partial C}{\partial v_1}, \ldots, \frac{\partial C}{\partial v_m}) \\
+\Delta v & = -\epsilon \nabla C \\
+v \rightarrow v^{\prime} & = v - \epsilon \nabla C \\
+\end{align}
+\]
+
+<p>
+  How do we extend this general gradient descent approach to our specific
+  goal of optimizing \(C\) in a neural network. We simply rewrite the above
+  equations in terms of \(w\) and \(b\).
+</p>
+
+\[
+\begin{align}
+w_i \rightarrow w_i^{\prime} & = w_i - \epsilon \frac{\partial C}{\partial w_i} \\
+b_i \rightarrow b_i^{\prime} & = b_i - \epsilon \frac{\partial C}{\partial b_i} \\
+\end{align}
+\]
+
+<p>
+  We can now walk backwards through the layers in the neural network,
+  adjusting (backpropegating) weights and biases for each neuron. To
+  do this, recall \(C = \frac{1}{n} \sum_x C_x\) and \(C_x
+  =\,\)<span class="frac">\(\frac{||y_i(x_i) -
+  a_i||^{2}}{2}\)</span>. To compute \(\nabla C\) we compute \(\Delta C_x
+  \; \forall x\) and average the result.
+</p>
+
+\[
+\nabla C = \frac{1}{n} \sum_x \nabla C_x
+\]
+
+<p>
+  If the number of neurons \(n\) is very large, we may want to sample
+  \(\nabla C_x\). This is called stochastic gradient descent, where we
+  randomly choose \(m \ll n\) training inputs to form a mini-batch
+  \((x_1, \ldots, x_m)\), assuming
+</p>
+
+\[
+\begin{align}
+\sum_{i=1}^{m} \frac{\nabla C_{x_i}}{m} & \approx \sum_x \frac{\nabla C_x}{n} = \nabla C \\
+\nabla C & \approx \frac{1}{m} \sum_{i=1}^{m} \nabla C_{x_i} \\
+w_i \rightarrow w_{i}^{\prime} & = w_i = \frac{\epsilon}{m} \sum_i \frac{\partial C_{x_i}}{\partial w_i} \\
+b_i \rightarrow b_{i}^{\prime} & = b_i = \frac{\epsilon}{m} \sum_i \frac{\partial C_{x_i}}{\partial b_i} \\
+\end{align}
+\]
+
+<p>
+  We then pick another mini-batch from the remaining samples, repeat the
+  above process and continue until the training set is exhausted. This
+  is defined as one training <i>epoch</i>.
+  </p>
+
+<h2 id="backprop">Backpropegation</h2>
+
+<p>
+  To begin, we review and simplify the feed-forward component of DNN
+  training to use matrix notation.
+  </p>
+
+<ul>
+
+  <li>\(w_{jk}^{\ell}\), weight from neuron \(k\) in layer \((\ell-1)\) to
+    neuron \(j\) in layer \(\ell\)
+
+  <li>\(b_{j}^{\ell}\), bias at neuron \(j\) in layer \(\ell\)
+
+  <li>\(a_{j}^{\ell}\), activation at neuron \(j\) in layer \(\ell\)
+
+</ul>
+
+<p>
+\(\therefore\) \(a_{j}^{\ell} = \sigma(\sum_k w_{jk}^{\ell}
+a_{k}^{(\ell-1)} + b_{j}^{\ell})\).
+</p>
+
+<p>
+  To convert to matrix format, define a weight matrix \(w^{\ell}\) for layer
+  \(\ell\) where \(w^{\ell}\) are weights connecting <i><b>to</b></i> layer
+  \(\ell\)'s neurons.
+</p>
+
+\[
+w^{\ell} =
+\underbrace{
+\begin{bmatrix}
+  w^{\ell}[j,k] \\
+  = w_{jk}^{\ell}
+\end{bmatrix}
+}_{k\text{ input weights}}
+\;\;\Bigg\}\;{\scriptsize j\text{ neurons}}
+\]
+
+<p>
+  Similarly for layer \(\ell\), \(b^{\ell}\) is a bias vector with
+  \(b_{j}^{\ell}\) the bias for neuron \(j\) in layer \(\ell\). \(a^{\ell}\)
+  is an activation vector with \(a_{j}^{\ell}\) the activation for
+  neuron \(j\) in layer \(\ell\).
+</p>
+
+<p>
+  Finally, we use vectorization to apply the activation function to
+  weights times previous layer activations plus biases.
+</p>
+
+\[
+\sigma \left(
+\begin{bmatrix}
+x_1 \\ \cdots \\ x_m
+\end{bmatrix}
+\right)
+=
+\begin{bmatrix}
+\sigma(x_1) \\ \cdots \\ \sigma(x_m)
+\end{bmatrix}
+\]
+
+<p>
+  Combining all of these, for layer \(\ell\)
+</p>
+
+\[
+a^{\ell} = \sigma( w^{\ell} a^{(\ell-1)} + b^{\ell})
+\]
+
+<p>
+  The value \(z^{\ell} = w^{\ell} a^{(\ell-1)}+b^{\ell}\) is important,
+  so we explicitly extract it and define it as the <i>weighted
+  input</i> to neurons in layer \(\ell\). We can now write
+  </p>
+
+\[
+\begin{align}
+a^{\ell} & = \sigma(z^{\ell})\\
+z_{j}^{\ell} & = \sum_k w_{jk}^{\ell} a^{(\ell-1)} + b_{j}^{\ell}
+\end{align}
+\]
+
+<h3>Cost Function Assumptions</h3>
+
+<p>
+  The goal of backpropegation is to
+  compute <span class="frac">\(\frac{\partial C}{\partial w}\)</span>
+  and <span class="frac">\(\frac{\partial C}{\partial b}\)</span> for
+  cost function \(C\), w.r.t. weights \(w\) and biases \(b\) in the
+  network. To do this, we make two assumptions about \(C\). You can
+  assume our \(C\) is MSE, \(C = \frac{1}{2n} \sum_x || y(x) -
+  a^{L}(x)||^2\), where
+</p>
+
+<ul>
+  <li>\(n\), total number of training examples;
+  <li>\(\sum_x\), sum over individual examples \(x\);
+  <li>\(y=y(x)\), expected output;
+  <li>\(L\), number of layers in network, and
+  <li>\(a^{L}=a^{L}(x)\), vector of activation outputs for input \(x\).
+</ul>
+
+<ol>
+  <li>Cost function \(C\) can be written as an average \(C=\frac{1}{n}
+  \sum_x C_{x}\) over individual cost functions \(C_x\) for individual
+  training examples \(x\). This is required because backpropegation
+  computes individual <span class="frac">\(\frac{\partial C_x}{\partial
+  w}\)</span> and <span class="frac">\(\frac{\partial C_x}{\partial
+  b}\)</span>, then recovers <span class="frac">\(\frac{\partial
+  C}{\partial w}\)</span> and <span class="frac">\(\frac{\partial
+  C}{\partial b}\)</span> by averaging the individual partial
+  derivatives.
+
+    <li>Cost function \(C\) can be written as a function of outputs from
+    the neural network.
+</ol>
+
+<h3>Elementwise Product (Hadamard or Schur Product)</h3>
+
+<p>For two vectors \(s\) and \(t\), the elementwise product \(s \odot t\) is
+  \((s \odot t) = s_{j} t_{j}\), <i>e.g.</i>,
+</p>
+
+\[
+\begin{bmatrix} 1 \\ 2 \end{bmatrix}
+\odot
+\begin{bmatrix} 3 \\ 4 \end{bmatrix}
+=
+\begin{bmatrix} 1 \cdot 3 \\ 2 \cdot 4 \end{bmatrix}
+=
+\begin{bmatrix} 3 \\ 8 \end{bmatrix}
+\]
+
+<p>
+  This is know as the <i>Hadamard</i> or <i>Schur</i> product.
+</p>
+
+<h3>Four Fundamental Backpropegation Equations</h3>
+
+<p>
+  At a basic level, backpropegation explains how changing \(w\) and \(b\)
+  in a network changes \(C\). Ultimately, this requires
+  computing <span class="frac">\(\frac{\partial C}{\partial
+  w_{jk}^{\ell}}\)</span> and <span class="frac">\(\frac{\partial
+  C}{\partial b^{\ell}}\)</span>. To do this, we introduce an
+  intermediate quantity \(\delta_{j}^{\ell}\)</span>, the error in
+  neuron \(j\) in layer \(\ell\). Backpropegation computes
+  \(\delta_{j}^{\ell}\), then relates it
+  to <span class="frac">\(\frac{\partial C}{\partial
+  w_{jk}^{\ell}}\)</span> and <span class="frac">\(\frac{\partial
+  C}{\partial b^{\ell}}\)</span>.
+</p>
+
+<p>
+  Suppose, at some neuron, we modify \(z_{j}^{\ell}\) by adding a small
+  change \(\Delta z_{j}^{\ell}\). Now, the neuron outputs \(\sigma(
+  z_{j}^{\ell} + \Delta z_{j}^{\ell} )\), propegating through follow-on
+  layers in the network and changing the overall cost \(C\) by
+  <span class="frac">\(\frac{\partial C}{\partial
+  z_{j}^{\ell}}\)</span>\(\Delta
+  z_{j}^{\ell}\). If <span class="frac">\(\frac{\partial C}{\partial
+  z_{j}^{\ell}}\)</span> is large, we can improve \(C\) by choosing
+  \(\Delta z_{j}^{\ell}\) with a sign opposite
+  to <span class="frac">\(\frac{\partial C}{\partial
+  z_{j}^{\ell}}\)</span>. If <span class="frac">\(\frac{\partial
+  C}{\partial z_{j}^{\ell}}\)</span> is small, though, \(\Delta
+  z_{j}^{\ell}\) will have little impact on \(C\). Intuitively,
+  <span class="frac">\(\frac{\partial C}{\partial z_{j}^{\ell}}\)</span>
+  is a measure of the amount of error in a neuron.
+</p>
+
+<p>
+  Given this, we define error \(\delta_{j}^{l}\) of neuron \(j\) in layer
+  \(\ell\) as
+</p>
+
+\[
+\delta_{j}^{\ell} = \frac{\partial C}{\partial z_{j}^{\ell}}
+\]
+
+<p>
+  As before, \(\delta^{\ell}\) is a vector of errors for neurons in
+  layer \(\ell\). Backpropegation computes \(\delta^{\ell}\) for every
+  layer, then relates \(\delta^{\ell}\) to the quantities of real
+  interest, <span class="frac">\(\frac{\partial C}{\partial
+  w_{jk}^{\ell}}\)</span> and <span class="frac">\(\frac{\partial
+  C}{\partial b^{\ell}}\)</span>
+</p>
+
+<p>
+  <b>Eq 1:</b> Computing \(\delta^{L}\) error in the output layer.
+</p>
+
+<p>Components of \(\delta^{L}\) are
+</p>
+
+\[
+\delta_{j}^{L} = \frac{\partial C}{\partial a_{j}^{L}}
+\sigma^{\prime}(z_{j}^{L})
+\]
+
+<p>
+  <span class="frac">\(\frac{\partial C}{\partial a_j^L}\)</span>
+  measures how fast cost is changing as a function of output
+  activation \(j\). \(\sigma^{\prime}(z_y^L)\) measures how fast
+  activation function \(\sigma\) is changing at \(z_y^{L}\). \(z_y^{L}\) is
+  computed during feed-forward, so \(\sigma^{\prime}(z_y^L)\) is easily
+  obtained. <span class="frac">\(\frac{\partial C}{\partial
+  a_j^L}\)</span> depends on \(C\), but for our MSE cost function
+  <span class="frac">\(\frac{\partial C}{\partial a_j^L} =\,\)</span>
+  \((a_j^{L} - y_j)\).
+</p>
+
+<p>
+  To extend \(\delta_j^L\) to matrix-based form
+</p>
+
+\[
+\delta^L = \nabla_a C \odot \sigma^{\prime}(z^L)
+\]
+
+<p>
+  where \(\nabla_a C\) is a vector whose components
+  are <span class="frac">\(\frac{\partial C}{\partial
+  a_j^L}\)</span>. \(\nabla_a C\) expresses the rate of change of \(C\)
+  w.r.t. output activations. In our example \(\nabla_a C = (a^L - y)\),
+  so the full matrix form of Eq. 1 is
+</p>
+
+\[
+\sigma^L = (a^L - y) \odot \sigma^{\prime}(z^L)
+\]
+
+<p>
+  <b>Eq 2:</b> Computing \(\delta^{\ell}\) from \(\delta^{\ell+1}\)
+  </p>
+
+<p>
+  Given \(\delta^{\ell+1}\)
+</p>
+
+\[
+\delta^{\ell} = ((w^{\ell+1})^{T} \delta^{\ell+1}) \odot
+\sigma^{\prime}(z^{\ell})
+\]
+
+<p>
+  where \((w^{\ell+1})^{T}\) is the transpose of the weight matrix
+  \(w^{\ell+1}\) for layer \(\ell+1\).
+</p>
+
+<p>
+  Suppose we know the error \(\delta^{\ell+1}\) at layer \(\ell+1\).
+  Applying \((w^{\ell+1})^{T}\) moves error backwards, giving us some
+  measure of error in layer \(\ell\). Applying the Hadamard product
+  \(\odot \sigma^{\prime}(z^{\ell})\) pushes error backwards through the
+  activation function in layer \(\ell\), giving us backpropegated error
+  \(\delta^{\ell}\) in weighted input to layer \(\ell\).
+</p>
+
+<p>
+  We can use this to compute error \(\delta^{\ell}\) for any layer
+  \(\ell\) by starting with \(\delta^{L}\) (Eq. 1), using it to calculate
+  \(\delta^{L-1}\), then \(\delta^{L-2}\) and so on until \(L-i=\ell\).
+</p>
+
+<p>
+  <b>Eq 3:</b> Rate of change of \(C\) w.r.t. bias
+</p>
+
+<p>
+  It turns out that <span class="frac">\(\frac{\partial C}{\partial
+  b_j^{\ell}} =\,\)</span> \(\delta_j^{\ell}\). That is, error
+  \(\delta_j^{\ell}\) is exactly equal to the rate of change of bias
+  <span class="frac">\(\frac{\partial C}{\partial
+  b_j^{\ell}}\)</span>. Since we already know how to compute
+  \(\delta_j^{\ell}\), we can rewrite this as
+</p>
+
+\[
+\frac{\partial C}{\partial b} = \delta
+\]
+
+<p>
+  where \(\delta\) is being evaluated at the same neuron as bias \(b\). 
+</p>
+
+<p>
+  <b>Eq 4:</b> Rate of change of \(C\) w.r.t. weight
+</p>
+
+<p>
+  Here
+</p>
+
+\[
+\frac{\partial C}{\partial w_{jk}^{\ell}} = a_k^{\ell-1} \delta_j^{\ell}
+\]
+
+<p>
+so partial derivative <span class="frac">\(\frac{\partial C}{\partial
+w_{jk}^{\ell}}\)</span> depends on \(\delta^{\ell}\) and \(a^{\ell-1}\),
+which we already know how to compute. Our equation can be rewritten as
+</p>
+
+\[
+\frac{\partial C}{\partial w} = a_\text{in} \delta_\text{out}
+\]
+
+<p>
+  where \(a_\text{in}\) is activation of the neuron's input to its
+  weight \(w\) and \(\delta_\text{out}\) is the error of the neuron output
+  for its weight \(w\). Examining just weight \(w\) and the two neurons
+  connected by that weight
+</p>
+
+<div class="img-div" style="max-width: 198px;">
+	<img style="width: 100%; max-width: 198px;" src="../figs/dnn//neuron_weight.png">
+</div>
+
+<h3>Backpropegation Algorithm</h3>
+
+<p>
+  Combining all four equations, we obtain
+</p>
+
+<ol>
+
+  <li>Input \(x\), set \(a^1\) for input layer.
+
+  <li>Feed-forward, for each \(\ell = 2, 3, \ldots, L\) compute
+    \(z^{\ell} = w^{\ell} a^{\ell-1} + b^{\ell}\) and \(a =
+    \sigma(z^{\ell})\).
+
+  <li>Output error \(\delta^L\), then compute vector \(\delta^L =
+    \nabla_a C \odot \sigma^{\prime}(z^L)\).
+
+  <li>Backpropegate error, for each \(\ell = L-1, L-2, \ldots, 2\)
+    compute \(\delta^{\ell} = ((w^{\ell+1})^{T} \delta^{\ell+1}) \odot
+    \sigma^{\prime}(z^{\ell})\).
+
+  <li>Result<br>
+    \[
+    \frac{\partial C}{\partial w_{jk}^{\ell}} = a^{\ell-1} \delta_j^{\ell}, \;\;\;
+    \frac{\partial C}{\partial b_j^{\ell}} = \delta_j^{\ell}
+    \]
+
+</ol>
+
+<h3>Full Training Algorithm</h3>
+
+<ol>
+
+  <li>Input training examples.
+
+  <li>For each training example \(x\)
+
+  <ul>
+    <li>set input activation \(a^{x,1}\),
+    <li>feed-forward, for each \(\ell=2, 3, \ldots, L\) compute
+      \(z^{x,\ell} = w^{\ell}a^{x,\ell-1} + b^{\ell}\) and
+      \(a^{x,l} = \sigma(z^{x,l})\),
+    <li>output error, compute \(\delta^{x,\ell} = \nabla_a C_x \odot
+      \sigma^{\prime}(z^{x,\ell})\)
+    <li>backpropegate error for each \(\ell = L-1, L-2, \ldots, 2\)
+      by computing \(\delta^{x,\ell} = ((w^{\ell+1})^{T} \delta^{x,\ell+1})
+      \odot \sigma^{\prime}(z^{x,\ell})\)
+  </ul>
+
+  <li>Gradient descent, for each \(\ell = L, L-1, \ldots, 2\) update
+    weights and biases according to rules<br>
+    \[
+    \begin{align}
+    w^{\ell} & \rightarrow w^{\ell} - \frac{\eta}{m} \sum_x \delta^{x,\ell} (a^{x,\ell-1})^{T}\\
+    b^{\ell} & \rightarrow b^{\ell} - \frac{\eta}{m} \sum_x \delta^{x,\ell}
+    \end{align}
+    \]
+</ol>
+
+<h2 id="pytorch">PyTorch</h2>
+
+<p>
+PyTorch is, at its core, a tensor computing language with GPU acceleration
+support and a deep neural network library. PyTorch began as an internship
+program by Adam Paszke (now a Senior Research Scientist at Google) in October
+2016. It was based on Torch, an open-source machine learning library
+and scientific computing framework written in the Lua programming language.
+</p>
+
+<p>
+Three additional authors (Sam Gross, Soumith Chintala, and Gregory
+Chanan) formed the original author list. PyTorch was released as an
+open source machine learning language using the BSD open source
+license. Facebook currently operates
+both <a href="https://ai.meta.com/tools/pytorch/"
+target="_blank">PyTorch</a> and
+the <a href="https://research.facebook.com/blog/2017/4/introducing-caffe2-to-the-academic-community/" target="_blank">Convolutional Architecture for Fast Feature
+Embedding</a> (Caffe2, <a href="https://caffe2.ai/" target="_blank">now part of the standard PyTorch library</a>). It is one of the standard libraries for deep
+neural network research and implementation.
+
+<h3>Tensors</h3>
+
+<p>A basic data structure for holding data in PyTorch is
+a <i>tensor</i>.  An <i>m&nbsp;&times;&nbsp;n</i> tensor is a
+multidimensional data structure with <i>n</i> rows and <i>m</i>
+columns, very similar to a Numpy <tt>ndarray</tt>. One critical
+difference between tensors and Numpy arrays is that tensors can be
+moved to the GPU for rapid processing. Below is a very simple example
+of creating a 2&nbsp;&times;&nbsp;2 PyTorch tensor.</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-tensor">
+% import torch
+% data = [ [1,2], [3,4] ]
+% t = torch.tensor( data )
+% print( t )
+
+tensor([[1, 2],
+       [3, 4]])
+  </div>
+</div>
+
+<p>If we wanted to move the tensor to the GPU, we would first check to
+ensure GPU processing is available, then use the <tt>to()</tt> method
+to transfer the tensor from CPU memory to GPU memory.</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-device">
+% if torch.cuda.is_available():
+%     device = torch.device( 'cuda' )
+% else:
+%     device = torch.device( 'cpu' )
+% t.to( device )
+  </div>
+</div>
+
+<p><b>Note:</b> If you're using a Mac with Apple silicon (M1, M2, M3,
+	or M4), you need to use <code>mps</code> as your device,
+	not <code>cuda</code> since CUDA s specific to NVIDIA GPUs.
+	</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-mac-device">
+% if torch.backends.mps.is_available():
+%     device = torch.device( 'mps' )
+% else:
+%     device = torch.device( 'cpu' )
+% t.to( device )
+  </div>
+</div>
+
+<p>One important caveat is that you must do <b>all</b> processing on
+either the CPU or the GPU. You cannot split data structures and
+processing between the two processors. So, if you move your tensors to
+the GPU, you must also move your DNN models to the GPU and ensure all
+operations are performed on the GPU.</p>
+
+<!--
+<p>This is a <a href='./code/iris-dnn.ipynb' target="_blank">Jupyter notebook that
+implements a DNN</a> in the simplest possible manner. It is a good
+starting point for understanding what tensors are and how they can be
+created and manipulated. The DNN itself trains on six examples of
+three iris types (setosa, versicolor, virginica) using sepal and petal
+length and width.</p>
+-->
+
+
+<h2 id="wheat">FCN Exercise 1: Wheat Seed Classification</h2>
+
+<p>
+  As an initial example, we will run a simple wheat seed classifier.
+  The <a href="./code/wheat.csv">dataset</a> contains properties
+  of three types of wheat seeds. The goal is to use these properties
+  to predict the type of wheat the seed represents. we will first
+  demonstrate a "from scratch" DNN that uses a simple single-layer
+  neural network to train, then predict wheat seeds.
+</p>
+
+<div>
+<table style="margin: 0 auto;">
+    <tr>
+      <th>Province</th>
+      <th>Area</th>
+      <th>Perimeter</th>
+      <th>Compactness</th>
+      <th>Kernel Length</th>
+      <th>Kernel Width</th>
+      <th>Assymetry</th>
+      <th>Groove Length</th>
+      <th>Type</td>
+    </tr>
+    <tr class="even">
+      <td>Ontario</td>
+      <td>15.26</td>
+      <td>14.84</td>
+      <td>0.871</td>
+      <td>5.763</td>
+      <td>3.312</td>
+      <td>2.221</td>
+      <td>5.22</td>
+      <td>1</td>
+    </tr>
+    <tr class="odd">
+      <td>Manitoba</td>
+      <td>14.88</td>
+      <td>14.57</td>
+      <td>0.8811</td>
+      <td>5.554</td>
+      <td>3.333</td>
+      <td>21.018</td>
+      <td>4.956</td>
+      <td>1</td>
+    </tr>
+    <tr class="even">
+      <td>Nova Scotia</td>
+      <td>19.13</td>
+      <td>16.31</td>
+      <td>0.9035</td>
+      <td>6.183</td>
+      <td>3.902</td>
+      <td>2.109</td>
+      <td>5.924</td>
+      <td>2</td>
+    </tr>
+    <tr class="odd">
+      <td colspan="9" style="text-align: center;">
+      	\(\cdots\)
+      </td>
+    </tr>
+</table>
+</div>
+
+
+<p>
+  The following Python-only DNN uses a simple single-layer 10-neuron
+  DNN (ANN, actually) with a learning rate \(\epsilon=0.1\), a learning
+  rate decay of 0.01 per epoch, 1000 training iterations per epoch,
+  a single epoch, and five-fold cross validation during testing.
+</p>
+
+
+<div style="margin-left: 1.25in;">
+  <a href="./notebook/simple-nn.ipynb" target="_blank">Python Wheat DNN, Jupyter Notebook</a>
+</div>
+
+
+<p>
+  Next, we'll show the processing the same dataset, but instead of
+  doing it in raw Python, we'll use PyTorch, Facebook's Python-based
+  DNN library. This will demonstrate how much easier it is to use
+  PyTorch to build a significantly more complicated DNN to train,
+  then predict wheat types based on wheat seed properties.
+<p>
+
+<div style="margin-left: 1.25in;">
+  <a href="./code/pytorch-nn.py" target="_blank">Pytorch Wheat DNN</a>
+</div>
+
+<p>
+  The purpose of these examples is, first, to show you how to code
+  your own DNN using basic Python, then how to use one of the most
+  popular Python libraries (TensorFlow, programmed in C, is the
+  other candidate) to perform the same computation in a simpler to
+  program and more sophisticated, manner.
+  </p>
+
+<h2 id="fcn-num">FCN Exercise 2: Handwritten Number Recognition</h2>
+
+<p>PyTorch's dataset repository includes
+the <a href="https://en.wikipedia.org/wiki/MNIST_database" target="_blank">MNIST
+database of handwritten images</a>, which
+includes <a href="https://python-course.eu/data/mnist/mnist_train.csv">60,000
+training examples</a> and
+<a href="https://python-course.eu/data/mnist/mnist_test.csv">10,000
+test examples</a>. It is a very common dataset to use to test learning
+or pattern recognition algorithms on real-world data, without the need
+to hand-label a large training dataset.
+</p>
+
+<p>Normally, images are processed with CNNs. However, we will use a
+simple FCN to recognize the handwritten images. This is done by
+converting each handwritten digit image into a set of pixel values,
+then converting that into a one-dimensional vector. This 1D vector
+acts as input to a single hidden layer, an ReLU (rectified linear
+unit) filter, and an output layer with ten possible classifications
+representing the ten digits 0&ndash;9. Here are two simple examples of
+the digits in the MNIST dataset.
+</p>
+
+<div class="img-div" style="max-width: 411px;">
+	<img style="width: 100%; max-width: 411px;" src="../figs/dnn//MNIST.png">
+</div>
+
+<p>Here is a Jupyter Notebook we will use to load the MNIST dataset,
+construct a simple FCN, then train and test it on the MNIST data.
+</p>
+
+<div style="margin-left: 1.25in;">
+  <a href="./notebook/digit_ex.ipynb" target="_blank">Digits FCN Jupyter Notebook</a>
+</div>
+
+<p>Even with a simple FCN with a single hidden layer and an ReLU
+filter, five training epochs (evaluating the training dataset five
+times) produces results of 97% or better on the test dataset.
+</p>
+
+<h2 id="fcn-img">FCN Exercise 3: Image Processing</h2>
+
+<p>
+To see how well an FCN works on real two-dimensional images, we will
+work with the CIFAR10 dataset, also a part of PyTorch's dataset
+repository. CIFAR10 contains 50,000 training images and 10,000 test
+images of size \(32 \times 32 \times 3\): 32 pixels wide by 32 pixels
+high by 3 pixel components R (red), G (green), and B (blue).
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-CIFAR">
+% train_dataset = dsets.CIFAR10( root='./data', train=True, transform=xforms.ToTensor(), download=True )
+% test_dataset = dsets.CIFAR10( root='./data', train=False, transform=xforms.ToTensor() )
+% classes = ( 'plane','car','bird','cat','deer','dog','frog','horse','ship','truck' )
+  </div>
+</div>
+
+<p>
+Note the <code>classes</code> variable. This is used to convert the
+label value for an image into a semantic text description of the class
+it belongs to. You will probably want to define this and index into it
+to better understand which classes the images belong to.
+</p>
+
+<p>
+If you want to examine some of the images in the CIFAR10 dataset, you
+can modify the code in our original FCN example. However, a simpler
+way to do this and show more images would be as follows.
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-obj-rec">
+% # Let's look at four of the images in the training dataset, and the
+% # corresponding label (which defines the object the image represents)
+% 
+% # Grab the first four images and corresponding objects they represent
+% # from the training set
+% 
+% img = []
+% val = []
+% 
+% for i in range( 4 ):
+%     im, v = train_dataset[ 20 * i ]
+%     img.append( im )
+%     val.append( v )
+%     
+%     img[ i ] = img[ i ] / 2 + 0.5
+%     img[ i ] = img[ i ].numpy()
+%     img[ i ] = img[ i ].transpose( 1, 2, 0 )
+% 
+% # Print out what objects the four images are meant to represent
+% 
+% print( ' '.join( classes[ val[ i ] ] for i in range( 4 ) ) )
+% 
+% # Create a single row of four images
+% 
+% fig, axes = plt.subplots( 1, 4, ../figs/dnn/ize=( 12, 2.5 ) )
+% for i in range( 4 ):
+%     axes[ i ].imshow( img[ i ] )<br>
+  </div>
+</div>
+
+<div class="img-div" style="max-width: 706px;">
+	<img style="width: 100%; max-width: 706px;" src="../figs/dnn//CIFAR_ex.png">
+</div>
+
+
+<p>
+Apart from changing any occurrences <code>28 * 28</code> to <code>32
+* 32 * 3</code> (to account for the different input size), the
+remainder of the code can be identical to the MNIST FCN. You're
+certainly encouraged to also vary things like
+<code>criteria</code>, <code>optimizer</code>, <code>hidden_size</code>,
+the number of hidden layers, and other properties of the FCN to try to
+improve performance. Remember that, for ten classes, just like the
+MNIST dataset, chance is 10%. You're unlikely to obtain accuracies
+anywhere near the 97% we produce for the MNIST images, but you should
+be able to do much better than 10%, even for this most simple FCN.
+</p>
+
+<p>
+Here is a simple Jupyter Notebook that trains on the CIFAR10
+dataset using our simple FCN.
+</p>
+
+<div style="margin-left: 1.25in;">
+  <a href="./notebook/CIFAR_FCN_ex.ipynb" target="_blank">CIFAR FCN Jupyter Notebook</a>
+</div>
+
+
+<h2 id="cnn-img">CNN Exercise 4: Image Processing</h2>
+
+<p>
+  The wheat dataset is fairly easy to process, but it is probably more
+  representative of the type of task you need to solve: classification
+  from one or more input properties. DNNs themselves have been applied
+  most successfully to image data using convolutional neural networks
+  (CNNs). A CNN converts an \(n \times m\) image to an \(nm\) vector, then
+  uses that vector as input into a convolution stage. Here, a
+  collection of \(k\) <i>kernels</i> are convolved against the pixels
+  and their immediate neighbours to produce scalar values. For each
+  kernel, a column of \(nm\) convolved values are created, one for each
+  pixel in the image. In the simplest CNN, the column values are
+  evaluated to produce a single, representative value. For
+  example, <i>max</i> scans a column and extracts the largest
+  value. These values form a \(k\)-length <i>input vector</i> to a
+  follow-on fully connected network.  This network processes output
+  from the CNN to generate a final classification prediction.
+</p>
+
+
+<h2 id="cnn">Convolutional Neural Networks</h2>
+
+<p>
+Convolutional neural networks (CNNs) extend FCNs by preceding the
+fully connected layers with a set of convolutional layers.  CNNs are
+commonly used to analyze images,
+although <a href="https://arxiv.org/pdf/1803.01271v2" target="_blank">recent
+research</a> has shown that they can handle other data modalities like
+text with excellent performance.
+</p>
+
+<p>
+CNNs are made up of a number of standard operations to produce new,
+hidden layers. These include
+</p>
+
+<ul>
+
+<li><b>Convolution (CONV):</b> Application of a <i>convolve</i>
+operation across a layer, producing a new layer with the convolved
+results
+
+<li><b>Filter (RELU):</b> Application of a filter like ReLU to values
+in a layer, produce a new layer with filtered results
+
+<li><b>Pooling (POOL):</b> Application of a pooling (aggregation)
+operator to values in a layer, produce a new, smaller layer with
+pooled results
+
+</ul>
+
+
+<div class="img-div" style="max-width: 1000px;">
+	<img style="width: 100%; max-width: 1000px;" src="../figs/dnn//CNN-pipeline.png">
+</div>
+
+
+<p>
+In practice, it is common to apply a series of CONV-RELU layers,
+follow them with a POOL layer, and repeat this pattern until an image
+has been processed to a small size. At this point, results are formed
+into a 1D vector which acts as input to an FCN. The FCN produces a set
+of probabilities for each possible classification (softmax).
+</p>
+
+<h3>Convolution</h3>
+
+
+<div class="img-div" style="max-width: 1000px;">
+	<img style="width: 100%; max-width: 1000px;" src="../figs/dnn//convolve.png">
+</div>
+
+
+<p>
+Convolution combines a pixel in an image and its neighbours by placing
+a <i>kernel</i> of a given size centered over the pixel, then
+multiplying the corresponding pixel and kernel values, and summing
+them together to produce a final filtered result.
+</p>
+
+<p>
+The example above using a 3&times;3 kernel with values -1, 0, and 5 at
+various positions within its nine cells. When we center it over the
+pixel at the center of the purple box, multiple, and sum, we obtain a
+final filtered value of 210 for that position in the image. Kernels
+are designed to identify specific properties of an image, producing
+large values when those properties are located, and small values when
+they are not. For example, the Kirsch filter is designed to identify
+edges in an image. Convolution of a simple animation with a Kirsch
+filter produces the result shown below.
+</p>
+<div>
+
+<table style="margin-left: auto; margin-right: auto;">
+  <caption>
+    Original image and edges detected by Kirsch filter within the image
+  </caption>
+
+<tr>
+  <td style="border-width: 0px;">
+    <div class="img-div" style="max-width: 350px;">
+    	<img style="width: 100%; max-width: 350px;" src="../figs/dnn//anime.png">
+    </div>
+	</td>
+  <td style="text-align: center; vertical-align: middle; border-width: 0px;" rowspan="2">
+    <table style="margin-left: auto; margin-right: auto;">
+			<tr class="even">
+				<td>5</td>
+				<td>5</td>
+				<td>5</td>
+      </tr>
+			<tr class="odd">
+				<td>-3</td>
+				<td>0</td>
+				<td>-3</td>
+      </tr>
+			<tr class="even">
+				<td>-3</td>
+				<td>-3</td>
+				<td>-3</td>
+      </tr>
+			<tr>
+       <td style="vertical-align: middle; border-width: 0px; text-align: center; color: var(--txt-fg);" colspan="3">
+				 Kirsch filter
+			 </td>
+			</tr>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td style="border-width: 0px;">
+    <div class="img-div" style="max-width: 350px;">
+    	<img style="width: 100%; max-width: 350px;" src="../figs/dnn//anime-edge.png">
+    </div>
+	</td>
+</tr>
+
+</table>
+</div>
+
+<p>
+Normally, we use numerous kernels to identify different properties
+or <i>features</i> in an image. Each kernel produces a <i>feature map</i>
+from the image. These feature maps are normally stacked one on top of
+another, producing a result with width and height one less than the
+original image size, and depth equal to the number of kernels applied
+to the image. How does the CNN decide on the kernel values for each
+kernel? This occurs during training. Kernel values are initially random,
+and slowly converge along with edge weights during backpropagation to
+identify image properties salient to classifying the images.
+</p>
+
+<h3>Filtering</h3>
+
+<p>
+Filtering adjusts values in a feature map, for example, by normalizing
+them, or by removing negative values. The common ReLU filter, for
+example, removes negative values and retains positive values.
+
+<table style="margin-left: auto; margin-right: auto;">
+  <caption>
+    Original image, filtered version of image, and filtered version of
+    image with RELU applied to remove negative values
+  </caption>
+
+<tr>
+  <td style="vertical-align: middle; border-width: 0px; text-align: center; color: var(--txt-fg)" rowspan="2">
+    <div class="img-div" style="max-width: 269px;">
+    	<img style="width: 100%; max-width: 269px;" src="../figs/dnn//filter-img.png">
+    </div>
+  Original</td>
+  <td style="vertical-align: middle; border-width: 0px; text-align: center; color: var(--txt-fg)">
+    <div class="img-div" style="max-width: 222px;">
+    	<img style="width: 100%; max-width: 222px;" src="../figs/dnn//filter-orig.png">
+    </div>
+  Filtered</td>
+</tr>
+<tr>
+  <td style="vertical-align: middle; border-width: 0px; text-align: center; color: var(--txt-fg)">
+    <div class="img-div" style="max-width: 222px;">
+    	<img style="width: 100%; max-width: 222px;" src="../figs/dnn//filter-relu.png">
+    </div>
+  Filtered w/RELU</td>
+</tr>
+</table>
+
+<h3>Pooling</h3>
+
+<p>
+Pooling takes a feature map, and reduces its size by aggregating block
+of values. Aggregation can use any common mathematical operator like
+average, median, maximum or minimum. Pooling uses a <i>window
+size</i> which defines its width and height, and a <i>stride</i>
+which defines the step size it uses as it slides over the feature
+map values it pools.
+</p>
+
+
+<table style="margin-left: auto; margin-right: auto; text-align: center;">
+<table style="margin-left: auto; margin-right: auto;">
+<tr>
+  <td style="text-align: center; vertical-align: middle; border-width: 0px;">
+    <div class="img-div" style="max-width: 153px;">
+    	<img style="width: 100%; max-width: 153px;" src="../figs/dnn//maxpool-matrix-L.png">
+    </div>
+  <td style="text-align: center; vertical-align: middle; border-width: 0px; color: var(--txt-fg);">
+  		max pooling<br>&rarr;&nbsp;&nbsp; 2&times;2 window
+  		&nbsp;&nbsp;&rarr;<br>stride 2
+	</td>
+  <td style="text-align: center; vertical-align: middle; border-width: 0px;">
+    <div class="img-div" style="max-width: 78px;">
+    	<img style="width: 100%; max-width: 78px;" src="../figs/dnn//maxpool-matrix-R.png">
+    </div>
+	</td>
+</tr>
+</table>
+
+
+<h2>Images</h2>
+
+<p>
+Recall in the previous discussion of FCNs, we used the MNIST
+handwriting image dataset. We are now switching to the CIFAR10
+dataset of photographic images. In your exercise, you were
+asked to re-purpose the FCN to handle images from CIFAR10.
+Here is a simple Jupyter Notebook that does that.
+
+<div style="margin-left: 1.25in;">
+  <a href="./notebook/CIFAR_FCN_ex.ipynb" target="_blank">CIFAR FCN Jupyter Notebook</a>
+</div>
+
+<p>
+Although this produces results better than chance, we can further
+improve performance by using a simple CNN.
+</p>
+
+<div style="margin-left: 1.25in;">
+  <a href="./notebook/CIFAR_CNN_ex.ipynb" target="_blank">CIFAR CNN Jupyter Notebook</a>
+</div>
+
+<p>
+Results for the CNN are indeed better than the FCN, but only by a few
+percentage points. This suggests the CNN could be improved possibly
+significantly, by expanding the CONV/RELU/POOL part of the image to
+better capture the features needed to differentiate different image
+classes from one another. One clue is in the individual class
+accuracies, which show that natural images like cats and deer are
+being labeled much less accurately than man-made images like cars
+and trucks.
+</p>
+
+<!--
+<h2 id="rnn">Recurrent Neural Networks</h2>
+
+<p>
+Recurrent neural networks (RNNs) are normally used to handle
+sequence-based data \(I= \{ i_1, \ldots, i_n \}\). In simple terms, a
+basic DNN is designed. The first sample in the input sequence \(i_1\) is
+fed into the DNN, producing both an output \(o_1\) and a hidden output
+\(h_1\), \(o1 = h1\). The output can be fed into a standard FCN is the
+user wants to use it for classification. The hidden output \(h_1\) is
+combined with the next sample in the input sequence \(i_2\), and this
+pair \((h_1,i_2)\) is used as input into the DNN. This produces another
+output \(o_2\) and hidden output \(h_2\), \(o_2 = h_2\). The process
+continues until all samples in the input sequence are processed,
+producing a final output \(o_n\) and hidden output \(h_n\). In other
+words, a single DNN processes input samples and hidden output from the
+previous step <i>recursively</i> or <i>recurrently</i>, generating a
+result that represent both the output from the current RNN step and a
+hidden output for the next RNN step.
+</p>
+
+<p>
+Note that one detail was left unspecified: if the DNN expects a
+sample input and previous hidden output pair as input, what is the
+hidden output for the first step in the recursion? Normally, a random
+hidden output \(h_0\) is generated and used for the first processing
+step in an RNN.
+</p>
+
+<p>
+Visually, these images from Michael Phi's
+excellent <a href="https://towardsdatascience.com/illustrated-guide-to-lstms-and-gru-s-a-step-by-step-explanation-44e9eb85bf21">page
+on LSTMs and GRUs</a> shows clearly how input samples \(i_j\) from the
+input sequence \(I\) are fed into the RNN's DNN structure one-by-one.
+
+<div class="img-div" style="max-width: 950px;">
+  <img style="max-width: 950px;" src="../figs/dnn//RNN-01.gif">
+	<caption>Processing image samples one-by-one from image sequence \(I\)
+  (attribution: <a href="https://towardsdatascience.com/illustrated-guide-to-lstms-and-gru-s-a-step-by-step-explanation-44e9eb85bf21">Michael
+	Phi)</a>
+  </caption>
+</div>
+
+<p>
+This close-up image shows how the hidden output \(h_{j-1}\) and the
+current input \(i_j\) are combined and passed through a tanh function to
+produce a continuous output \(o_j\) and hidden output value \(h_j\).
+</p>
+
+<div class="img-div" style="max-width: 576px;">
+  <img style="max-width: 576px;" src="../figs/dnn//RNN-02.gif">
+  <caption>A recurrent step combines previous hidden
+  input \(h_{j-1}\) and current input \(i_j\), then passes the combination
+  through a tanh function to produce a continuous output \(o_j\) and
+  hidden output \(h_j\) from the DNN
+  (attribution: <a href="https://towardsdatascience.com/illustrated-guide-to-lstms-and-gru-s-a-step-by-step-explanation-44e9eb85bf21">Michael
+	Phi)</a>
+  </caption>
+</div>
+
+<p>
+One way of understanding RNNs is that they use the concept
+of <i>sequence memory</i>. Over time, they have the ability to "learn"
+sequential patterns. In theory, this is something an FCN or CNN would
+have more difficulty to do, since an RNN uses previous information
+(hidden output) where FCNs and CNNs do not. Programatically, this can
+be expressed in the following way.
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-rnn">
+% rnn = RNN()
+% fcn = FeedForwardDNN()
+% hidden = random()
+% 
+% for i in input:
+%     output,hidden = rnn( i, hidden )
+%     prediction = fcn( output )
+  </div>
+</div>
+
+
+<h3>Vanishing Gradients</h3>
+
+<p>
+Although basic RNNs are designed to "remember" previous results, they
+do have an important problem. As an RNN processes inputs, it begins to
+forget what it has seen in previous steps. Intuitively, you could say
+that a basic RNN has a short-term memory, but not a long-term memory.
+This happens because of the way backpropegation occurs. To understand
+this, think of how any DNN works. There are three major steps: (1)
+feedforward; (2) error based on predicted class; (3) backpropegation
+of error based on gradient descent to adjust edge weights. At any
+given layer in the DNN, its gradient values depend on the successive
+layer's gradient values. So, if the following layer has small gradient
+values, the current layer's gradients will be even smaller. This is
+the vanishing gradient effect. Layers near the beginning of the DNN
+are learning little or nothing.
+</p>
+
+<p>
+Consider an RNN, where each step in the RNN is analogous to a layer in
+a DNN. A method similar to backpropegation (backpropegation over time)
+is used to improve the network, so the vanishing gradient effect
+occurs over steps in the RNN, as opposed to layers in a DNN.  This
+explains intuitively why an RNN can remember recent timesteps, but not
+ones further back in time.
+</p>
+
+<p>
+What is the practical effect of the lack of long-term memory? Consider
+an RNN processing a sentence term by term.
+</p>
+
+<div class="ex-div">
+My dog Goro and I went for a walk, but a squirrel ran in front of us and he started chasing it.
+</div>
+
+<p>
+It's easy for us to recognize that "he started chasing it" refers to
+Goro. But an RNN may no longer remember that "he" refers to a dog named
+Goro. This is a serious disadvantage for a type of DNN specifically
+designed to process sequence data.
+</p>
+
+<h2>Long Short-Term Memory RNNs</h2>
+
+<p>
+Long short-term memory (LSTM) DNNs are a type of RNN designed to
+address the vanishing gradient problem. Initially introduced by
+Hochreiter &amp; Schmidhuber in 1977, LSTMs use a set of three "gates" to
+maintain both a long-term and a short-term memory.  Below is an image
+of the internals of an LSTM.
+</p>
+
+<div class="img-div" style="max-width: 576px;">
+  <img style="max-width: 576px;" src="../figs/dnn//lstm-01.png">
+  <caption>
+	  The gates, activation functions, and data flow through the DNNs
+    used in LSTMs A recurrent step combines previous hidden input
+    \(h_{j-1}\) and current input \(i_j\), then passes the combination
+    through a tanh function to produce a continuous output \(o_j\) and
+    hidden output \(h_j\) from the DNN
+    (attribution: <a href="https://towardsdatascience.com/illustrated-guide-to-lstms-and-gru-s-a-step-by-step-explanation-44e9eb85bf21">Michael
+    Phi)</a>
+  </caption>
+</div>
+
+<p>
+To understand what happens internally within the LSTM, we can look at
+the various data paths. An LSTM is made up of three pieces of
+information: the current input value from the sequence \(i_j\), the
+previous hidden state \(h_{j-1}\), and the previous <i>cell state</i>
+\(c_{j-1}\). Each iteration of an LSTM RNN produces a new hidden state
+\(h_j\), and new cell state \(c_j\), and an output \(o_j\), with \(h_j = o_j\)
+as before. Intuitively, we think of the hidden state as our short-term
+memory, and the cell state as our long-term memory.
+</p>
+
+<p>
+The path along the top manages the cell state \(c_{j-1}\). As noted
+above, the cell state is the long-term "memory" of the network over
+the sequence processed to date. We must decide what to remove or
+"forget" from the cell state. Not surprisingly, this is called
+the <i>forget gate layer</i>. The previous hidden state \(h_{j-1}\) and
+current input \(i_j\) are used to control this decision. Mathematically,
+the output combines the hidden and input values, then passes them
+through a sigmoid operator.
+</p>
+
+\[ f = \sigma ( W_f \cdot [ h_{j-1},i_j ] + b_f ) \]
+
+<p>
+The previous hidden state and current input value \([ h_{j-1},i_j ]\)
+are multiplied by a weight in \(W_f\) and combined with a bias in \(b_f\),
+then passed through the \(\sigma\) function to transform the result to
+the continuous range \([0 \ldots 1]\). A value close to 0 means
+completely forget, and a value close to 1 means fully retain. Remember
+that we are (normally) working with vectors \(h_{j-1}\), \(i_j\), \(W_f\),
+and \(b_f\). The resulting vector \(f\) is pointwise-multiplied to the
+previous cell state \(c_{j-1}\) using the elementwise product operator
+\(\odot\) to alter its values. At this point it should be clear why
+values close to 0 or close to 1 remove or retain information in
+\(c_{j-1}\).
+</p>
+
+<p>
+Next comes the <i>input gate</i>, which decides what new information
+will be stored in long-term memory \(c_j\). As with the forget gate, it
+combines the previous hidden state \(h_{j-1}\) and the current input
+value \(i_j\) to make this decision. This is made up of two parts \(i_1\)
+and \(i_2\).
+
+\[
+\begin{align}
+i_1 & = \sigma( W_{i_1} \cdot [ h_{j-1}, i_{j} ] + b_{i_1} )\\
+i_2 & = \textrm{tanh}( W_{i_2} \cdot [ h_{j-1}, i_{j} ] + b_{i_2} )\\
+\end{align}
+\]
+
+<p>
+Intuitively, \(i_1\) dictates what information "passes through" to the
+cell state, again with 0 indicating no pass-thru, and 1 indicating
+complete pass-thru. \(i_2\) is more difficult to explain intuitively,
+but its purpose is to regulate the network. \(i_1\) and \(i_2\) are
+multiplied, and the result is pointwise-added to the cell state after
+the forget gate is applied. Again, at this point it should be clear
+how values on the range \([0 \ldots 1]\) are affecting what new
+information is being added into long-term memory.
+</p>
+
+<p>
+The final stage is the <i>output gate</i>, which combines all three
+pieces of information: the previous hidden state \(h_{j-1}\) (short-term
+memory), the current input value \(i_j\) (new input), and the new cell
+state after the forget and input gates are applied, \(c_j\) (long-term
+memory) using two parts \(o_1\) representing a combination of the
+previous hidden state and the current input value and \(o_2\)
+representing long-term memory.
+</p>
+
+\[
+\begin{align}
+o_1 &= \sigma( W_{o_1} \cdot [ h_{j-1}, i_{j} ] + b_{o_1} )\\
+o_2 &= \textrm{tanh}( W_{o_2} \cdot c_j + b_{o_2} )\\
+h_j, o_j &= o_1 \odot o_2\\
+\end{align}
+\]
+
+<p>
+The new short-term memory \(o_1\) and long-term memory \(o_2\) are
+pointwise-multiplied to produce the new hidden state and output \(h_j\)
+and \(o_j\) for the current sequence entry.
+</p>
+
+<p>
+As with all DNNs, the key on how the network functions lies in its
+weights and biases \(W_f\), \(b_f\), \(W_{i_1}\), \(b_{i_1}\), \(W_{i_2}\),
+\(b_{i_2}\), \(W_{o_1}\), \(b_{o_1}\), \(W_{o_2}\), and \(b_{o_2}\). And as with
+all DNNs, these values are updated during each step of DNN training by
+using gradient descent and optimization to adjust the weights and
+biases in directions that produce results with a lower loss or error.
+</p>
+
+<p>
+One final note about LSTMs is that they generally come in two forms:
+<i>many-to-many</i> or <i>many-to-one</i>. The difference is in
+whether we care about intermediate output values, or only the final
+output value produced after the last input \(i_n\) in the sequence is
+processed.  For example, if we are performing text generation, we
+would use a many-to-many approach. The output from each step would be
+fed through an FCN to produce a generated term, appended to the terms
+to date as we build up a sentence related to the input being
+processed. If we were performing sentiment analysis, we would most
+likely use a many-to-one approach, where we ignored intermediate
+outputs and passed only the final output through an FCN to determine a
+sentiment for the input sequence as a whole.
+</p>
+
+<h3>Airline Passenger Example</h3>
+
+<p>
+As a "simple" example of an LSTM, we'll use a built-in dataset from
+<a href="https://seaborn.pydata.org" target="_blank">seaborn</a>, a
+Python statistical graphics and visualization library. seaborn
+includes a airline flight dataset with 144 months of data that
+includes, among other things, the number of passengers that flew each
+month.  We will use an LSTM RNN to train on twelve months (one year)
+of passenger data, then use the resulting model to predict the number
+of passengers flying the month immediately following our twelve month
+training period.</p>
+
+<ul>
+<li><a href="./notebook/flight.ipynb" target="_blank">Flight LSTM Jupyter Notebook</a></li>
+<li><a href="./code/flight.py">PyTorch Flight LSTM</a></li>
+</ul>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-flt-sns">
+% import seaborn as sns
+% 
+% flight_data = sns.load_dataset( 'flights' )
+% print( flight_data.head() )
+% print( len( flight_data ) )
+
+  year    month  passengers
+0 1949  January         112
+1 1949 February         118
+2 1949    March         132
+3 1949    April         129
+4 1949      May         121
+
+144
+  </div>
+</div>
+
+<p>
+To start, we load the libraries we will use in our program.
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-flt-lib">
+% import matplotlib.pyplot as plt
+% import numpy as np
+% import pandas as pd
+% import seaborn as sns
+% import torch
+% import torch.nn as nn
+% 
+% from sklearn.preprocessing import MinMaxScaler
+  </div>
+</div>
+
+<p>
+Next, we will create our LSTM neural network. Since this is a simple
+example, the LSTM will be made of of a recurrent node as described
+above, with output from the node fed into a fully-connected network
+with a single hidden layer.
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-flt-lstm">
+% class LSTM( nn.Module ):
+%     def __init__( self, input_size=1, hidden_n=100, output_size=1 ):
+%         super( LSTM, self ).__init__()
+%         
+%         self.hidden_layer_size = hidden_n
+%         self.lstm = nn.LSTM( input_size, hidden_n )
+%         self.fcn = nn.Linear( hidden_n, output_size )
+%         
+%         #  Hidden cell contains previous hidden state, previous cell state,
+%         #  randomized to start
+%         
+%         self.hidden_cell =\
+%           ( torch.zeros( 1, 1, self.hidden_layer_size ),
+%             torch.zeros( 1, 1, self.hidden_layer_size ) )
+%         
+%     #  End method __init__
+%     
+%     def forward( self, input_seq ):
+%         
+%         #  input_seq is a 12-value tensor, the 12 months of passengers to
+%         #  train on, normalized on the range -1..1, as a single row
+%         
+%         #  Input to an LSTM is of shape (seq_len, batch, input_size)
+%         #  so view below creates a column of 12 "samples", each sample is
+%         #  a single value, a batch size of 1, and a length of 1 (one 12-value
+%         #  sample sequence)
+%         
+%         input_seq = input_seq.view( len( input_seq ), 1, 1 )
+%         
+%         #  Ask the LSTM for the output and the (hidden,cell) state based
+%         #  on the 12-value input and the current (hidden,cell) state, this
+%         #  will recurse the LSTM 12 times
+%         
+%         lstm_out,self.hidden_cell = self.lstm( input_seq, self.hidden_cell )
+%         lstm_out = lstm_out.view( len( input_seq ), -1 )
+%         
+%         #  Run final output through the LSTM's FCN to get class
+%         #  probabilities
+%         
+%         predictions = self.fcn( lstm_out )
+%         
+%         #  Highest probability is the class we estimate
+%         
+%         return predictions[ -1 ]
+%     
+%     #  End method forward
+% #  End class LSTM
+  </div>
+</div>
+
+<p>
+We will also create a helper function that takes a full sequence of
+monthly passenger data, and breaks it into tuples of training and
+label data. The training data is a list of twelve months of passenger
+counts \(t_i = \{ p_j, \ldots, p_{j+11} \}\). The label is the passenger
+count for the month immediately following the twelve-month training
+period \(l_i = p_{j+12}\). Each of these \((t_i, l_i)\) tuples are stores
+in a list of training samples used to train our LSTM \(T = \{ t_0, t_1,
+\ldots, t_{119} \}\).
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-flt-io-seq">
+% def create_IO_seq( input, tw ):
+%     
+%     #  Create a set of time series to process during training, input is the
+%     #  entire data stream to divide, tw is time window size in samples
+%     #
+%     #  IO_seq is a (train_seq,label) tuple list, train_seq is a 12-month
+%     #  set of passengers, label is a single passenger count following the
+%     #  12-month sequence
+%     
+%     IO_seq = [ ]
+%     n = len( input )
+%     
+%     for i in range( 0, n - tw ):
+%         
+%         #  Grab tw elements as training sequence, next element that follows
+%         #  is the label (i.e., the number of passengers following the given
+%         #  12-month period)
+%         
+%         train_seq = input[ i: i + tw ]
+%         
+%         #  To be pedantic, pull single tensor value as float, then make a
+%         #  single-element float list and convert it back to a tensor; can be
+%         #  done in a single step as:
+%         #
+%         #  train_label = input[ i + tw: i + tw + 1 ]
+%         #
+%         #  but I find that harder to understand
+%         #
+%         #  val is a single float, the number of passengers following the
+%         #  12-month training sequence we just extracted
+%         #
+%         #  train_label is [ val ] (a single-element float list) as a tensor
+%         
+%         val =  input[ i + tw ].item()
+%         train_label = torch.FloatTensor( [ val ] )
+%         
+%         IO_seq.append(  (train_seq,train_label) )
+%         
+%     return IO_seq
+% 
+% #  End function create_IO_seq
+  </div>
+</div>
+
+<p>
+Next, we will load our dataset, transform the values from raw
+passenger counts into "normalized" values on the range \([0 \ldots 1]\),
+then use our helper function <tt>create_IO_seq</tt> to create our
+training sequence.
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-flt-load">
+% #  Load data, divide into train and test
+% 
+% flight_data = sns.load_dataset( 'flights' )
+% 
+% #  First 132 months for train, last 12 months for test, split into
+% #  12-month training sequences and 1-value labels:
+% #
+% #  1 2 3 4 5 6 7 8 9 10 11 12       13
+% #  - 12 months of training          - next value is label
+% #    so train on 12-month sequence..then see how many passengers next month
+% 
+% all_data = flight_data[ 'passengers' ].values.astype( float )
+% test_data_size = 12
+% 
+% train_data = all_data[ :-test_data_size ]
+% test_data = all_data[ -test_data_size: ]
+% 
+% #  Transform/normalize data to range -1..1
+% 
+% scaler = MinMaxScaler( feature_range=(-1,1) )
+% 
+% #  First reshape data into a single column then transform to range -1..1
+% 
+% train_data_norm =\
+%   scaler.fit_transform( train_data.reshape( len( train_data ), 1 ) )
+% 
+% #  Convert back to PyTorch tensor that's a single row
+% 
+% train_data_norm =\
+%   torch.FloatTensor( train_data_norm ).view( len( train_data_norm ) )
+% 
+% #  Create 12-value training sequences and correspond next value label
+% 
+% train_window = 12
+% train_IO_seq = create_IO_seq( train_data_norm, train_window )
+  </div>
+</div>
+
+<p>
+Finally, we can create our LSTM RNN, choose our loss and optimizer
+functions (mean squared error and Adam, respectively), and use our
+training sequence to teach the model how to predict future passenger
+counts based on the previous year's monthly passenger count sequences.
+We will process the entire training sequence for 150 epochs.
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-flt-train">
+% #  Train LSTM
+% 
+% model.train()
+% 
+% epochs = 150
+% for i in range( 0, epochs ):
+%     for seq,label in train_IO_seq:
+%         optimizer.zero_grad()
+%         
+%         #  Re-initialize hidden and cell state to random prior to
+%         #  walking over the samples in the training sequence
+%         
+%         model.hidden_cell =\
+%           ( torch.zeros( 1, 1, model.hidden_layer_size ),
+%             torch.zeros( 1, 1, model.hidden_layer_size ) )
+%         
+%         y_pred = model( seq )
+%         
+%         single_loss = loss_function( y_pred, label )
+%         single_loss.backward()
+%         optimizer.step()
+%         
+%     if i % 25 == 1:
+%         print( f'epoch {i:3}; loss: {single_loss.item():10.8f}' )
+%        
+% print( f'epoch {i:3}; loss: {single_loss.item():10.10f}' )
+  </div>
+</div>
+
+<p>
+Notice an important subtlety here. The order of processing for our
+LSTM is:
+</p>
+
+<ol>
+
+<li>Zero any previous gradient information.
+
+<li>Randomize both our hidden and cell states.
+
+<li>Run the LSTM over <b>the entire</b> 12-month sequence, storing the
+final output value as <tt>y_pred</tt>.
+
+<li>Compute the loss between our prediction <tt>y_pred</tt> and the
+known passenger count for the 13<sup>th</sup> month.
+
+<li><b>Now</b> use gradient descent to backpropegate the loss through
+the LSTM.
+
+<li>Use the Adam optimizer to update the LSTM's weights, hopefully to
+better predict future passenger counts.
+
+</ol>
+
+<p>
+Critically, gradient descent, backpropegation, and weight optimization
+happen after each 12-month sequence is processed, and <b>not</b>
+after each month in the 12-month sequence is processed. This detail is
+important to understand.
+</p>
+
+<p>
+Once the network is trained, we can predict passenger counts for the final
+twelve months, and compare them to the known counts. Notice we have two
+options for testing. We can take the <i>known</i> 12-month sequences,
+or we can take a combination of the <i>known</i> and <i>predicted</i>
+values to form a 12-month sequence.
+</p>
+
+\[
+\begin{array}{r l l}
+t_1 &=\;\; \{ p_{121}, p_{122}, \ldots, p_{132} \} &\rightarrow \;\; l_1\\
+t_2 &=\;\; \{ p_{122}, p_{123}, \ldots, p_{133} \} &\rightarrow \;\; l_2\\
+&\qquad\qquad\,\cdots&\;\\
+t_{12} &=\;\; \{ p_{132}, p_{133}, \ldots, p_{143} \} &\rightarrow \;\; l_{12}\\
+\\
+&\;\;\;\textrm{versus}\\
+\\
+t &=\;\; \{ p_{121}, p_{122}, \ldots, p_{132} \} &\rightarrow \;\; l_1\\
+t &=\;\; \{ p_{122}, p_{123}, \ldots, l_{1} \} &\rightarrow \;\; l_2\\
+&\qquad\qquad\,\cdots&\;\\
+t &=\;\; \{ p_{132}, l_{1}, \ldots, l_{11} \} &\rightarrow \;\; l_{12}\\
+\end{array}
+\]
+
+<p>
+We choose to implement the second approach. This approach would be
+required if you are using all of your known data to predict a target
+variable different from your predictors. For example, suppose we had
+144 months of temperature data, and 156 months of precipitation data.
+If we use the full 144 months of temperature data to build our model,
+then the final 12 months we predict for testing have no corresponding
+temperature data. In this case, we have no choice but to use our
+predictions to "fill in" the unavailable temperature data as we
+predict the 1<sup>st</sup>, 2<sup>nd</sup>, \(\ldots\), and
+12<sup>th</sup> precipitation values. The tradeoff is more data during
+training versus estimated data that likely contains errors during
+testing for accuracy.
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-flt-predict">
+% #  Predict final twelve months
+% 
+% model.eval()
+% fut_pred = 12
+% 
+% #  Grab last twelve months of data, this will be the sequence used to
+% #  predict the first test value (remember, 132 training and 12 test
+% #  values were split at the beginning of the program)
+% 
+% test_outputs = [ ]
+% test_inputs = train_data_norm[ -train_window: ].tolist()
+% 
+% #  Run through all 12 test values
+% 
+% for i in range( 0, fut_pred ):
+%     
+%     #  Convert list of last 12 (normalized) passengers to a tensor
+%     
+%     seq = torch.FloatTensor( test_inputs[ -train_window: ] )
+%     
+%     #  with torch.no_grad() runs LSTM without calculating gradients, we
+%     #  can only do this b/c we know we don't need gradients, backwards()
+%     #  is not called at the end of this training run, b/c we are passing
+%     #  one single 12-value sequence and only care about the final output
+%     
+%     with torch.no_grad():
+%         model.hidden =\
+%           ( torch.zeros( 1, 1, model.hidden_layer_size ),
+%             torch.zeros( 1, 1, model.hidden_layer_size ) )
+%         
+%         #  Append output of LSTM to test_inputs, so when we loop again and
+%         #  grab the last 12 values for input, it includes the output(s)
+%         #  the LSTM is generating. Also, make sure to save the outputs for
+%         #  later accuracy calculations
+%         
+%         test_inputs.append( model( seq ).item() )
+%         test_outputs.append( test_inputs[ -1 ] )
+  </div>
+</div>
+
+<p>
+Finally, to visually inspect our predictions, we plot the full
+144-month sequence of known passenger counts in blue, then show the
+last twelve months of predicted passenger counts in orange.
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-flt-viz">
+% #  The LSTM output is normalized on range -1..1, so we need to invert this
+% #  to get actual passenger numbers, need these to do a proper comparison to
+% #  known passenger numbers for accuracy calculations
+% 
+% actual_pred =\
+%   scaler.inverse_transform( np.array( test_outputs ).reshape( -1, 1 ) )
+% 
+% #  Plot known values in blue
+% 
+% fig_size = plt.rcParams[ 'figure.figsize' ]
+% fig_size[ 0 ] = 15
+% fig_size[ 1 ] = 5
+% plt.rcParams[ 'figure.figsize' ] = fig_size
+% plt.title( 'Months vs Passengers' )
+% plt.ylabel( 'Total Passengers' )
+% plt.xlabel( 'Months' )
+% plt.grid( True )
+% plt.autoscale( axis='x', tight=True )
+% plt.plot( flight_data[ 'passengers' ] )
+% 
+% #  Add in the predicted values in orange
+% 
+% x = np.arange( 132, 144, 1 )
+% plt.plot( x, actual_pred )
+% plt.show()
+  </div>
+</div>
+
+<div class="img-div" style="max-width: 891px;">
+  <img src="../figs/dnn//predict.png" style="display: block; margin: auto; width: 100%; max-width: 891px;">
+</div>
+
+<p>
+The results are acceptable but not outstanding, although the LSTM was
+able to catch the up&ndash;down seasonal variation in the data,
+something a basic RNN would probably miss. You can compare this to an
+approach where we use only known values during testing. Not
+surprisingly, this produces slightly better results.
+</p>
+
+<div class="img-div" style="max-width: 891px;">
+  <img src="../figs/dnn//predict_known.png" style="display: block; margin: auto; width: 100%; max-width: 891px;">
+</div>
+
+
+<h2 id="gan">Generative Adversarial Networks</h2>
+
+<p>
+	Generative adversarial networks (GANs) use a pair of DNNs that
+	collaborate to try to <em>generate</em> examples of a pattern
+	contained in an unlabelled dataset. Unlike <em>unsupervised</em>
+	machine learning algorithms that attempt to classify or cluster
+	samples based on similarity, GANs attempt to <em>generate</em>
+	samples that are plausible or, ideally, indistinguishable from real
+	samples contained in the original dataset. GANs were originally
+	introduced by <a href="https://arxiv.org/abs/1406.2661"
+	target="_blank">Ian Goodfellow et al.</a> They are made up of two
+	sub-models:
+</p>
+
+<ul>
+	<li><b>Generator.</b> A model that attempts to generate realistic
+	examples from the original dataset.</li>
+
+	<li><b>Discriminator.</b> A model that attempts to classify a sample
+	as real or generated.</li>
+</ul>
+
+<p>
+	The generator model was originally designed to take a fixed-length
+	random vector as input, and use it to generate a plausible sample
+	based on the input dataset. This is achieved through a standard DNN
+	training process, after which points in the multidimensional vector
+	space map to samples in the dataset. This is often described as a
+	compressed representation of the original data distribution, where
+	the vector space is a set of latent variables (<em>i.e.</em>, hidden
+	variables) that are important but not directly observable.
+</p>
+
+<p>
+	The discriminator is a standard classification model. After training
+	its job is to label a sample as <em>real</em> or <em>generated</em>.
+</p>
+
+<p>
+	Once the discriminator and generator models are constructed, a
+	two-player game ensues in an unsupervised manner. The generator and
+	discriminator are improved together. The generator constructions a
+	collection of generated and real examples. The discriminator
+	classifies the examples as real or generated.  Based on its
+	accuracy, the discriminator is updated to improve its discrimination
+	abilities during the next round of the game. Equally importantly,
+	the generator is updated based on how well or how poorly the
+	generated samples fooled the discriminator. In the game theory
+	sense, the two models are seen as adversarial and playing a zero-sum
+	game, that is, the gain for one model represents an equivalent loss
+	for the other model. In the GAN environment, zero-sum means that
+	when the discriminator successfully identifies a sample, it is
+	rewarded and no change is made to its model parameters, while the
+	generator is penalized and updates are made to its
+	parameters. Alternatively, if the discriminator is unsuccessful, it
+	is updated and the generator is left as-is. In a perfect situation,
+	the generator will fool the discriminator 50% of the time
+	(<em>i.e.</em>, the discriminator is guessing whether a sample is
+	real or generated.)
+</p>
+
+<p>
+	A useful extension to GANs is cGAN or conditional GAN. Conditional
+	GANs allow conditioning the DNNs with additional information, for
+	example, subclass labels. For example, suppose we are classifying
+	flower images.  In addition to determining whether a flower image is
+	real or generated, you can add a flower type label (<em>e.g.</em>,
+	tulip, rose, daffodil) to try to learn the differences between
+	them. This allows specific <em>types</em> of flower images to be
+	generated.
+</p>
+
+<p>
+	Constructing cGANs involves adding a label to both the real and
+	generated images, so the discriminator understands what it is trying
+	to discriminate. The following figure shows a simple example of the
+	structure of a cGAN.
+</p>
+
+<div class="img-div" style="max-width: 954px;">
+  <img src="../figs/dnn//cGAN.png" style="display: block; margin: auto; width: 50%; max-width: 954px;">
+	<caption>cGAN structure
+	(attribution: <a href="https://towardsdatascience.com/cgan-conditional-generative-adversarial-network-how-to-gain-control-over-gan-outputs-b30620bd0cc8"
+	target="_blank">Saul Dobilas)</a>
+		</caption>
+</div>
+
+
+
+<h2 id="#exercise">DNN Practice Exercises</h2>
+
+<p>
+Below is an example of the MNIST problem solved using a single-layer
+FCN (<a href="./notebook/MNIST-FCN.ipynb" target="_blank">Jupyter
+Notebook</a>, <a href="./code/MNIST-FCN.py">Python file</a>). Extend
+this example to use two hidden layers instead of one. The second
+hidden layer should take input from the first, contain 64 nodes, and
+use ReLU to transform its output to be continuous. <b>Note:</b> to
+achieve this, you should <b>only</b> need to make minor changes in the
+FCN class's <tt>init()</tt> and <tt>forward()</tt> methods.
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-mnist-fcn">
+% #  Perform all required imports
+% 
+% import numpy as np
+% import torch
+% import torch.nn as nn
+% import torch.optim as optim
+% import torchvision.datasets as datasets
+% import torchvision.transforms as transforms
+% 
+% 
+% class FCN( nn.Module ):
+% 
+% #  FCN model to convert image to digit
+% 
+%     def __init__( self ):
+%         super( FCN, self ).__init__()
+% 
+%         self.hidden0 = nn.Linear( 784, 128 )
+%         self.output = nn.Linear( 128, 10 )
+%         self.sigmoid = nn.Sigmoid()
+%        self.softmax = nn.LogSoftmax( dim=1 )
+%
+%    #  End function __init__
+%
+%    def forward( self, input ):
+%        hidden = self.hidden0( input )
+%        hidden = self.sigmoid( hidden )
+%        output = self.output( hidden )
+%        output = self.softmax( output )
+%        return output
+%
+%    #  End function forward
+% #  End class FCN
+% 
+% 
+% def train( model, epoch, trainloader ):
+% 
+% #  Training function, use stochastic gradient descent to optimize
+% 
+%     criterion = nn.NLLLoss()
+%     optimizer = optim.SGD( model.parameters(), lr=0.003, momentum=0.9 )
+% 
+%     for e in range( 0, epoch ):
+%         running_loss = 0
+%         for images,labels in trainloader:
+% 
+%             #  Flatten images into a 784-long vector
+% 
+%             images = images.view( images.shape[ 0 ], -1 )
+% 
+%             optimizer.zero_grad()
+%             output = model( images )
+%             loss = criterion( output, labels )
+%             loss.backward()
+%             optimizer.step()
+% 
+%             running_loss += loss.item()
+% 
+%         print( 'Epoch {}, training loss: {}'.\
+%           format( e, running_loss / len( trainloader ) ) )
+% 
+% #  End function train
+% 
+% 
+% #  Mainline
+% 
+% #  Transform incoming greyscale data to a tensor, the mean and stdev of
+% #  the MNIST images is 0.1307 and 0.3081, so use Normalize to convert
+% #  this to a range of -1..1 (NB: mean and stdev can take up to 3 arguments,
+% #  to support different mean/stdev for R,G,B image channels, but a greyscale
+% #  image only has one channel)
+% 
+% transform = transforms.Compose(
+%     [ transforms.ToTensor(),
+%       transforms.Normalize( (0.5,), (0.5,) )
+%     ]
+% )
+% 
+% #  Download datasets, if not already downloaded
+% 
+% trainset =\
+%   datasets.MNIST( './', download=True, train=True, transform=transform )
+% testset =\
+%   datasets.MNIST( './', download=True, train=False, transform=transform )
+% 
+% #  Process data in batches of 64 items, both for training and testing
+% 
+% trainloader =\
+%   torch.utils.data.DataLoader( trainset, batch_size=64, shuffle=True )
+% testloader =\
+%   torch.utils.data.DataLoader( testset, batch_size=64, shuffle=True )
+% 
+% model = FCN()
+% 
+% #  Put the model in training mode, train for 15 epochs
+% 
+% model.train()
+% train( model, 15, trainloader )
+% 
+% #  Evaluate the model on the 10000 test images
+% 
+% n = 0
+% correct = 0
+% 
+% model.eval()
+% 
+% for images,labels in testloader:
+%     for i in range( 0, len( labels ) ):
+%         img = images[ i ].view( 1, 784 )
+%         prob = model( img )
+% 
+%         #  Invert probabilities since they are natural log'd
+%         #  (LogSoftmax), then from a tensor to a list
+% 
+%         prob = torch.exp( prob )
+%         prob = prob[ 0 ].tolist()
+% 
+%         pred_label = prob.index( max( prob ) )
+%         true_label = labels[ i ].item()
+% 
+%         if true_label == pred_label:
+%             correct += 1
+%         n += 1
+% 
+% print( f'Images tested: {n}' )
+% print( f'Accuracy: {correct / n * 100.0:.2f}%' )
+  </div>
+</div>
+
+
+<div id="MNIST-FCN-accordion" class="detail">
+	<h3>MNIST FCN Solution</h3>
+	<div>
+  <div class="code-flex-div">
+  	<div class="code-flex" id="code-rnn">
+% class FCN( nn.Module ):
+% 
+% #  FCN model to convert image to digit
+% 
+%     def __init__( self ):
+%         super( FCN, self ).__init__()
+% 
+%         self.hidden0 = nn.Linear( 784, 128 )
+%         self.hidden1 = nn.Linear( 128, 64 )
+%         self.output = nn.Linear( 64, 10 )
+%         self.sigmoid = nn.Sigmoid()
+%         self.relu = nn.ReLU()
+%         self.softmax = nn.LogSoftmax( dim=1 )
+% 
+%     #  End function __init__
+% 
+%     def forward( self, input ):
+%         hidden = self.hidden0( input )
+%         hidden = self.sigmoid( hidden )
+%         hidden = self.hidden1( hidden )
+%         hidden = self.relu( hidden )
+%         output = self.output( hidden )
+%         output = self.softmax( output )
+%         return output
+% 
+%     #  End function forward
+% #  End class FCN
+     </div>
+	</div>
+
+  <p>Full Python code
+  solution: <a href="./code/MNIST-FCN.py">MNIST-FCN.py</a></p>
+
+  </div>
+</div>
+
+<p>
+Normally, image data is processed with a CNN rather than an FCN. This
+worked well here because taking the \(2 \times 2\) image and
+concatenating rows to create a single vector of greyscale values
+formed patterns that distinguished different digits well. Could we do
+better with a CNN?  Would you like to find out? If so, try
+implementing one.
+</p>
+
+<p>
+This is more complicated than the previous example, because you will
+need to completely replace the <tt>FCN</tt> class with a <tt>CNN</tt>
+class. The rest of the code can remain unchanged, except for: (1)
+using a different <tt>criterion</tt> better suited for images, (2) no
+need to flatten images because a CNN can handle 2D images directly,
+unlike an FCN which expects its input to be single 1D vector, and (3)
+the evaluation section of the mainline, which will need to account for
+the format of the output from the CNN model.</p>
+
+<p>
+Here is the CNN model structure you should use.
+</p>
+
+<ol>
+<li>A 2D convolution that takes the MNIST images as input and produces
+six filters using a \(4 \times 4\) kernel with a stride of \(1\).
+
+<li>An ReLU activation on the results to scale them to the range \([0
+\ldots 1]\).
+
+<li>A 2D maxpooling of size \(2 \times 2\) to downsample the image from
+size \(28 \times 28\). <b>Be careful here!</b> Think hard about what
+size of image results you'll get from your 2D covolution step (hint:
+it <b>IS NOT</b> \(28 \times 28\), consider what happens when a \(4
+\times 4\) filter reaches either the right edge or bottom edge of a \(28
+\times 28\) image). You will need to add <tt>padding</tt> to
+the <tt>MaxPool2D</tt> operation to account for this.
+
+<li>Another 2D convolution producing 16 filters using a \(2 \times 2\)
+kernel with a stride of \(1\).
+
+<li>An ReLU activation on the results.
+
+<li>A 2D maxpooling of size \(2 \times 2\).
+
+<li>Flatten the results into a single 1D vector as input for the
+follow-on FCN.
+
+<li>A linear layer with \(120\) nodes taking the results of the
+convolution stage as input.
+
+<li>An ReLU activation on the results.
+
+<li>A linear layer with 10 nodes taking output from the previous
+hidden layer and producing probabilities for the ten possible
+handwritten letter types.
+
+<li>Finally, a <tt>LogSoftmax</tt> operation on the probabilities to
+produce normalized logarithmic results.
+
+<li>Update your <tt>criterion</tt> to use
+<tt>nn.CrossEntropyLoss()</tt> rather than <tt>nn.NLLLoss()</tt> in
+your <tt>train()</tt> function.
+
+<li>In your <tt>train()</tt> function, you <b>DO NOT</b> need to
+flatten the images with <code>view()</code>, since a CNN takes the 2D
+\(28 \times 28\) greyscale images directly.
+
+</ol>
+
+
+<div id="MNIST-CNN-accordion" class="detail">
+  <h3>MNIST CNN Solution</h3>
+  <div>
+  <div class="code-flex-div">
+  	<div class="code-flex" id="code-rnn">
+% class CNN( nn.Module ):
+%     def __init__( self ):
+%         super( CNN, self ).__init__()
+% 
+%         #  2D convolution, 1 input channel, 6 output channels, 4x4 kernel,
+%         #  stride of 1, 28x28 image will become a 25x25 result, b/c last
+%         #  4x4 kernel at right edge and bottom edge produces 1 result for 4
+%         #  cells, meaning image shrinks by 3 cells
+% 
+%         self.conv1 = nn.Conv2d( 1, 6, kernel_size=4, stride=1 )
+% 
+%         #  2D convolution, input size of 6(from previous convolution layer),
+%         #  output size of 16, this follows a MaxPool2d of size 2x2 with a
+%         #  padding of 1 to expand image to 26x26 from 25x25, this downsamples
+%         #  the image to 13x13
+% 
+%         self.conv2 = nn.Conv2d( 6, 16, kernel_size=2 )
+% 
+%         #  FCN section of CNN, result of second covolution is again MaxPool2d
+%         #  at 2x2 resolution with padding of 1, reducing image size from 14x14
+%         #  to 7x7 over the 16 output filters
+% 
+%         self.fc1 = nn.Linear( 16 * 7 * 7, 120 )
+%         self.fc2 = nn.Linear( 120, 10 )
+% 
+%         self.pool = nn.MaxPool2d( 2, 2, padding=1 )
+%         self.relu = nn.ReLU()
+%         self.softmax = nn.LogSoftmax( dim=1 )
+% 
+%     def forward( self, input ):
+%         conv = self.conv1( input )
+%         conv = self.relu( conv )
+%         conv = self.pool( conv )
+%         conv = self.conv2( conv )
+%         conv = self.relu( conv )
+%         conv = self.pool( conv )
+% 
+%         conv = conv.view( -1, 16 * 7 * 7 )
+%         output = self.fc1( conv )
+%         output = self.relu( output )
+%         output = self.fc2( output )
+%         output = self.softmax( output )
+%         return output
+%     #  End function forward
+% #  End class CNN
+% 
+% ...
+% 
+% def train( model, epoch, trainloader ):
+% 
+% #  Training function, use stochastic gradient descent to optimize
+% 
+%     criterion =  nn.CrossEntropyLoss()
+%     optimizer = optim.SGD( model.parameters(), lr=0.003, momentum=0.9 )
+% 
+%     for e in range( 0, epoch ):
+%         running_loss = 0
+%         for images,labels in trainloader:
+%             optimizer.zero_grad()
+%             output = model( images )
+% 
+% ...
+% 
+% model.eval()
+% 
+% for images,labels in testloader:
+% 
+%     # Use trained CNN to convert (batch of 64) images to class probabilities
+% 
+%     prob = model( images )
+% 
+%     #  Check all results against known class labels
+% 
+%     for i in range( 0, len( labels ) ):
+% 
+%         #  Invert probabilities since they are natural log'd
+%         #  (LogSoftmax), then from a tensor to a list
+% 
+%         p = torch.exp( prob[ i ] )
+%         p = p.tolist()
+% 
+%         pred_label = p.index( max( p ) )
+%         true_label = labels[ i ].item()
+% 
+%         if true_label == pred_label:
+%             correct += 1
+%     n += 1
+% 
+% ...
+    </div>
+   </div>
+
+  <p>Full Python code
+  solution: <a href="./code/MNIST-CNN.py">MNIST-CNN.py</a></p>
+
+  </div>
+</div>
+
+<p>In my testing, results from the CNN were 98% or higher, slightly
+better than the FCN example.</p>
+
+
+<h2 id="gpt">Programming ChatGPT</h2>
+
+<p>OpenAI provides the ability to interact with different versions of
+	ChatGPT programatically. Our particular interest is using ChatGPT
+	with Python. To do this, you must first install the <tt>openai</tt>
+	library, which is available in Anaconda's <tt>conda-forge</tt>
+	repository.
+</p>
+
+<div class="ex-div">
+conda install -c conda-forge openai
+</div>
+
+<p>Although we will provide you with an API key to allow you to call
+the ChatGPT API, you may want to setup your own account at some point
+in the future. As of March 2025, this is how you do this on OpenAI's
+web site.
+</p>
+
+<ul>
+
+	<li>Go to the <a href="https://platform.openai.com/docs/overview"
+	target="_blank">OpenAI developer platform page</a> and click
+	the <tt>Sign up</tt> button.</li>
+
+	<li>Enter the email address you want to associate with your
+	developer account and click the <tt>Continue</tt> button.</li>
+
+	<li>Choose a password for your developer account and click
+	the <tt>Continue</tt> button.</li>
+
+	<li>OpenAI will send a verification code to the email you
+	entered. Retrieve the code and enter it, then click
+	the <tt>Continue</tt> button.</li>
+
+	<li>Enter your full name and birthday, then click
+	the <tt>Continue</tt> button.</li>
+
+	<li>Choose an organization name (anything you like) and a level of
+	technical expertise, then click the <tt>Create organization</tt>
+	button.</li>
+
+	<li>Leave the team email input box empty, then click
+	the <tt>Continue</tt> button.</li>
+
+	<li>If you want to generate an API key, choose an <tt>API key
+	name</tt> and <tt>Project name</tt> and click the <tt>Generate API
+	Key</tt> button. Alternatively, you can choose <tt>I'll do this
+	later</tt> to wait to generate an API key.</li>
+
+	<li>If you chose to generate an API key, you can now <tt>Copy</tt>
+	the key. Make sure to do this so you have it and save it somewhere
+	safe where you can access it later. Then, click on
+	the <tt>Python</tt> tab in the <tt>Try out your new API key</tt>
+	dialog and click the <tt>Continue</tt> button.</li>
+
+	<li>This is the point where you will need to provide a payment
+	method for your API calls to work. Normally OpenAI offers a \(5
+	credit if you enter a payment method now. I strongly recommend
+	if/when you enter your payment method you <b>DO NOT</b> choose the
+	option to automatically re-purchase more API calls when your current
+	allotment of API calls ends. Instead, either monitor how many calls
+	you have left or when calls stop working, come back to the developer
+	dashboard to see if you've exhausted your call limit and then decide
+	if you want to purchase another block of calls or not. You can do
+	this on
+	the <a href="https://platform.openai.com/settings/organization/billing/overview"
+	target="_blank">billing page</a>.</li>
+
+</ul>
+
+<p>Once you have an API key and associated funds to support calls through
+	the key, you can start using the <tt>openai</tt> library to conduct
+	<i>conversations</i>. A conversation
+	is <a href="https://platform.openai.com/docs/guides/text-generation"
+	target="_blank">a set of back-and-forth questions and responses
+	between your program and one of OpenAI's large language
+	models</a>. A conversation is maintained as a Python list of
+	dictionary elements. Each dictionary element consists of
+	a <tt>role</tt> entry and a <tt>content</tt>
+	entry. The <tt>role</tt> is either <tt>assistant</tt> to identify
+	the entry as an LLM-generated entry, <tt>user</tt> to identify the
+	entry as instructions from the user, or <tt>developer</tt> used to
+	initialize the LLM to respond in a certain
+	way. The <tt>developer</tt> entry is usually the first entry in the
+	message list.
+</p>
+
+<p>
+	By maintaining a list of back-and-forth question-and-answer results
+	and passing the entire list with each new user question, you
+	provide <i>context</i> to OpenAI's LLM. It will not only answer the
+	most recent question you ask, but it will also look at the
+	conversation to date and tailor its answer based on past questions
+	and answers that occurred throughout the conversation.
+</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-gpt-req">
+% from openai import OpenAI
+% 
+% client = OpenAI(api_key='api_key')
+% 
+% msg = [ {
+%   'role': 'developer',
+%   'content': 'You are a helpful assistant that answers programming questions in the style of a northerner from the northeast United States.'
+% } ]
+% 
+% msg = msg + [ {
+%   'role': 'user',
+%   'content': 'Are semicolons optional in JavaScript?'
+% } ]
+% 
+% completion = client.chat.completions.create(
+%   model='gpt-4o-mini',
+%   messages=msg,
+%   temperature=0.7,
+%   top_p=1
+% )
+% 
+% rep = completion.choices[0].message
+% print(rep.content)<br>
+  </div>
+</div>
+
+<p>If this pair of messages is sent to OpenAI's <tt>gpt-4o-mini</tt>
+LLM, the response will be something like this.</p>
+
+<div class="ex-div">
+Ah, that's a good question! So, here’s the deal with semicolons in JavaScript: they're mostly optional due to a feature called Automatic Semicolon Insertion (ASI). This means that the JavaScript engine will automatically insert semicolons at certain points if you forget 'em. 
+
+But, here's the kicker: while it can save ya from having to type them all the time, it can also lead to some really tricky bugs if you’re not careful. For instance, if you have a return statement followed by a line break, JavaScript might insert a semicolon where you didn't want it, and then you’re left scratching your head wondering why it's not working.
+
+So, I'd say the best practice is to use semicolons consistently. It can save ya a lot of headaches down the line, ya know? Keeps your code clean and clear. But if you're feelin' adventurous and wanna go without 'em, just be cautious and test your code thoroughly.<br>
+</div>
+
+<p>Based on this simple example, it's easy to see how you could
+develop a "conversation loop" where you continued a conversation
+back-and-forth with an LLM until you were done.</p>
+
+<div class="code-flex-div">
+	<div class="code-flex" id="code-gpt-conversation">
+% from openai import OpenAI
+% 
+% client = OpenAI(api_key='api-key')
+% 
+% msg = [
+%     {
+%         'role': 'developer',
+%         'content': 'You are a helpful assistant that answers programming questions in the style of a northerner from the northeast United States.',
+%     }
+% ]
+% 
+% print('Type "quit" to exit the conversation.')
+% req = input('Enter your question: ')
+% 
+% while req.lower() != 'quit':
+%     msg = msg + [{'role': 'user', 'content': req}]
+% 
+%     completion = client.chat.completions.create(
+%         model='gpt-4o-mini', messages=msg, temperature=0.7, top_p=1
+%     )
+% 
+%     rep = completion.choices[0].message
+%     print(rep.content)
+% 
+%     msg = msg + [rep.to_dict()]
+%     req = input('Enter your question: ')<br>
+  </div>
+</div>
+
+<p>Here is a simple example conversation with user questions and LLM
+answers in the style of a "northerner from the northeast United
+States", something that was requested using the <tt>developer</tt>
+role at the very beginning of the conversation.</p>
+
+<div class="ex-div">
+Type "quit" to exit the conversation.
+Enter your question: Hello!
+Hey there! How's it going? What can I help ya with today?
+
+Enter your question: How many people live in Raleigh, NC, USA?
+As of my last update, Raleigh, NC, had a population of around 474,000 folks. But, ya know, populations can change pretty quickly, so it’s always a good idea to check the latest census data or city estimates for the most up-to-date numbers. What’s got ya curious about Raleigh?
+
+Enter your question: What is AI?
+Ah, good question! So, AI, or artificial intelligence, is basically when computers or machines are designed to think and learn like humans do. It can do things like recognize speech, understand language, make decisions, and even learn from experience.
+
+There are different types of AI, like narrow AI, which is made for specific tasks—like recommending movies or driving a car. Then there’s general AI, which is more like the stuff you see in sci-fi movies, where machines can understand and reason about the world just like a human.
+
+It's a pretty broad field, and it's changing fast! What part of AI are ya interested in?
+
+Enter your question: I'm interested in large language models.
+Ah, large language models, eh? Those are quite the topic! Basically, they're a type of AI that’s trained on a massive amount of text data to understand and generate human-like language. They can do things like answer questions, write essays, translate languages, and even have conversations—kinda like what we're doing now!
+
+These models, like GPT (which I’m based on), use a technique called deep learning, specifically a type of neural network called a transformer. They learn patterns in language by crunching through all that data and figuring out how words and phrases relate to each other.
+
+The cool part is they can generate coherent and contextually relevant text based on the prompts they get, making them super handy for all sorts of applications—chatbots, content generation, and more.
+
+What aspect of large language models gets you excited?
+
+Enter your question: Attention transformer models excite me.
+Ah, the attention mechanism in transformer models! That’s some pretty fascinating stuff! Basically, the attention mechanism allows the model to focus on different parts of the input data when it's generating output.
+
+In simpler terms, instead of just looking at the words in a sequence one by one, the model can weigh the importance of each word relative to the others. This helps it understand context way better and capture relationships between words, even if they’re far apart in the text.
+
+So, when you’ve got a long sentence, the model can keep track of which words are important for understanding the meaning and use that info to generate a more accurate response. It’s like how we humans pay attention to certain words in a conversation to make sense of what’s being said.
+
+The transformer architecture, with its self-attention mechanism, has really revolutionized how we handle natural language processing tasks. It’s behind a lot of the breakthroughs we’ve seen in AI lately.
+
+You into any specific applications of transformers, or just the tech behind it?
+
+Enter your question: quit<br>
+</div>
+
+<h2>Further Study</h2>
+
+<p>
+If you want to continue working on CNNs, I suggest you look at
+a library like <code>fastai</code>. This library sits on top of
+<code>pytorch</code>, and further simplifies creating image-based
+CNNs. <code>fastai</code> includes numerous pre-structured CNNs
+that have been shown to produce excellent performance on standard
+test datasets like CIFAR10. <code>fastai</code> documentation and
+instructions on how to install the library can be found here.
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp;
+<a href="https://github.com/fastai"><code>fastai</code></a>
+</p>
+
+<p>
+Here is an example of using <code>fastai</code> to train on the
+CIFAR10 dataset, producing accuracies of approximately 93%.
+</p>
+
+<p>
+&nbsp; &nbsp; &nbsp; &nbsp;
+<a href="https://www.fast.ai/2018/04/30/dawnbench-fastai/">CIFAR10 fastai CNN</a>
+</p>
+-->
+
+
+<!-- The mod-date span will be updated by code in mod-date.js -->
+
+<hr class="fig_top">
+<div class="footer">
+  Updated <span id="mod-date">01-Jan-01</span>
+</div>
+
+</body>
 </html>
+
+
+<!--  LocalWords:  ui DNNs PyTorch FCNs convolutional CNNs conda ANNs
+ -->
+<!--  LocalWords:  pytorch torchvision McCulloch Rosenblatt DNN GPUs
+ -->
+<!--  LocalWords:  Perceptron Widrow MADALINE Papert multilayer FCN
+ -->
+<!--  LocalWords:  activations backpropagation Rumelhart PyTorch's im
+ -->
+<!--  LocalWords:  dataset MNIST ReLU greyscale CIFAR dsets xforms jk
+ -->
+<!--  LocalWords:  ToTensor img numpy plt figsize imshow Jupyter CONV
+ -->
+<!--  LocalWords:  accuracies modalities convolve convolved softmax
+ -->
+<!--  LocalWords:  neighbours Analytics Healey perceptrons perceptron
+ -->
+<!--  LocalWords:  ldots leq cdot sigmoid frac perceptron's MNIST MSE
+ -->
+<!--  LocalWords:  forall rightarrow tunable nabla pre datasets Bigg
+ -->
+<!--  LocalWords:  fastai backpropegating Backpropegation underbrace
+ -->
+<!--  LocalWords:  bmatrix scriptsize vectorization cdots Elementwise
+ -->
+<!--  LocalWords:  backpropegation elementwise odot Hadamard Schur Eq
+ -->
+<!--  LocalWords:  propegating backpropegated Backpropegate Assymetry
+ -->
+<!--  LocalWords:  backpropegate TensorFlow nm Paszke Lua Soumith cpu
+ -->
+<!--  LocalWords:  Chintala Chanan Caffe ndarray cuda setosa RNNs RNN
+ -->
+<!--  LocalWords:  versicolor virginica LSTMs GRUs RNN's tanh rnn sns
+ -->
+<!--  LocalWords:  Programatically FeedForwardDNN feedforward Goro np
+ -->
+<!--  LocalWords:  timesteps LSTM Hochreiter Schmidhuber pointwise nn
+ -->
+<!--  LocalWords:  textrm seaborn len matplotlib pyplot sklearn init
+ -->
+<!--  LocalWords:  preprocessing MinMaxScaler lstm fcn recurse LSTM's
+ -->
+<!--  LocalWords:  tw FloatTensor scaler pred f'epoch th nd tradeoff
+ -->
+<!--  LocalWords:  eval tolist rcParams ylabel xlabel autoscale optim
+ -->
+<!--  LocalWords:  arange LogSoftmax trainloader NLLLoss SGD lr stdev
+ -->
+<!--  LocalWords:  trainset testset testloader log'd f'Images relu py
+ -->
+<!--  LocalWords:  f'Accuracy maxpooling downsample covolution conv
+ -->
+<!--  LocalWords:  MaxPool Conv downsamples fc CrossEntropyLoss
+ -->
