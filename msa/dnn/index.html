@@ -107,7 +107,7 @@
 
 <p>
 This module will introduce you to deep learning and deep neural
-networks using <a href="https://pytorch.org">PyTorch</a>, a
+networks using <a href="https://pytorch.org" target="_blank">PyTorch</a>, a
 Python-based open source deep learning package created by Facebook.
 We will use PyTorch to introduce both fully connected deep neural
 networks (FCNs) and convolutional deep neural networks (CNNs) for
@@ -139,8 +139,8 @@ conda install langchain langchain-openai -c conda-forge
 
 <p>
 You can review the
- <a href="https://leapcell.io/blog/how-to-install-pytorch-using-conda">instructions on installing PyTorch with <tt>conda</tt></tt></a> or
- <a href="https://www.langchain.com"> LangChain website</a>for more information, as well as commands you can issue to verify the install has been performed correctly.
+ <a href="https://leapcell.io/blog/how-to-install-pytorch-using-conda" target="_blank">instructions on installing PyTorch with <tt>conda</tt></tt></a> or
+ <a href="https://www.langchain.com" target="_blank"> LangChain website</a> for more information, as well as commands you can issue to verify the install has been performed correctly.
 </p>
 
 <h2 id="dnn">Deep Neural Networks</h2>
@@ -150,12 +150,12 @@ Deep neural networks (DNNs) are a relatively new area of focused
 research, based off the foundations of artificial neural networks
 (ANNs). ANNs and DNNs fall within the broad area of supervised machine
 learning algorithms. The original idea for a <i>neural network</i> was
-<a href="https://link.springer.com/article/10.1007/BF02478259">proposed
+<a href="https://link.springer.com/article/10.1007/BF02478259" target="_blank">proposed
 by McCulloch and Pitts in 1943</a>, based off a biological estimate of
 how neurons in the brain were hypothesized to function. The problem
 with the McCulloch-Pitts model was its inability to easily learn. To
 address
-this, <a href="https://www.google.com/books/edition/_/ig8mHog30X0C?hl=en&gbpv=1&pg=PA398&dq=rosenblatt+perceptron">Rosenblatt
+this, <a href="https://www.google.com/books/edition/_/ig8mHog30X0C?hl=en&gbpv=1&pg=PA398&dq=rosenblatt+perceptron" target="_blank">Rosenblatt
 proposed the Perceptron</a>, adding weights that allowed the ANN to
 &quot;learn&quot; by increasing and decreasing weights based on how
 well the current network categorized relative to a known, correct
@@ -169,7 +169,7 @@ use. Careful analysis of MADALINE showed that it found a set of
 weights for a number of inputs, which is analogous to linear
 regression. In other words, ANNs at this point could not solve more
 complex, non-linear problems.
-<a href="https://direct.mit.edu/books/monograph/3132/PerceptronsAn-Introduction-to-Computational">Marvin
+<a href="https://direct.mit.edu/books/monograph/3132/PerceptronsAn-Introduction-to-Computational" target="_blank">Marvin
 Minsky and Seymour Papert at MIT</a> proved this theoretically,
 effectively silencing research on neural networks for many years.
 </p>
@@ -191,7 +191,7 @@ multi-layer DNN.
 <p>
 To address this, the idea of backpropagation, which distributes error
 throughout the network,
-was <a href="https://www.nature.com/articles/323533a0">proposed
+was <a href="https://www.nature.com/articles/323533a0" target="_blank">proposed
 by Rumelhart, Hinton, and Williams</a> in 1986. In simple terms, we
 are using calculus to assign some of the blame for error in the output
 layer to each neuron in the previous hidden layer, further propagating
@@ -889,9 +889,8 @@ open source machine learning language using the BSD open source
 license. Facebook currently operates
 both <a href="https://ai.meta.com/tools/pytorch/"
 target="_blank">PyTorch</a> and
-the <a href="https://ai.meta.com/resources"
-target="_blank">Convolutional Architecture for Fast Feature
-Embedding</a> (Caffe2). It is one of the standard libraries for deep
+the <a href="https://research.facebook.com/blog/2017/4/introducing-caffe2-to-the-academic-community/" target="_blank">Convolutional Architecture for Fast Feature
+Embedding</a> (Caffe2, <a href="https://caffe2.ai/" target="_blank">now part of the standard PyTorch library</a>). It is one of the standard libraries for deep
 neural network research and implementation.
 
 <h3>Tensors</h3>
@@ -952,7 +951,7 @@ the GPU, you must also move your DNN models to the GPU and ensure all
 operations are performed on the GPU.</p>
 
 <!--
-<p>This is a <a href='./code/iris-dnn.ipynb'>Jupyter notebook that
+<p>This is a <a href='./code/iris-dnn.ipynb' target="_blank">Jupyter notebook that
 implements a DNN</a> in the simplest possible manner. It is a good
 starting point for understanding what tensors are and how they can be
 created and manipulated. The DNN itself trains on six examples of
@@ -1036,7 +1035,7 @@ length and width.</p>
 
 
 <div style="margin-left: 1.25in;">
-  <a href="./notebook/simple-nn.ipynb">Python Wheat DNN, Jupyter Notebook</a>
+  <a href="./notebook/simple-nn.ipynb" target="_blank">Python Wheat DNN, Jupyter Notebook</a>
 </div>
 
 
@@ -1049,7 +1048,7 @@ length and width.</p>
 <p>
 
 <div style="margin-left: 1.25in;">
-  <a href="./code/pytorch-nn.py">Pytorch Wheat DNN</a>
+  <a href="./code/pytorch-nn.py" target="_blank">Pytorch Wheat DNN</a>
 </div>
 
 <p>
@@ -1063,7 +1062,7 @@ length and width.</p>
 <h2 id="fcn-num">FCN Exercise 2: Handwritten Number Recognition</h2>
 
 <p>PyTorch's dataset repository includes
-the <a href="https://en.wikipedia.org/wiki/MNIST_database">MNIST
+the <a href="https://en.wikipedia.org/wiki/MNIST_database" target="_blank">MNIST
 database of handwritten images</a>, which
 includes <a href="https://python-course.eu/data/mnist/mnist_train.csv">60,000
 training examples</a> and
@@ -1092,7 +1091,7 @@ construct a simple FCN, then train and test it on the MNIST data.
 </p>
 
 <div style="margin-left: 1.25in;">
-  <a href="./notebook/digit_ex.ipynb">Digits FCN Jupyter Notebook</a>
+  <a href="./notebook/digit_ex.ipynb" target="_blank">Digits FCN Jupyter Notebook</a>
 </div>
 
 <p>Even with a simple FCN with a single hidden layer and an ReLU
@@ -1187,7 +1186,7 @@ dataset using our simple FCN.
 </p>
 
 <div style="margin-left: 1.25in;">
-  <a href="./notebook/CIFAR_FCN_ex.ipynb">CIFAR FCN Jupyter Notebook</a>
+  <a href="./notebook/CIFAR_FCN_ex.ipynb" target="_blank">CIFAR FCN Jupyter Notebook</a>
 </div>
 
 
@@ -1218,7 +1217,7 @@ dataset using our simple FCN.
 Convolutional neural networks (CNNs) extend FCNs by preceding the
 fully connected layers with a set of convolutional layers.  CNNs are
 commonly used to analyze images,
-although <a href="https://arxiv.org/pdf/1803.01271v2">recent
+although <a href="https://arxiv.org/pdf/1803.01271v2" target="_blank">recent
 research</a> has shown that they can handle other data modalities like
 text with excellent performance.
 </p>
@@ -1420,7 +1419,7 @@ asked to re-purpose the FCN to handle images from CIFAR10.
 Here is a simple Jupyter Notebook that does that.
 
 <div style="margin-left: 1.25in;">
-  <a href="./notebook/CIFAR_FCN_ex.ipynb">CIFAR FCN Jupyter Notebook</a>
+  <a href="./notebook/CIFAR_FCN_ex.ipynb" target="_blank">CIFAR FCN Jupyter Notebook</a>
 </div>
 
 <p>
@@ -1429,7 +1428,7 @@ improve performance by using a simple CNN.
 </p>
 
 <div style="margin-left: 1.25in;">
-  <a href="./notebook/CIFAR_CNN_ex.ipynb">CIFAR CNN Jupyter Notebook</a>
+  <a href="./notebook/CIFAR_CNN_ex.ipynb" target="_blank">CIFAR CNN Jupyter Notebook</a>
 </div>
 
 <p>
@@ -1716,7 +1715,7 @@ of passengers flying the month immediately following our twelve month
 training period.</p>
 
 <ul>
-<li><a href="./notebook/flight.ipynb">Flight LSTM Jupyter Notebook</a></li>
+<li><a href="./notebook/flight.ipynb" target="_blank">Flight LSTM Jupyter Notebook</a></li>
 <li><a href="./code/flight.py">PyTorch Flight LSTM</a></li>
 </ul>
 
@@ -2217,7 +2216,7 @@ surprisingly, this produces slightly better results.
 
 <p>
 Below is an example of the MNIST problem solved using a single-layer
-FCN (<a href="./notebook/MNIST-FCN.ipynb">Jupyter
+FCN (<a href="./notebook/MNIST-FCN.ipynb" target="_blank">Jupyter
 Notebook</a>, <a href="./code/MNIST-FCN.py">Python file</a>). Extend
 this example to use two hidden layers instead of one. The second
 hidden layer should take input from the first, contain 64 nodes, and
