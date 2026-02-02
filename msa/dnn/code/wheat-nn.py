@@ -180,7 +180,7 @@ def read_data( fname ):
     #  Final column is assumed to be target, check its range and make
     #  sure it's shifted to be 0-based
     
-    min = dataset.min( axis=0 )[ -1 ]
+    min = dataset.min( axis=0 ).iloc[ -1 ]
     for i in range( 0, dataset.shape[ 0 ] ):
         dataset.iloc[ i, -1 ] -= min
         
